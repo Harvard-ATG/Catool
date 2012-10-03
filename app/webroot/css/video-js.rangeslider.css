@@ -1,0 +1,125 @@
+.vjs-default-skin div.vjs-rangeslider-control {
+  display: none;
+  position: absolute;
+  left: 4.8em; right: 4.8em; /* Leave room for time displays. */
+  height: 1.0em; width: auto;
+  top: -2.4em; /* Set above the rest of the controls. And leave room for 2px of borders (progress bottom and controls top). */
+  border-bottom: 1px solid #1F1F1F;
+  border-top: 1px solid #222;
+
+  /* CSS Gradient */
+  background: #333;
+  background: -moz-linear-gradient(top, #222, #333);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#222), to(#333));
+  background: -webkit-linear-gradient(top, #222, #333);
+  background: -o-linear-gradient(top, #333, #222);
+  background: -ms-linear-gradient(top, #333, #222);
+  background: linear-gradient(top, #333, #222);
+
+
+  /* 1px top shadow */
+/*  -webkit-box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.15); -moz-box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.15); box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.15);*/
+}
+
+/* Box containing double-thumb scrubber. */
+.vjs-default-skin .vjs-rangeslider-holder {
+  position: relative;  /*overflow: hidden;*/
+  padding: 0; margin: 0; /* Placement within the progress control item */
+  height: 1.0em;
+  -moz-border-radius: 0.6em; -webkit-border-radius: 0.6em; border-radius: 0.6em;
+
+  /* CSS Gradient */
+  background: #111;
+  background: -moz-linear-gradient(top, #111, #262626);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#111), to(#262626));
+  background: -webkit-linear-gradient(top, #111, #262626);
+  background: -o-linear-gradient(top, #111, #262626);
+  background: -ms-linear-gradient(top, #111, #262626);
+  background: linear-gradient(top, #111, #262626);
+}
+
+.vjs-default-skin div.vjs-rangeslider-handle {
+	position: absolute;
+	margin-top: 0;
+	cursor: pointer !important;
+	background-color: transparent;
+	z-index: 101; /* in front of the bar */
+}
+.vjs-default-skin div.vjs-rangeslider-handle-left {
+	left: 0;
+}
+.vjs-default-skin div.vjs-rangeslider-handle-right {
+	left: 100%;
+}
+.vjs-default-skin div.vjs-rangeslider-handle-left,
+.vjs-default-skin div.vjs-rangeslider-handle-right {
+	top: -1em;
+}
+.vjs-default-skin div.vjs-rangeslider-handle-line {
+	width: 1px;
+	height: 2.4em;
+	background-color: #A69700;
+}
+.vjs-default-skin div.vjs-rangeslider-handle-arrow {
+	width: 0;
+	height: 0;
+	border-left: 1em solid transparent;
+	border-right: 1em solid transparent;
+	border-top: 1em solid #FFF273;
+	margin-left: -1em;	
+	opacity: 0.8;
+}
+
+.vjs-default-skin div.vjs-rangeslider-bar {
+	position: absolute;
+	height: 1.0em;
+	left: 0em;
+	right: 0em;
+	background-color: #FFE800;
+	z-index: 100; /* behind the handle */
+
+  /* CSS Gradient */
+  background: #FFE800;
+  background: -moz-linear-gradient(top, #FFE800, #A69700);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFE800), to(#A69700));
+  background: -webkit-linear-gradient(top, #FFE800, #A69700);
+  background: -o-linear-gradient(top, #FFE800, #A69700);
+  background: -ms-linear-gradient(top, #FFE800, #A69700);
+  background: linear-gradient(top, #FFE800, #A69700);
+}
+
+.vjs-default-skin .vjs-rangeslider-time-controls {
+  display: none;
+  position: absolute;
+  right: 0;
+  height: 1.0em;
+  line-height: 1.0em;
+  width: 4.8em;
+  top: -2.5em;
+  border-bottom: 1px solid #1F1F1F;
+  border-top: 1px solid #222;
+  background-color: #333;
+
+  font-size: 1em; line-height: 1.0em; font-weight: normal; font-family: Helvetica, Arial, sans-serif;
+
+  background: #333;
+  background: -moz-linear-gradient(top, #222, #333);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#222), to(#333));
+  background: -webkit-linear-gradient(top, #222, #333);
+  background: -o-linear-gradient(top, #333, #222);
+  background: -ms-linear-gradient(top, #333, #222);
+  background: linear-gradient(top, #333, #222);
+
+  /* 1px top shadow */
+/*  -webkit-box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.15); -moz-box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.15); box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.15);*/
+}
+
+.vjs-default-skin .vjs-rangeslider-start-time {
+	left: 0;
+}
+.vjs-default-skin .vjs-rangeslider-end-time {
+}
+
+.vjs-default-skin .vjs-seek-handle {
+	z-index: 9999;
+}

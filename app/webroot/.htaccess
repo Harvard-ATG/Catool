@@ -1,0 +1,23 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
+
+# Added for JPlayer
+<IfModule mod_mime.c>
+	# AddType TYPE/SUBTYPE EXTENSION
+	AddType audio/mpeg mp3
+	AddType audio/mp4 m4a
+	AddType audio/ogg ogg
+	AddType audio/ogg oga
+	AddType audio/webm webma
+	AddType audio/wav wav
+	  
+	AddType video/mp4 mp4
+	AddType video/mp4 m4v
+	AddType video/ogg ogv
+	AddType video/webm webm
+	AddType video/webm webmv
+</IfModule>

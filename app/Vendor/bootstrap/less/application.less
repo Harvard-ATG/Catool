@@ -1,0 +1,222 @@
+/*!
+ * Application extensions to bootstrap.
+ *
+ */
+body {
+	padding-top: 60px;
+	padding-bottom: 40px;
+}
+.sidebar-nav {
+	padding: 9px 0;
+}
+
+.note-comments-btn,
+.note-edit-btn,
+.note-delete-btn,
+.note-comment-btn {
+	margin-right: 12px;
+}
+.notes-empty {
+	margin-top: 10px;
+	padding: 3px;
+	background: @greenLighter;
+	line-height: @baseLineHeight * 1.25;
+}
+.note-wrapper {
+	border-top: 1px solid #ddd;
+	border-left: 1px solid #ddd;
+	border-right: 1px solid #ddd;
+	margin: 10px 0;
+
+	.fluid-img () {
+		max-width: 100%;
+		height: auto;
+	}
+	img { 
+		.fluid-img;
+	}
+	img.slide {
+		min-width: 350px;
+		.fluid-img;
+	}
+	.highlight, .highlight.fadein {
+		background-color: lighten(@yellow, 20%);
+		transition: background-color 1s linear;
+		-moz-transition: background-color 1s linear;    /* FF3.7+ */
+		-o-transition: background-color 1s linear;      /* Opera 10.5 */
+		-webkit-transition: background-color 1s linear; /* Saf3.2+, Chrome */
+	}
+	.highlight.fadeout {
+		background-color: transparent;
+	}
+}
+.note-compact-wrapper {
+	line-height: @baseLineHeight * 1.25;
+	background: @greenLighter;
+	border-bottom: 1px solid #ddd;
+	clear: right;
+	&:hover {
+		background: @white;
+		cursor: pointer;
+	}
+	.note-header {
+		padding: 3px 10px;
+	}
+}
+.note-expanded-wrapper {
+	border-bottom: 1px solid #ddd;
+}
+.note-detail-wrapper {
+	padding: 13px 10px; 
+}
+.note-comments-wrapper {
+	margin-right: 10px;
+	margin-bottom: 5px;
+}
+.note-comment {
+	margin: 0 0 0 60px;
+	border-bottom: 1px solid #ccc; 
+	padding: 0 .5em .5em .5em;
+	&:last-child {
+		border-bottom: none;
+	}
+}
+.note-col-left {
+	width:55%; 
+	float:left;
+}
+.note-col-right {
+	width:42%;
+	float:right; 
+	margin-left: 3%; 
+}
+.note-clear-float {
+	clear: both;
+	height: 0;
+	font-size: 1px;
+	line-height: 0px;
+}
+.note-title {
+	font-weight: bold;
+}
+.note-byline {
+	color: #999; 
+	font-style: italic;
+	line-height: @baseLineHeight * 2;
+}
+.note-date {}
+.note-author {}
+.note-play-control {
+	display:block;
+	position: relative;
+	width: 170px;
+	padding: 2px 4px;
+	color: @black;
+	vertical-align: middle;
+	text-align:center;
+	text-decoration: none; 
+	text-transform: uppercase;
+	font-weight: bold;
+	border: 1px solid #866;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	background-image: url(@imgNotePlayButton);
+	background-repeat: no-repeat;
+	background-position: -15px -24px;
+	height: 15px;
+	line-height: 15px;
+	
+	&:hover, &:hover {
+		background-position: -15px -89px;
+		cursor: pointer;
+	}
+	
+	.note-play-label,
+	.note-play-time {
+		position: absolute;
+		top: 2px;
+	}
+	.note-play-label {
+		left: 5px;
+	}
+	.note-play-time {
+		left: 60px;
+	}
+}
+.note-comment-form {
+  padding: (@baseLineHeight - 1) 5px @baseLineHeight;
+  margin-top: @baseLineHeight;
+  margin-bottom: @baseLineHeight;
+	background-color: @grayLighter;
+	border: 1px solid @grayLight;
+	textarea {
+		width: 95%;
+	}
+	button {
+		margin-right: 5px;
+	}
+}
+.note-form.form-horizontal {
+	label {
+		width: 60px;
+	}
+	.controls {
+		margin-left: 80px;
+	}
+}
+
+.notes-btn-group {
+	.btn, a.btn {
+	    background: none repeat scroll 0 0 @grayLighter;
+	    border: 1px solid @grayLight;
+	    color: @gray;
+	    margin: 0px 2px;
+	    padding: 4px 6px;
+	    text-decoration: 0;
+	    -webkit-border-radius: 0;
+	    -moz-border-radius: 0;
+	    border-radius: 0;
+	    -webkit-box-shadow: 0;
+	    -moz-box-shadow: 0;
+	    box-shadow: 0;
+	}
+	.btn:hover {
+	    background: none repeat scroll 0 0 @white;
+	}
+}
+.notes-sort .sort-label {
+		padding: 4px 6px;
+	}
+
+// Tweaks to note tabs
+.notes-tabs.nav-tabs {
+	@offset: 9px;
+	
+	li > a.offset {
+		margin-left: @offset;
+	}
+	li > a.info {
+		background-image: url(@imgInfo);
+		vertical-align: text-top;
+		background-repeat: no-repeat;
+		background-position: 10px 8px;
+		width: 15px;
+	}
+}
+
+// For AJAX "loading" effect
+div.loading {
+	background-color: @grayLighter;
+	background-image: url(@imgAjaxLoader);
+	background-position: center center;
+	background-repeat: no-repeat;
+	opacity: 1;
+}
+div.loading * {
+	opacity: 0.8;
+}
+
+// Typography extensions../
+.upper {
+	text-transform: uppercase;
+}

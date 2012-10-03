@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdoc>
+	<parser>
+		<target>.</target>
+	</parser>
+	<transformer>
+		<target>.</target>
+	</transformer>
+	<files>
+		<directory>../../Model</directory>
+		<directory>../../Controller</directory>
+		<directory>../../Test</directory>
+		<directory>../../Plugin/AuthService</directory>
+	</files>
+</phpdoc>

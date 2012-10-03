@@ -1,0 +1,119 @@
+<?php
+// Copyright (c) 2012 The President and Fellows of Harvard College
+// Use of this source code is governed by the LICENSE file found in the root of this project.
+?>
+<?php
+App::uses('AppModel', 'Model');
+/**
+ * User Model
+ *
+ * @package       app.Model
+ * @property UserCollection $UserCollection
+ * @property Note $Note
+ */
+class User extends AppModel {
+
+/**
+ * name
+ *
+ * @var string
+ */
+	public $name = 'User';
+
+/**
+ * belongsTo associations
+ *
+ * @var array
+ */
+	public $belongsTo = array(
+		'Role' => array(
+			'className' => 'Role',
+			'foreignKey' => 'role_id'
+		)
+	);
+
+/**
+ * hasMany associations
+ *
+ * @var array
+ */
+	public $hasMany = array(
+		'UserCollection' => array(
+			'className' => 'UserCollection',
+			'foreignKey' => 'user_id'
+		),
+		'Note' => array(
+			'className' => 'Note',
+			'foreignKey' => 'user_id',
+			'dependent' => false
+		),
+	);
+	
+
+/**
+ * actsAs
+ *
+ * used by Cake's AclBehavior
+ *
+ * @var array
+ */
+	public $actsAs = array(
+		'Acl' => array('type' => 'requester'),
+		'RBACL'
+	);
+	
+/**
+ * parentNode
+ *
+ * method used with Cake's AclBehavior
+ */
+	public function parentNode() {
+		return 'users';
+	}
+
+/**
+ * getRoleTypes
+ *
+ * @return array of possible roles someone can have in the site
+ */
+	public function getRoleTypes() {
+		$conditions = array('Role.name' => array(Role::SUPER, Role::ADMIN, Role::USER));
+		$result = $this->Role->find('all', array(
+			'recursive' => -1,
+			'conditions' => $conditions
+		));
+
+		return $result;
+	}
+
+/**
+ * findAllUsers
+ */
+	public function findAllUsers() {
+		return $this->find('all', array('recursive' => 0));
+	}
+
+/**
+ * findAllUsersIndexedById
+ */
+	public function findAllUsersIndexedById() {
+		$users = $this->findAllUsers();
+
+		$users_by_id = array();
+		foreach($users as $row) {
+			$id = $row[$this->alias]['id'];
+			$users_by_id[$id] = $row;
+		}
+
+		return $users_by_id;
+	}
+
+/**
+ * getDefaultRole method
+ *
+ * @return Role model
+ */
+ 	public function getDefaultRole() {
+		return $this->Role->getDefaultRole();
+	}
+}
