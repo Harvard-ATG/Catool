@@ -11,29 +11,15 @@ App::uses('AppModel', 'Model');
  */
 class Role extends AppModel {
 
-/**
- * Super user role name constant.
+/** 
+ * Role name constants.
+ *
+ * @type constant
  */
 	const SUPER = 'super';
-	
-/**
- * Administrator role name constant.
- */
 	const ADMIN = 'admin';
-
-/**
- * Moderator role name constant.
- */
 	const MOD = 'mod';
-
-/**
- * Normal user role name constant.
- */
 	const USER = 'user';
-
-/**
- * Guest role name constant.
- */
 	const GUEST = 'guest';
 
 /**
@@ -61,34 +47,74 @@ class Role extends AppModel {
 	);
 
 /**
- * beforeSave callback
+ * Called before every save.
+ *
+ * See Cake's beforeSave callback.
  *
  * @param array $options
+ * @return boolean
  */
 	public function beforeSave($options = array()) {
-		// all roles must have a valid alias or name 
-		$role_name = $this->getRoleNameOnSave();
-		$this->assertValidName($role_name);
+		$this->beforeSaveCheckName($options);
+		return true;
 	}
 
 /**
- * afterSave callback
+ * Checks that the role name is valid before a save.
+ *
+ * Called from beforeSave().
+ *
+ * Note: this could throw a CakeException if the role name is invalid.
+ *
+ * @param array $options
+ * @return void
+ */
+ 	public function beforeSaveCheckName($options = array()) {
+		$role_name = $this->getRoleNameOnSave();
+		$this->assertValidName($role_name); 
+ 	}
+
+/**
+ * Called after every save.
+ *
+ * See Cake's afterSave callback.
  *
  * @param boolean $created
  * @return void
  */
 	public function afterSave($created) {
+		$this->afterSaveSetAcoAlias($created);
+	}
+
+/**
+ * Sets the ACO alias for the role after every save.
+ *
+ * A Role model is automatically bound to an Aco node, but it does not 
+ * automatically get an alias assigned to it. So this function fixes that by
+ * mapping the role name to the ACO alias. This is useful because then we can
+ * query ACOs using the alias instead of the model/id syntax.
+ *
+ * @param boolean $created
+ * @return void
+ */
+ 	public function afterSaveSetAcoAlias($created) {
 		// the role ACO automatically binds to the model by id,
 		// but we also want to be able to query by alias
 		$role_name = $this->getRoleNameOnSave();
 		$this->assertValidName($role_name);
-		$this->Aco->save(array('alias' => $role_name));
-	}
+		$this->Aco->save(array('alias' => $role_name)); 	 
+ 	}
 
 /**
- * parentNode
+ * Finds the parent node in the ACL ACO structure for this model.
  *
- * method used with Cake's AclBehavior
+ * Roles are considered "controlled" objects, which things like Users and
+ * UserCollections might want to access. The roles are organized hierarchically,
+ * starting with Super User at the top and going all the way down to Guest. Roles
+ * at the top of the hierarchy automatically have permissions for those at the
+ * bottom.
+ *
+ * Note: this method is used with Cake's AclBehavior
  *
  * @return mixed
  */
@@ -113,7 +139,7 @@ class Role extends AppModel {
 	}
 
 /**
- * getDefaultRole method
+ * Returns the default role.
  *
  * @return Role model
  */
@@ -126,7 +152,7 @@ class Role extends AppModel {
 	}
 
 /**
- * getRoleNames method
+ * Returns a flat list of all valid role names.
  *
  * @return array
  */
@@ -135,7 +161,7 @@ class Role extends AppModel {
 	}
 
 /**
- * getDisplayNameFor
+ * Returns the display name for a role.
  *
  * @param string $name of the role
  * @return array
@@ -155,7 +181,7 @@ class Role extends AppModel {
 	}
 
 /**
- * getPathToRole
+ * Returns the path from the root or "super" user down to a given role.
  *
  * @param string $name of the role
  * @return array
@@ -169,7 +195,7 @@ class Role extends AppModel {
 	}
 
 /**
- * getRoleIdByName
+ * Returns the role ID associated with a role name.
  * 
  * @param string $name of the role
  * @return integer
@@ -185,9 +211,12 @@ class Role extends AppModel {
 	}
 
 /**
- * getAdminRoleIds
+ * Returns all admin role IDs that have access to the "admin" role.
  *
- * @return array
+ * Since roles are organized hierarchically, this means any roles above admin
+ * also inherit admin permissions.
+ *
+ * @return array of IDs
  */
 	public function getAdminRoleIds() {
 		$path = $this->getPathToRole(self::ADMIN);
@@ -195,9 +224,10 @@ class Role extends AppModel {
 	}
 
 /**
- * assertValidName
+ * Asserts that a role name is valid.
  *
  * @param string $name of the role
+ * @return void
  * @throws CakeException if the role name is invalid
  */
 	protected function assertValidName($name) {
@@ -208,7 +238,8 @@ class Role extends AppModel {
 
 
 /**
- * getRoleNameOnSave
+ * Fetches the role name from the current model data, or attempts to look
+ * it up in the database with the current model id.
  *
  * @return string name in Model::$data or from database
  */
