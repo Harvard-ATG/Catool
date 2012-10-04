@@ -43,7 +43,10 @@ class AppModel extends Model {
     }
 
 /**
- * __afterFindConvertDateToTime function
+ * After every find operation, converts the date fields into a unix timestamp.
+ *
+ * This is intended to facilitate date/time manipulation on the client side
+ * (i.e. for cases when data is sent directly to the client via JSON).
  *
  * @param array $results
  * @return array
