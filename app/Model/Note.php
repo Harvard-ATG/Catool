@@ -56,7 +56,7 @@ class Note extends AppModel {
  * @return void
  */
 	public function afterSave($created) {
-		$this->afterSaveSetCommentTitle();
+		$this->afterSaveSetCommentTitle($created);
 	}
 	
 /**
