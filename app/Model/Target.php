@@ -54,7 +54,10 @@ class Target extends AppModel {
 	);
 
 /**
- * Target type.
+ * The target type.
+ *
+ * Subclasses should override this value with their target type, whether it
+ * is video, audio, etc.
  *
  * @var string
  */
@@ -78,25 +81,40 @@ class Target extends AppModel {
 /**
  * Called after each save operation.
  *
+ * See Cake's afterSave callback.
+ *
  * @param boolean $created
+ * @return void
  */
 	public function afterSave($created) {
-		// new items should be placed at the end of the collection
+		$this->afterSaveSetOrder($created);
+	}
+	
+/**
+ * Places a new item at the bottom of a collection.
+ *
+ * Called from the afterSave callback.
+ *
+ * @param boolean $created
+ * @return void
+ */
+ 	public function afterSaveSetOrder($created) {
 		if($created && isset($this->data[$this->alias]['collection_id'])) {
 			$sort_order = $this->getNextSortOrder($this->data[$this->alias]['collection_id']);
 			$this->saveField('sort_order', $sort_order);
-		}		
-	}
+		}
+ 	}
 
 /**                                                                                   
- * Returns the information about the current position of the target in a collection   
- * including the next and previous targets in the collection.                         
+ * Returns data about the current position of a target in a collection.
  *
- * Note: reads all targets into memory and does a brute-force linear search
- * to keep things simple, since we don't expect a collection to have more than 
- * a hundred or so items.
+ * Given a list of ordered targets from left to right, this function returns
+ * the immediate neighbors of a particular target. So it will return the 
+ * "previous" and "next" targets in the sequence.
  *                                                                                    
- * @param integer $target_id                                                          
+ * @param integer $target_id
+ * @param array $options an array with 
+ *		- onlyVisible: if true, excludes hidden targets. Defaults to true.
  * @return array Array with keys for next and previous items in the collection.       
  */                                                                                   
     public function getNeighbors($target_id, $options = array()) {                  
