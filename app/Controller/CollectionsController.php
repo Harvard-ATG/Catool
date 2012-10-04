@@ -50,7 +50,7 @@ class CollectionsController extends AppController {
 			case 'admin_add':
 				return $this->_isAdmin(); 
 			case 'admin_index':
-				return $this->_isAdmin() || $this->Collection->UserCollection->hasAdminRole($user_id);
+				return $this->_isAdmin() || $this->Collection->UserCollection->isAdmin($user_id);
 			case 'admin_edit':
 			case 'admin_edit_permissions':
 			case 'admin_edit_items':
@@ -80,7 +80,7 @@ class CollectionsController extends AppController {
 			$collections = $this->Collection->findUserCollections($user_id);
 		}
 
-		$this->set('hasManagePermission', $this->_isAdmin() || $this->Collection->UserCollection->hasAdminRole($user_id));
+		$this->set('hasManagePermission', $this->_isAdmin() || $this->Collection->UserCollection->isAdmin($user_id));
 		$this->set('collections', $collections);
 	}
 

@@ -15,7 +15,7 @@ App::uses('Role', 'Model');
 class UserCollection extends AppModel {
 
 /**
- * name
+ * Model name.
  *
  * @var string
  */
@@ -54,9 +54,20 @@ class UserCollection extends AppModel {
 	);
 
 /**
- * parentNode
+ * Finds the parent node in the ACL structure for this model. 
  *
- * method used with Cake's AclBehavior
+ * Since this model acts as a requester, the parent node will be the User 
+ * model in the AROs tree. This is so that user permissions can cascade down
+ * to collection permissions. For example, if a user is an unprivileged member
+ * of a collection and they are subsequently made a site administrator, they
+ * will automatically inherit that admin privilege in all of their collections.
+ * If necessary, this can be overridden on a per-collection basis by explicitly
+ * denying access.
+ *
+ * Note: it assumes that the the User model already exists in the ARO tree. If
+ * that is not the case, then the parent node will be the root of the ARO tree.
+ *
+ * @return array
  */
 	public function parentNode() {
 		if(!isset($this->data[$this->alias]['user_id'])) {
@@ -72,21 +83,9 @@ class UserCollection extends AppModel {
 	}
 
 /**
- * isAdmin
+ * Finds all the members of a collection.
  * 
- * This should probably be converted to use the Acl methods.
- * 
- * @param number $user_id
- * @return true if the user is in the "admins" or "superadmins" roles
- */
-	public function isAdmin($user_id, $collection_id = null) {
-		return $this->hasAdminRole($user_id, $collection_id);
-	}
-
-/**
- * findAllCollectionUsers
- * 
- * @param $collection_id
+ * @param number $collection_id
  * @return array
  */
 	public function findAllCollectionUsers($collection_id = null) {
@@ -101,9 +100,11 @@ class UserCollection extends AppModel {
 	}
 
 /**
- * findAllCollectionUsersIndexedById
+ * Finds all members of a collection keyed by ID.
+ *
+ * Note: the ID is the UserCollection.id, _not_ User.id.
  * 
- * @param $collection_id
+ * @param number $collection_id
  * @return array 
  */
 	public function findAllCollectionUsersIndexedById($collection_id = null) {
@@ -119,13 +120,11 @@ class UserCollection extends AppModel {
 	}
 
 /**
- * findFromCollection
- *
- * Locate a user's membership in a collection.
+ * Find a user's membership record for a collection.
  *
  * @param number $user_id
  * @param number $collection_id
- * @return array containing the record if it exists, false otherwise
+ * @return array if they are a member, false otherwise
  */	
 	public function findFromCollection($user_id, $collection_id) {
 		$result = $this->find('first', array(
@@ -140,13 +139,16 @@ class UserCollection extends AppModel {
 	}
 
 /**
- * hasAdminRole method
+ * Check if the user has admin permissions.
  *
- * @param $user_id
- * @param $collection_id
- * @return boolean true if has any admin roles, false otherwise
+ * Note: if no collection ID is passed, it will return true if the user has 
+ * admin permission in _any_ collection, false otherwise.  
+ *
+ * @param number $user_id
+ * @param number $collection_id
+ * @return boolean 
  */
-	public function hasAdminRole($user_id, $collection_id = null) {
+	public function isAdmin($user_id, $collection_id = null) {
 		$conditions = array(
 			"Role.id" => $this->Role->getAdminRoleIds(),
 			"{$this->alias}.user_id" => $user_id
@@ -165,11 +167,14 @@ class UserCollection extends AppModel {
 	}
 
 /**
- * findCollectionsWithAdminRole method
+ * Find collection(s) that a user can administer.
  *
- * @param $user_id 
- * @param $collection_id optional
- * @return mixed collection IDs with admin privilege, false otherwise 
+ * Finds a list of collections that the user has the ability to make changes
+ * (i.e. admin permission).
+ *
+ * @param number $user_id 
+ * @param number $collection_id optional
+ * @return array of collection IDs or false  
  */
 	public function findCollectionsWithAdminRole($user_id, $collection_id = null) {
 		$conditions = array(
@@ -193,7 +198,7 @@ class UserCollection extends AppModel {
 	}
 
 /**
- * findFromTarget
+ * findFromTarget method
  *
  * Locate a user's membership in a collection from a target.
  *
@@ -229,6 +234,9 @@ class UserCollection extends AppModel {
 /**
  * findByEmailAndCollection
  *
+ * @param string $email 
+ * @param number $collection_id
+ * @return array
  */
 	public function findByEmailAndCollection($email, $collection_id) {
 		$email = strtolower(trim($email));
@@ -262,7 +270,7 @@ class UserCollection extends AppModel {
 	}
 
 /**
- * getRoleTypes
+ * getRoleTypes method
  *
  * @return array of possible roles someone can have in a collection
  */
