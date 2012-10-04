@@ -67,6 +67,8 @@ class UserCollection extends AppModel {
  * Note: it assumes that the the User model already exists in the ARO tree. If
  * that is not the case, then the parent node will be the root of the ARO tree.
  *
+ * Note: used by Cake's AclBehavior
+ * 
  * @return array
  */
 	public function parentNode() {
