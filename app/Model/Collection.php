@@ -15,7 +15,7 @@ class Collection extends AppModel {
 
 /**
  * Validation rules
- * @name validate
+
  * @var array
  */
 	public $validate = array(
@@ -50,14 +50,15 @@ class Collection extends AppModel {
 	);
 
 /**
- * findTargetsWith method
+ * Finds all targets that match a query.
+ *
  * @param string $query
- * @param integer $id
+ * @param integer $collection_id
  * @return array
  */
-	public function findTargetsWith($query = '', $id = null) {
+	public function findTargetsWith($query = '', $collection_id = null) {
 		$conditions = array();
-		$conditions['Target.collection_id'] = $id;		
+		$conditions['Target.collection_id'] = $collection_id;
 		
 		$query = trim($query);
 		if(mb_strlen($query) > 0) {
@@ -78,7 +79,7 @@ class Collection extends AppModel {
 	}
 	
 /**
- * findUsersWithPosts
+ * Finds and aggregates a list of users who have created annotations or comments.
  * 
  * @param mixed $collection_id
  * @return array
@@ -141,7 +142,7 @@ class Collection extends AppModel {
 	}
  
  /**
-  * findPostsByCollection
+  * Finds a list of notes filtered by collection and/or user.
   * 
   * @param $collection_id
   * @param $user_id
@@ -191,10 +192,10 @@ class Collection extends AppModel {
  	}
 
 /**
- * getCollectionsIndexedById
+ * Returns a list of collections keyed by the Collection ID.
  * 
  * @param integer $id collection id
- * @return array or hash of collections keyed by id
+ * @return array
  */
 	public function getCollectionsIndexedById($id = null) {
 		$conditions = array();
@@ -214,9 +215,13 @@ class Collection extends AppModel {
 	}
 
 /**
- * getTargetStats
+ * Returns aggregate information about each target in a collection.
  *
- * @param integer $id
+ * This includes things like the last post date for a target, the total number
+ * of posts, etc.
+ *
+ * @param integer $id the collection ID
+ * @return array keyed by target ID
  */
 	public function getTargetStats($id = null) {
 		$db = $this->Target->getDataSource();
@@ -248,7 +253,7 @@ class Collection extends AppModel {
 	}
 
 /**
- * findUserCollections method
+ * Returns a list of collections of which the user is a member.
  *
  * @param $user_id 
  * @return array of collections
@@ -276,7 +281,7 @@ class Collection extends AppModel {
 	}
 
 /**
- * findUserAdminCollections method
+ * Returns a list of collections in which the user has admin privileges.
  *
  * @param $user_id 
  * @return array of collections
