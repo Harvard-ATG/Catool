@@ -200,9 +200,7 @@ class UserCollection extends AppModel {
 	}
 
 /**
- * findFromTarget method
- *
- * Locate a user's membership in a collection from a target.
+ * Find a user's membership in a collection from a target.
  *
  * @param number $user_id
  * @param number $collection_id
@@ -234,7 +232,7 @@ class UserCollection extends AppModel {
 	}
 
 /**
- * findByEmailAndCollection
+ * Find a user's collection membership by email address.k
  *
  * @param string $email 
  * @param number $collection_id
@@ -272,9 +270,9 @@ class UserCollection extends AppModel {
 	}
 
 /**
- * getRoleTypes method
+ * Returns a list of the valid roles in a collection.
  *
- * @return array of possible roles someone can have in a collection
+ * @return array of role names
  */
 	public function getRoleTypes() {
 		$conditions = array('Role.name' => array(Role::ADMIN, Role::MOD, Role::USER));
@@ -287,7 +285,7 @@ class UserCollection extends AppModel {
 	}
 
 /**
- * getDefaultRole method
+ * Returns the default role for a user in a collection.
  *
  * @return Role model
  */
