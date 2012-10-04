@@ -48,22 +48,39 @@ class Note extends AppModel {
     public $actsAs = array('Tree');
 	
 /**
- * afterSave callback
+ * Called after every save operation.
  * 
+ * See Cake's afterSave callback
+ * 
+ * @param boolean $created
+ * @return void
  */
 	public function afterSave($created) {
+		$this->afterSaveSetCommentTitle();
+	}
+	
+/**
+ * Sets the comment title after saving.
+ *
+ * Called from aftersave().
+ *
+ * @param boolean $created
+ * @return void
+ */
+ 	public function afterSaveSetCommentTitle($created) {
 		if($created && $this->isComment()) {
 			$this->saveField('title', $this->createCommentTitle());
 		}
 	}
 
 /**
- * getRoot method
+ * Get the root note of a discussion thread.
  * 
- * Convenience method to get the root element of a tree 
- * (not provided by TreeBehavior).
+ * This is a convenience method to get the root element of a tree 
+ * since it is not provided by Cake's TreeBehavior.
  * 
  * @param string $id model id
+ * @return mixed
  */
 	public function getRoot($id) {
 		$parents = $this->getPath($id);
@@ -71,9 +88,10 @@ class Note extends AppModel {
 	}
 	
 /**
- * isComment method
+ * Checks if the model is a comment.
  *
- * @param $type
+ * @param string $type defaults to Model::data type
+ * @return boolean true if it is a comment, false otherwise
  */
 	public function isComment($type = null) {
 		if(!isset($type)) {
@@ -83,9 +101,10 @@ class Note extends AppModel {
 	}
 
 /**
- * isAnnotation method
+ * Checks if the model is an annotation.
  *
- * @param $type
+ * @param string $type defaults to Model::data type
+ * @return boolean true if it is an annotation, false otherwise
  */
 	public function isAnnotation($type = null) {
 		if(!isset($type)) {
@@ -95,7 +114,7 @@ class Note extends AppModel {
 	}
 
 /**
- * isOwnedBy method
+ * Checks if a note is owned by a user.
  * 
  * @param integer $note_id
  * @param integer $user_id
@@ -114,7 +133,10 @@ class Note extends AppModel {
 	}
  
  /**
-  * createCommentTitle
+  * Automatically create a title for comments.
+  *
+  * This is for when comments are displayed outside of the annotation
+  * interface.
   * 
   * @return string
   */
@@ -127,7 +149,7 @@ class Note extends AppModel {
  	}
  
 /**
- * findNotesWith method
+ * Find a list of notes in a target that match a query.
  * 
  * @param integer $target_id
  * @param string $query
