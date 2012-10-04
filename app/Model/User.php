@@ -63,18 +63,25 @@ class User extends AppModel {
 	);
 	
 /**
- * parentNode
+ * Find the parent node in the ACL tree structure for User models.
  *
- * method used with Cake's AclBehavior
+ * Since this model acts as a requester, the parent node will be the "users"
+ * node in the AROs tree (alias since it doesn't correspond to any particular
+ * model). The "users" node should already be setup to grant access to the 
+ * "user" role in the ACOs tree.
+ *
+ * Note: this is used with Cake's AclBehavior
+ *
+ * @return mixed
  */
 	public function parentNode() {
 		return 'users';
 	}
 
 /**
- * getRoleTypes
+ * Returns a list of possible roles that a person can have in the site.
  *
- * @return array of possible roles someone can have in the site
+ * @return array 
  */
 	public function getRoleTypes() {
 		$conditions = array('Role.name' => array(Role::SUPER, Role::ADMIN, Role::USER));
@@ -87,14 +94,18 @@ class User extends AppModel {
 	}
 
 /**
- * findAllUsers
+ * Finds all users.
+ *
+ * @return array
  */
 	public function findAllUsers() {
 		return $this->find('all', array('recursive' => 0));
 	}
 
 /**
- * findAllUsersIndexedById
+ * Finds all users and returns them keyed by their user ID.
+ *
+ * @return array keyed by user id
  */
 	public function findAllUsersIndexedById() {
 		$users = $this->findAllUsers();
@@ -109,7 +120,7 @@ class User extends AppModel {
 	}
 
 /**
- * getDefaultRole method
+ * Returns the default role of a user.
  *
  * @return Role model
  */
