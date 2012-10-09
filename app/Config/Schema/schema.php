@@ -44,13 +44,14 @@ class AppSchema extends CakeSchema {
 	);
 	public $collections = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'primary'),
+		'target_setting_id' => array('type' => 'integer', 'null' => true, 'default' => NULL, 'key' => 'index'),
 		'display_name' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 1000, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'display_description' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 4000, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'target_count' => array('type' => 'integer', 'null' => false, 'default' => 0),
 		'deleted' => array('type' => 'integer', 'null' => false, 'default' => 0, 'length' => 1),
 		'created' => array('type' => 'datetime', 'null' => true, 'default' => NULL),
 		'modified' => array('type' => 'datetime', 'null' => true, 'default' => NULL),
-		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1)),
+		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1), 'collection_target_setting_fk' => array('column' => 'target_setting_id', 'unique' => 0)),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
 	public $roles = array(
@@ -125,6 +126,7 @@ class AppSchema extends CakeSchema {
 		'type' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 45, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'collection_id' => array('type' => 'integer', 'null' => true, 'default' => NULL, 'key' => 'index'),
 		'resource_id' => array('type' => 'integer', 'null' => true, 'default' => NULL, 'key' => 'index'),
+		'target_setting_id' => array('type' => 'integer', 'null' => true, 'default' => NULL, 'key' => 'index'),
 		'sort_order' => array('type' => 'integer', 'null' => true, 'default' => NULL),
 		'note_count' => array('type' => 'integer', 'null' => false, 'default' => 0),
 		'display_name' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 500, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
@@ -135,11 +137,17 @@ class AppSchema extends CakeSchema {
 		'modified' => array('type' => 'datetime', 'null' => true, 'default' => NULL),
 		'hidden' => array('type' => 'integer', 'null' => false, 'default' => 0, 'length' => 1),
 		'deleted' => array('type' => 'integer', 'null' => false, 'default' => 0, 'length' => 1),
-		'locked_annotations' => array('type' => 'integer', 'null' => false, 'default' => 0, 'length' => 1),
-		'locked_comments' => array('type' => 'integer', 'null' => false, 'default' => 0, 'length' => 1),
-		'synced_annotations' => array('type' => 'integer', 'null' => false, 'default' => 0, 'length' => 1),
-		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1), 'collection_id' => array('column' => 'collection_id', 'unique' => 0)),
+		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1), 'target_collection_fk' => array('column' => 'collection_id', 'unique' => 0), 'target_resource_fk' => array('column' => 'resource_id', 'unique' => 0), 'target_target_setting_fk' => array('column' => 'target_setting_id', 'unique' => 0)),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
+	);
+	public $target_settings = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'primary'),
+		'lock_annotations' => array('type' => 'integer', 'null' => false, 'default' => 0, 'length' => 1),
+		'lock_comments' => array('type' => 'integer', 'null' => false, 'default' => 0, 'length' => 1),
+		'sync_annotations' => array('type' => 'integer', 'null' => false, 'default' => 0, 'length' => 1),
+		'highlight_admins' => array('type' => 'integer', 'null' => false, 'default' => 0, 'length' => 1),
+		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1)),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')		
 	);
 	public $users = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'primary'),

@@ -178,9 +178,12 @@ $viewOptions = array(
 		)
 	),
 	'config' => array(
+		'noteId' => $note_id,
 		'sortNotesBy' => array('key' => 'start-time', 'dir' => 'asc'),
-		'syncEnabled' => !empty($target['Video']['synced_annotations']),
-		'noteId' => $note_id
+		'syncAnnotations' => !empty($target['TargetSetting']['sync_annotations']),
+		'lockAnnotations' => !empty($target['TargetSetting']['lock_annotations']),
+		'lockComments' => !empty($target['TargetSetting']['lock_comments']),
+		'highlightAdmins' => !empty($target['TargetSetting']['highlight_admins']) ?  $admin_user_ids : false
 	)
 );
 ?>

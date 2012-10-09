@@ -25,6 +25,10 @@ class Target extends AppModel {
 		'Resource' => array(
 			'className' => 'Resource',
 			'foreignKey' => 'resource_id'
+		),
+		'TargetSetting' => array(
+			'className' => 'TargetSetting',
+			'foreignKey' => 'target_setting_id'
 		)
 	);
 

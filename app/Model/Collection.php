@@ -12,7 +12,6 @@ App::uses('AppModel', 'Model');
  */
 class Collection extends AppModel {
 	
-
 /**
  * Validation rules
 
@@ -30,7 +29,17 @@ class Collection extends AppModel {
 		)
 	);
 
-	//The Associations below have been created with all possible keys, those that are not needed can be removed
+/**
+ * belongsTo associations
+ *
+ * @var array
+ */
+	public $belongsTo = array(
+		'TargetSetting' => array(
+			'className' => 'TargetSetting',
+			'foreignKey' => 'target_setting_id'
+		)
+	);
 
 /**
  * hasMany associations

@@ -3,22 +3,31 @@
 <div class="row">
 	<div class="span12">
 		<div id="collection_settings_form">
-		<?php echo $this->Form->create('Collection');?>
+			<form id="edit_user_form" method="post" action="<?php echo $this->Html->url(array('controller' => 'collections', 'action' => 'edit', 'admin' => true, $collection_id)); ?>">
 			<fieldset>
-				<?php
-					echo $this->Form->input('id');
-					echo $this->Form->input('display_name');
-					echo $this->Form->label('display_description');
-					echo $this->Form->textarea('display_description');
-				?>
+				<input type="hidden" name="data[Collection][id]" value="<?php echo $collection['Collection']['id']; ?>" />
+				
+				<div class="control-group">
+					<label class="control-label" for="display_name">Collection Name</label>
+					<div class="controls">
+						<input type="text" id="display_name" name="data[Collection][display_name]" value="<?php echo $collection['Collection']['display_name']; ?>" />
+					</div>
+				</div>
+				
+				<div class="control-group">
+					<label class="control-label" for="display_description">Description</label>
+					<div class="controls">
+						<textarea id="display_description" name="data[Collection][display_description]"><?php echo $collection['Collection']['display_description']; ?></textarea>
+					</div>
+				</div>
 			</fieldset>
 			<div class="form-actions">
 				<span class="pull-right">
 					<button id="delete_collection_button" class="btn btn-danger"><?php echo __('Delete'); ?></button>
 				</span>
-				<?php echo $this->Form->button('Save Changes', array('class' => 'btn btn-primary')); ?>
+				<input type="submit" name="submit" value="<?php echo __('Save Changes'); ?>" class="btn btn-primary" />
 			</div>
-		<?php echo $this->Form->end(); ?>
+			</form>
 		</div>
 	</div>
 </div>

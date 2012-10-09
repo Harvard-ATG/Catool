@@ -2424,7 +2424,7 @@ e* A class for displaying a list of annotations and their
 				collection: notes,
 				sortConfig: config.sortNotesBy,
 				showNoteId: config.noteId,
-				syncEnabled: config.syncEnabled,
+				syncEnabled: config.syncAnnotations,
 				syncModel: new NoteSyncModel({
 					player: videoPlayerView
 				})

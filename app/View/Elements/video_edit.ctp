@@ -2,9 +2,10 @@
 	<fieldset>
 		<legend><?php echo __('Information') ?></legend>
 		
-		<input type="hidden" name="data[Video][collection_id]" value="<?php echo $collection_id; ?>">
 		<input type="hidden" name="data[Video][id]" value="<?php echo @$video['Video']['id']; ?>">
+		<input type="hidden" name="data[Video][collection_id]" value="<?php echo $collection_id; ?>">
 		<input type="hidden" name="data[Resource][id]" value="<?php echo @$video['Resource']['id']; ?>">
+		<input type="hidden" name="data[TargetSetting][id]" value="<?php echo @$video['TargetSetting']['id']; ?>">
 		<input type="hidden" id="resource_duration" name="data[Resource][duration]" value="<?php echo @$video['Resource']['duration']; ?>">
 
 		<div id="resource-url-control-group" class="control-group <?php echo $this->Form->isFieldError('Resource.duration') ? 'error' : ''; ?>">
@@ -91,9 +92,24 @@
 			<label class="control-label" for="visibility"><?php echo __('Annotations'); ?></label>
 			<div class="controls">
 				<label class="checkbox">
-					<input type="hidden" name="data[Video][synced_annotations]" value="0">
-					<input type="checkbox" name="data[Video][synced_annotations]" value="1" <?php echo @$video['Video']['synced_annotations'] ? 'checked="checked"' : ''; ?>>
+					<input type="hidden" name="data[TargetSetting][lock_annotations]" value="1">
+					<input type="checkbox" name="data[TargetSetting][lock_annotations]" value="0" <?php echo @$video['TargetSetting']['lock_annotations'] ? '' : 'checked="checked"'; ?>>
+					<?php echo __('Allow public annotations'); ?>
+				</label>
+				<label class="checkbox">
+					<input type="hidden" name="data[TargetSetting][lock_comments]" value="1">
+					<input type="checkbox" name="data[TargetSetting][lock_comments]" value="0" <?php echo @$video['TargetSetting']['lock_comments'] ? '' : 'checked="checked"'; ?>>
+					<?php echo __('Allow comments on annotations'); ?>
+				</label>
+				<label class="checkbox">
+					<input type="hidden" name="data[TargetSetting][sync_annotations]" value="0">
+					<input type="checkbox" name="data[TargetSetting][sync_annotations]" value="1" <?php echo @$video['TargetSetting']['sync_annotations'] ? 'checked="checked"' : ''; ?>>
 					<?php echo __('Synchronize annotations to video by default'); ?>
+				</label>
+				<label class="checkbox">
+					<input type="hidden" name="data[TargetSetting][highlight_admins]" value="0">
+					<input type="checkbox" name="data[TargetSetting][highlight_admins]" value="1" <?php echo @$video['TargetSetting']['highlight_admins'] ? 'checked="checked"' : ''; ?>>
+					<?php echo __('Highlight administrator annotations and comments'); ?>
 				</label>
 			</div>
 		</div>

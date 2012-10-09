@@ -152,7 +152,7 @@ class UserCollection extends AppModel {
  */
 	public function isAdmin($user_id, $collection_id = null) {
 		$conditions = array(
-			"Role.id" => $this->Role->getAdminRoleIds(),
+			"{$this->alias}.role_id" => $this->Role->getAdminRoleIds(),
 			"{$this->alias}.user_id" => $user_id
 		);
 
@@ -162,10 +162,28 @@ class UserCollection extends AppModel {
 
 		$count = $this->find('count', array(
 			'conditions' => $conditions,
-			'recursive' => 0 
+			'recursive' => -1 
 		));
 
 		return $count > 0;
+	}
+
+/**
+ * Find all admin users in a collection.
+ * 
+ * @param $collection_id
+ * @return array 
+ */
+	public function findAdminUsers($collection_id = null) {
+		$conditions = array(
+			"{$this->alias}.role_id" => $this->Role->getAdminRoleIds(),
+			"{$this->alias}.collection_id" => $collection_id
+		);
+
+		return $this->find('all', array(
+			'conditions' => $conditions,
+			'recursive' => -1
+		));
 	}
 
 /**
