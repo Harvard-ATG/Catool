@@ -19,6 +19,12 @@ class NotesController extends AppController {
 	public $components = array('RequestHandler', 'Acl');
 
 /**
+* helpers 
+* @var array
+*/
+	public $helpers = array();
+
+/**
  * beforeFilter method
  * 
  * Callback that is called before the controller action.

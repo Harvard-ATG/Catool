@@ -1073,6 +1073,9 @@
 
 			this.$el.attr('id', 'note-' + this.model.id);
 			this.$el.addClass('note-detail-'+this.model.id);
+			if(this.model.get('highlightAdmin')) {
+				this.$el.addClass('note-admin');
+			}
 			this.$el.html(this.template(data));
 
 			return this;
@@ -1488,6 +1491,10 @@
 			var commentForm = new CommentFormView({ model: this.model });
 
 			this.$el.attr('id', 'note-' + this.model.id);
+			if(this.model.get('highlightAdmin')) {
+				this.$el.addClass('note-admin');
+			}
+			
 			this.$el.html(this.template(data));
 			this.$('.note-detail-wrapper').append(commentForm.render().el);
 			this.renderComments();
@@ -1955,6 +1962,7 @@ e* A class for displaying a list of annotations and their
 
 			this.syncModel = options.syncModel;
 			this.syncEnabled = options.syncEnabled;
+			this.highlightAdmins = options.highlightAdmins;
 			
 			if(options.sortConfig) {
 				this.sortBy(options.sortConfig.key, options.sortConfig.dir);
@@ -1962,14 +1970,42 @@ e* A class for displaying a list of annotations and their
 				this.sortBy('start-time', 'asc');
 			}
 
+			this.initCollection();
+			this.updateSyncBtn();
+			this.syncModel.initialize(this);
+		},
+		
+		/**
+		 * Initialize the view collection events and other filters.
+		 *
+		 * @return void
+		 */
+		 initCollection: function() {
+		 	var check, highlight;
+
+			if(this.highlightAdmins && this.highlightAdmins.length > 0) {
+				 check = {};
+				 _.each(this.highlightAdmins, function(id) {
+						 check[id] = true;
+				 });
+				 
+				 highlight = function(model) {
+						 var user = model.get('user');
+						 var user_id = user.get('id');
+						 if(check[user_id]) {
+							 model.set({ highlightAdmin: true }, {silent:true});
+						 }
+				 };
+				 
+				 this.collection.each(highlight);
+				 this.collection.on('change add sync', highlight);
+			}
+
 			this.collection.on('reset', this.render, this);
 			this.collection.on('add', this.onAddAnnotation, this);
 			this.collection.on('add', this._relayToCommentView('comment:add'), this);
 			this.collection.on('destroy', this._relayToCommentView('comment:destroy'), this);
-
-			this.updateSyncBtn();
-			this.syncModel.initialize(this);
-		},
+		 },
 
 		/**
 		 * This generates an event handler for collections. It is intended
@@ -2424,6 +2460,7 @@ e* A class for displaying a list of annotations and their
 				collection: notes,
 				sortConfig: config.sortNotesBy,
 				showNoteId: config.noteId,
+				highlightAdmins: config.highlightAdmins,
 				syncEnabled: config.syncAnnotations,
 				syncModel: new NoteSyncModel({
 					player: videoPlayerView

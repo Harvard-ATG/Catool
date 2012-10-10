@@ -4161,12 +4161,25 @@ body {
 .note-detail-wrapper {
   padding: 13px 10px;
 }
+.note-wrapper.note-admin {
+  border-color: #ae8bd4 !important;
+}
+.note-wrapper.note-admin .note-expanded-wrapper,
+.note-wrapper.note-admin .note-compact-wrapper {
+  border-color: #ae8bd4 !important;
+}
+.note-wrapper.note-admin .note-compact-wrapper {
+  background-color: #c8b0e2 !important;
+}
+.note-comment.note-admin {
+  background-color: #efe8f7 !important;
+}
 .note-comments-wrapper {
   margin-right: 10px;
-  margin-bottom: 5px;
+  margin-bottom: 0px;
 }
 .note-comment {
-  margin: 0 0 0 60px;
+  margin: 0 0 10px 60px;
   border-bottom: 1px solid #ccc;
   padding: 0 .5em .5em .5em;
 }

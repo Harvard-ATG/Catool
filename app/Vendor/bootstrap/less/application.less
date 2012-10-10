@@ -69,12 +69,25 @@ body {
 .note-detail-wrapper {
 	padding: 13px 10px; 
 }
+
+.note-wrapper.note-admin {
+	border-color: lighten(@purple, 20%) !important;
+	.note-expanded-wrapper, .note-compact-wrapper {
+		border-color: lighten(@purple, 20%) !important;
+	}
+	.note-compact-wrapper {
+		background-color: lighten(@purple, 30%) !important;
+	}
+}
+.note-comment.note-admin {
+	background-color: lighten(@purple, 45%) !important;
+}
 .note-comments-wrapper {
 	margin-right: 10px;
-	margin-bottom: 5px;
+	margin-bottom: 0px;
 }
 .note-comment {
-	margin: 0 0 0 60px;
+	margin: 0 0 10px 60px;
 	border-bottom: 1px solid #ccc; 
 	padding: 0 .5em .5em .5em;
 	&:last-child {

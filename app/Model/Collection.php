@@ -305,4 +305,28 @@ class Collection extends AppModel {
 
 		return $result;
 	}
+	
+/**
+ * Returns the collection's default target settings (individual targets
+ * should be able to override this).
+ *
+ * @param integer $collection_id
+ * @return array TargetSettings model
+ */
+ 	public function getSettings($collection_id = null) {
+ 		if(!isset($collection_id)) {
+ 			$collection_id = $this->id;
+ 		}
+ 		
+ 		$result = $this->find('first', array(
+ 			'recursive' => 0,
+ 			'conditions' => array("{$this->alias}.id" => $collection_id)
+ 		));
+ 		
+ 		if(isset($result['TargetSetting'])) {
+ 			return $result['TargetSetting'];
+ 		}
+ 		
+ 		return $this->TargetSetting->getDefault();
+ 	}
 }

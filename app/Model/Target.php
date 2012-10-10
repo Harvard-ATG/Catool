@@ -188,5 +188,28 @@ class Target extends AppModel {
 		$max = $result ? $result[0]['max_order'] : 0;
 		
 		return $max + 1;
-	}                      
+	}
+	
+/**
+ * Returns the target's associated settings.
+ *
+ * @param integer $target_id
+ * @return array TargetSettings model
+ */
+ 	public function getSettings($target_id = null) {
+ 		if(!isset($target_id)) {
+ 			$target_id = $this->id;
+ 		}
+ 		
+ 		$result = $this->find('first', array(
+ 			'recursive' => 0,
+ 			'conditions' => array("{$this->alias}.id" => $target_id)
+ 		));
+ 		
+ 		if(isset($result['TargetSetting'])) {
+ 			return $result['TargetSetting'];
+ 		}
+ 		
+ 		return $this->Collection->getSettings();
+ 	}
 }

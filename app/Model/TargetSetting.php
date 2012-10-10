@@ -25,4 +25,18 @@ class TargetSetting extends AppModel {
 			'foreignKey' => 'target_setting_id'
 		)
 	);
+	
+/**
+ * Returns the default settings if none have been defined.
+ *
+ * @return array
+ */
+ 	public function getDefault() {
+ 		return array(
+ 			'lock_annotations' => 0,
+ 			'lock_comments' => 0,
+ 			'sync_annotations' => 0,
+ 			'highlight_admins' => 0
+ 		);
+ 	}
 }
