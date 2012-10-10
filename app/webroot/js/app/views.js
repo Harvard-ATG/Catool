@@ -1444,7 +1444,7 @@
 				'<div class="note-byline">On <%= created_date %> <%= author %>:</div>',
 				'<div class="note-text"><%= body %></div>',
 				'<ul class="note-actions">',
-					'<li><a class="js-btn-reply" href="#">Comment</a></li>',
+					'<li><a class="js-btn-reply <%= replyCls %>" href="#">Comment</a></li>',
 					'<li><a class="js-btn-comments hide" href="#">Show Comments (<span class="note-num-comments"><%= numComments %></span>)</a></li>',
 					'<li><a class="js-btn-edit <%= actionCls %>" href="#">Edit</a></li>',
 					'<li><a class="js-btn-delete <%= actionCls %>" href="#">Delete</a></li>',
@@ -1479,6 +1479,7 @@
 			this.commentForm = null;
 			this.numComments = 0;
 			this.parentView = this.options.parentView;
+			this.lockComments = this.options.lockComments;
 			this.state = {
 				showComments: false,
 				showDetails: false
@@ -1579,6 +1580,7 @@
 			data.numComments = this.getNumComments();
 			data.expandedCls = (this.state.showDetails ? '' : 'hide');
 			data.actionCls = (App.user.canModerate(user_id) ? '' : 'hide');
+			data.replyCls = this.lockComments ? 'hide' : '';
 			
 			return data;
 		},
@@ -1978,6 +1980,8 @@ e* A class for displaying a list of annotations and their
 			this.syncModel = options.syncModel;
 			this.syncEnabled = options.syncEnabled;
 			this.highlightAdmins = options.highlightAdmins;
+			this.lockAnnotations = options.lockAnnotations;
+			this.lockComments = options.lockComments;
 			
 			if(options.sortConfig) {
 				this.sortBy(options.sortConfig.key, options.sortConfig.dir);
@@ -2318,6 +2322,7 @@ e* A class for displaying a list of annotations and their
 		 */
 		createViews: function() {
 			var self = this;
+			var lockComments = this.lockComments;
 			var collapsed = this.collapsed;
 			var notes = this.collection.getAnnotations();
 			var viewStates = this._viewStates;
@@ -2330,6 +2335,7 @@ e* A class for displaying a list of annotations and their
 				var options = {
 					state: state,
 					model: note,
+					lockComments: lockComments,
 					parentView: self
 				};
 				return new VideoAnnotationView(options);
@@ -2477,12 +2483,13 @@ e* A class for displaying a list of annotations and their
 				sortConfig: config.sortNotesBy,
 				showNoteId: config.noteId,
 				highlightAdmins: config.highlightAdmins,
+				lockComments: (App.user.isAdmin ? false : config.lockComments),
+				lockAnnotations: (App.user.isAdmin ? false : config.lockAnnotations),
 				syncEnabled: config.syncAnnotations,
 				syncModel: new NoteSyncModel({
 					player: videoPlayerView
 				})
 			});
-
 
 			this.videoNoteFormView = videoNoteFormView;
 			this.videoPlayerView = videoPlayerView;

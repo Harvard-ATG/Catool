@@ -76,10 +76,22 @@ class NotesController extends AppController {
 				break;
 		}
 
-		// in order to edit/delete a note:
-		// - user must be the owner of the note, or have the moderator role
+		// check for restrictions on add/edit/delete
 		$role = 'role/super/admin/mod/user';
 		switch($action) {
+			// only admins can add notes if they are locked
+			case 'add':
+				$target_id = $request->data['Note']['target_id'];
+				$type = $request->data['Note']['type'];
+				$settings = $this->Note->Target->getSettings($target_id);
+				$locked = (($this->Note->isAnnotation($type) && $settings['lock_annotations']) 
+					|| ($this->Note->isComment($type) && $settings['lock_comments']));
+
+				if($locked) {
+					$role = 'role/super/admin';
+				}
+				break;
+			// only mods or note owners can edit notes
 			case 'edit':
 			case 'delete':
 				$note_id = $request->params['pass'][0];

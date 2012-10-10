@@ -84,9 +84,11 @@ $infoElements = array(
 		
 		<!-- TABS -->
 		<ul class="notes-tabs nav nav-tabs">
+			<?php if($current_user['isAdmin'] || !$target['TargetSetting']['lock_annotations']): ?>
 			<li>
 				<a id="new_comment_tab" href="javascript:;" data-toggle="tab" data-target=".note-form-view" class="offset">New Comment</a>
 			</li>
+			<?php endif; ?>
 			<li class="active">
 				<a id="current_comments_tab" href="javascript:;" data-toggle="tab" data-target=".notes-view">Current Comments</a>
 			</li>

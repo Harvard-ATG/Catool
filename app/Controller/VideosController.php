@@ -83,24 +83,26 @@ class VideosController extends AppController implements TargetsControllerInterfa
 /**
  * isModerator method
  * 
- * Checks if the user is a moderator or can moderate.
+ * Checks if the user has a role in the video colleciton.
  * 
  * @param $video_id
- * @return true if has admin privileges for the collection, otherwise false
+ * @return boolean
  */	
-	public function isModerator($video_id) {
+	public function hasRole($role, $video_id) {
 		$this->loadModel('UserCollection');
-		
 		$this->Video->id = $video_id;
 		$collection_id = $this->Video->field('collection_id');
 		$user_id = $this->_getUserId();
-		
-		$user_collection_aro = $this->UserCollection->findFromCollection($user_id, $collection_id);
-		$role_aco = 'role/super/admin/mod';
-		
-		return $this->_isAdmin() || $this->Acl->check($user_collection_aro, $role_aco);
+
+		$aro = $this->UserCollection->findFromCollection($user_id, $collection_id);
+		$aco = array(
+			'model' => 'Role', 
+			'foreign_key' => $this->UserCollection->Role->getRoleIdByName($role)
+		);
+
+		return $this->_isAdmin() || $this->Acl->check($aro, $aco);
 	}
-	
+
 /**
  * view method
  *
@@ -117,15 +119,16 @@ class VideosController extends AppController implements TargetsControllerInterfa
 			'conditions' => array('Video.id' => $id),
 			'recursive' => 1
 		));
-		$collection = $this->Video->Collection->read(null, $target['Video']['collection_id']);
-		
-		$notes = $this->Video->Note->findNotesByTarget($id);
 
+		$collection = $this->Video->Collection->read(null, $target['Video']['collection_id']);
+		$notes = $this->Video->Note->findNotesByTarget($id);
 		$neighbors = $this->Video->getNeighbors($id);
 
+		$this->loadModel('Role');
 		$current_user = array(
 			'id' => $this->_getUserId(), 
-			'isModerator' => $this->isModerator($id)
+			'isModerator' => $this->hasRole(Role::MOD, $id),
+			'isAdmin' => $this->hasRole(Role::ADMIN, $id)
 		);
 
 		$this->loadModel('UserCollection');

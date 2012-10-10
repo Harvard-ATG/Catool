@@ -48,16 +48,13 @@ Catool = (function() {
 	 */
 	var user = {
 		id: null,
+		isAdmin: false,
 		isModerator: false,
 		canModerate: function(user_id) {
 			return this.isModerator || this.id == user_id;
 		},
 		set: function(attr) {
-			if(!attr.hasOwnProperty('id') || !attr.hasOwnProperty('isModerator')) {
-				throw 'User is missing "id" or "isModerator" attribute';
-			}
-			this.id = attr.id;
-			this.isModerator = attr.isModerator || false;
+			_.extend(this, attr);
 		}
 	};
 
