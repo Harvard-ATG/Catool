@@ -171,8 +171,8 @@
 	
 	var CommentEditorView = View.extend({
 		events: {
-			'click p > button:first' : 'onSave',
-			'click p > button:last' : 'onCancel'
+			'click .js-btn-save' : 'onSave',
+			'click .js-btn-cancel' : 'onCancel'
 		},
 
 		/**
@@ -190,8 +190,8 @@
 		template: _.template([
 			'<textarea style="margin-bottom: 10px; width: 95%"><%= content %></textarea>',
 			'<p>',
-				'<button class="btn-primary btn" style="margin-right: 10px">Save Changes</button>',
-				'<button class="btn">Cancel</button>',
+				'<button class="js-btn-save btn-primary btn" style="margin-right: 10px">Save Changes</button>',
+				'<button class="js-btn-cancel btn">Cancel</button>',
 			'</p>'
 		].join("")),
 
@@ -1021,16 +1021,23 @@
 	
 	var CommentView = View.extend({
 		events: {
-			'click a.note-edit-btn' : 'onEdit',
-			'click a.note-delete-btn' : 'onDelete'
+			'click .js-btn-edit' : 'onEdit',
+			'click .js-btn-delete' : 'onDelete'
 		},
-
+		
+		/**
+		 * Tag name.
+		 *
+		 * @property tagName
+		 */
+		 tagName: 'li',
+		 
 		/**
 		 * Class name for the container div element.
 		 *
 		 * @property className
 		 */
-		className: 'note-comment',
+		className: 'note note-comment',
 
 		/**
 		 * Template for displaying the comment.
@@ -1038,12 +1045,14 @@
 		 * @property template
 		 */
 		template: _.template([
-			'<div class="note-byline">On <%= created_date %> <%= author %>:</div>',
-			'<p class="note-body"><%= body %></p>',
-			'<p class="note-actions">',
-				'<a class="<%= actionCls %> note-edit-btn" href="javascript:;">Edit</a> ',
-				'<a class="<%= actionCls %> note-delete-btn" href="javascript:;">Delete</a>',
-			'</p>'
+			'<div class="note-body">',
+				'<div class="note-byline">On <%= created_date %> <%= author %>:</div>',
+				'<div class="note-text"><%= body %></div>',
+				'<ul class="note-actions">',
+					'<li><a class="js-btn-edit <%= actionCls %>" href="javascript:;">Edit</a><li>',
+					'<li><a class="js-btn-delete <%= actionCls %>" href="javascript:;">Delete</a><li>',
+				'</ul>',
+			'</div>'
 		].join("")),
 
 		/**
@@ -1071,13 +1080,13 @@
 			data.created_date = this.renderDate(data.created_unix);
 			data.actionCls = (App.user.canModerate(this.model.get('user').get('id')) ? '' : 'hide');
 
-			this.$el.attr('id', 'note-' + this.model.id);
-			this.$el.addClass('note-detail-'+this.model.id);
-			if(this.model.get('highlightAdmin')) {
-				this.$el.addClass('note-admin');
-			}
 			this.$el.html(this.template(data));
-
+			this.$el.attr('id', 'note-' + this.model.id);
+			this.$el.addClass('note-'+this.model.id);
+			if(this.model.get('highlightAdmin')) {
+				this.$el.addClass('role-admin');
+			}
+			
 			return this;
 		},
 
@@ -1161,7 +1170,7 @@
 		 * @return {Object} jquery element
 		 */
 		getBodyEl: function() {
-			return this.$el.children('p.note-body');
+			return this.$('.note-text').first();
 		},
 
 		/**
@@ -1171,7 +1180,7 @@
 		 * @return {Object} jquery element
 		 */
 		getActionsEl: function() {
-			return this.$el.children('p.note-actions');
+			return this.$('.note-actions').first();
 		},
 
 		/**
@@ -1240,8 +1249,8 @@
 	
 	var CommentFormView = View.extend({
 		events: {
-			'click button.cancel' 		: 'onCancelComment',
-			'submit .note-comment-form'	: 'onSaveComment'
+			'click .js-btn-cancel' 		: 'onCancelComment',
+			'submit'					: 'onSaveComment'
 		},
 
 		/**
@@ -1260,8 +1269,8 @@
 			'<form class="note-comment-form">',
 				'<textarea class="note-comment-text" rows="3"></textarea>',
 				'<div>',
-					'<button type="submit" class="btn btn-primary">Submit Comment</button>',
-					'<button class="btn cancel">Cancel</button>',
+					'<button type="submit" class="js-btn-save btn btn-primary">Submit Comment</button>',
+					'<button class="js-btn-cancel btn">Cancel</button>',
 				'</div>',
 			'</form>'
 		].join("")),
@@ -1391,20 +1400,27 @@
 	var VideoAnnotationView = View.extend({
 
 		events: {
-			'click .note-compact-wrapper': 'onToggleDetails',
-			'click .note-play-control': 'onPlay',
-			'click a.note-comment-btn' : 'onToggleComment',
-			'click a.note-comments-wrapper-btn' : 'onToggleComments',
-			'click a.note-edit-btn' : 'onEdit',
-			'click a.note-delete-btn' : 'onDelete'
+			'click .js-note-header': 'onToggleDetails',
+			'click .js-note-control-play': 'onPlay',
+			'click .js-btn-reply' : 'onToggleComment',
+			'click .js-btn-comments' : 'onToggleComments',
+			'click .js-btn-edit' : 'onEdit',
+			'click .js-btn-delete' : 'onDelete'
 		},
-
+		
+		/**
+		 * Tag name.
+		 *
+		 * @property tagName
+		 */
+		 tagName: 'li',
+		 	
 		/**
 		 * Class name for the container div element.
 		 *
 		 * @property className
 		 */
-		className: 'note-wrapper',
+		className: 'note note-annotation',
 
 		/**
 		 * Template for displaying the annotation.
@@ -1412,34 +1428,28 @@
 		 * @property template
 		 */
 		template: _.template([
-			'<div class="note-compact-wrapper">',
-				'<div class="note-header">',
-					'<div class="note-col-left">',
-						'<div class="note-title"><%= title %></div>',
-					'</div>',
-					'<div class="note-col-right">',
-						'<div class="note-date"><%= created_date %></div>',
-						'<div class="note-author"><%= author %></div>',
-					'</div>',
+			'<div class="note-header js-note-header">',
+				'<div class="note-col note-title"><%= title %></div>',
+				'<div class="note-col">',
+					'<div class="note-date"><%= created_date %></div>',
+					'<div class="note-author"><%= author %></div>',
 				'</div>',
-				'<br class="note-clear-float" />',
+				'<div class="note-clear-float"></div>',
 			'</div>',
-			'<div class="note-expanded-wrapper <%= expandedCls %>">',
-				'<div class="note-detail-wrapper note-detail-<%= id %>">',
-					'<div class="note-play-control">',
-						'<span class="note-play-label">Play</span>',
-						'<span class="note-play-time"><%= start_time %> / <%= end_time %></span>',
-					'</div>',
-					'<div class="note-byline">On <%= created_date %> <%= author %>:</div>',
-					'<p class="note-body"><%= body %></p>',
-					'<p class="note-actions">',
-						'<a class="note-comment-btn" href="#">Comment</a> ',
-						'<a class="hide note-comments-wrapper-btn" href="#">Show Comments (<span class="note-num-comments"><%= numComments %></span>)</a> ',
-						'<a class="<%= actionCls %> note-edit-btn" href="#">Edit</a> ',
-						'<a class="<%= actionCls %> note-delete-btn" href="#">Delete</a>',
-					'</p>',
+			'<div class="note-body <%= expandedCls %>">',
+				'<div class="note-control note-control-play js-note-control-play">',
+					'<span class="note-play-label">Play</span>',
+					'<span class="note-play-time"><%= start_time %> / <%= end_time %></span>',
 				'</div>',
-				'<div class="note-comments-wrapper"></div>',
+				'<div class="note-byline">On <%= created_date %> <%= author %>:</div>',
+				'<div class="note-text"><%= body %></div>',
+				'<ul class="note-actions">',
+					'<li><a class="js-btn-reply" href="#">Comment</a></li>',
+					'<li><a class="js-btn-comments hide" href="#">Show Comments (<span class="note-num-comments"><%= numComments %></span>)</a></li>',
+					'<li><a class="js-btn-edit <%= actionCls %>" href="#">Edit</a></li>',
+					'<li><a class="js-btn-delete <%= actionCls %>" href="#">Delete</a></li>',
+				'</ul>',
+				'<ul class="notes note-comments"></ul>',
 			'</div>'
 		].join("")),
 
@@ -1490,13 +1500,12 @@
 			var data = this.getDataForTemplate();
 			var commentForm = new CommentFormView({ model: this.model });
 
-			this.$el.attr('id', 'note-' + this.model.id);
-			if(this.model.get('highlightAdmin')) {
-				this.$el.addClass('note-admin');
-			}
-			
+			this.$el.attr('id', 'note-' + this.model.id);		
 			this.$el.html(this.template(data));
-			this.$('.note-detail-wrapper').append(commentForm.render().el);
+			if(this.model.get('highlightAdmin')) {
+				this.$el.addClass('role-admin');
+			}
+			this.$('.note-comments').before(commentForm.render().el);
 			this.renderComments();
 			this.commentForm = commentForm;
 
@@ -1515,8 +1524,10 @@
 			var comments = this.getComments();
 
 			if(comments.length > 0) {
-				cls = [ 'note-comments-wrapper', (this.state.showComments?'':'hide') ].join(' ');
-				el = $(this.make('div', { 'class': cls }));
+				cls = this.$('.note-comments').get(0).className;
+				el = $(this.make('div', { 
+						'class': cls + (this.state.showComments ? '' : ' hide')
+				}));
 				 
 				_.each(comments, function(comment) {
 					var view = new CommentView({ model: comment });
@@ -1524,16 +1535,18 @@
 					el.append(view.render().el);
 				});
 
-				this.$('.note-comments-wrapper').replaceWith(el);
-				this.$('.note-comments-wrapper-btn').removeClass('hide');
+				this.$('.note-comments').replaceWith(el);
+				this.$('.js-btn-comments').removeClass('hide');
 
 				_.each(this.views, function(view) {
 					view.destroy();
 				});
 
 				this.views = views;
+			} else {
+				this.$('.note-comments').addClass('hide');
 			}
-
+			
 			return this;
 		},
 
@@ -1617,7 +1630,7 @@
 		 */
 		toggleDetails: function(state, suppressEvent) {
 			var toggleState = _.isBoolean(state) ? state : this.state.showDetails;
-			this.$('.note-expanded-wrapper').toggleClass('hide', toggleState);
+			this.$('.note-body').toggleClass('hide', toggleState);
 			if(!suppressEvent) {
 				this.trigger('toggle', this, this.model.id, toggleState);
 			}
@@ -1660,7 +1673,9 @@
 		 * @method collapse
 		 */
 		expandComments: function() {
-			this.toggleComments(false, true);
+			if(this.getNumComments() > 0) {
+				this.toggleComments(false, true);
+			}
 			return this;
 		},
 		
@@ -1693,7 +1708,7 @@
 		 */
 		toggleComments: function(state, suppressEvent) {
 			var toggleState = _.isBoolean(state) ? state : this.state.showComments;
-			this.$('.note-comments-wrapper').toggleClass('hide', toggleState);
+			this.$('.note-comments').toggleClass('hide', toggleState);
 			if(!suppressEvent) {
 				this.trigger('toggle', this, this.model.id, toggleState);
 			}
@@ -1847,7 +1862,7 @@
 			this.numComments += increment;
 			this.$('.note-num-comments').html(this.numComments);
 			if(this.numComments < 1) {
-				this.$('.note-comments-wrapper-btn').addClass('hide');
+				this.$('.js-btn-comments').addClass('hide');
 			}
 		},
 
@@ -1858,7 +1873,7 @@
 		 * @return {Object} jquery element
 		 */
 		getBodyEl: function() {
-			return this.$('p.note-body').first();
+			return this.$('.note-text').first();
 		},
 
 		/**
@@ -1868,7 +1883,7 @@
 		 * @return {Object} jquery element
 		 */
 		getActionsEl: function() {
-			return this.$('p.note-actions').first();
+			return this.$('.note-actions').first();
 		},
 
 		/**
@@ -1936,7 +1951,7 @@ e* A class for displaying a list of annotations and their
 		 * @property emptyTemplate
 		 * @type String
 		 */
-		emptyTemplate: _.template('<div class="notes-empty"><%= msg %></div>'),
+		emptyTemplate: _.template('<div class="notes notes-empty"><%= msg %></div>'),
 
 		/**
 		 * Display the notes collapsed.
@@ -2104,7 +2119,7 @@ e* A class for displaying a list of annotations and their
 		 * @param {Object} evt jQuery event object
 		 */
 		onRefresh: function(evt) {
-			var $notes = this.$('.notes-wrapper');
+			var $notes = this.$('.note-annotations');
 			evt.preventDefault();
 			
 			$notes.addClass('loading');
@@ -2226,13 +2241,13 @@ e* A class for displaying a list of annotations and their
 		},
 
 		/**
-		 * Render the list of nnotations.
+		 * Render the list of annotations.
 		 *
 		 * @method render
 		 * @return {Object} this
 		 */
 		render: function() {
-			var el = this.$('.notes-wrapper');
+			var el = this.$('.note-annotations');
 			var views = this.createViews();
 
 			if(views.length > 0) {
@@ -2267,7 +2282,7 @@ e* A class for displaying a list of annotations and their
 		focusNoteOnce: function() {
 			var self = this;
 			var showNoteId = this.options.showNoteId;
-			var selector = '.note-detail-'+showNoteId;
+			var selector = '#note-'+showNoteId;
 			var isNote = function(model) {
 				return model.id === showNoteId;
 			};
@@ -2279,11 +2294,12 @@ e* A class for displaying a list of annotations and their
 						view.expand();
 						view.expandComments();
 
-						$focus = $(selector, view.$el).addClass('highlight');
+						$focus = this.$(selector).addClass('highlight');
 						if($focus.length === 1) {
 							$focus.get(0).scrollIntoView();
-							$focus.one('mouseover', function() {
-								$focus.addClass('fadeout');
+							console.log($focus.get(0));
+							$focus.on('mouseover', function() {
+								$focus.removeClass('highlight').addClass('unhighlight');
 							});
 						}
 						
@@ -2331,9 +2347,9 @@ e* A class for displaying a list of annotations and their
 		renderViews: function(views) {
 			var self = this;
 			var maxListHeight = $(window).height() - 300;
-			var el = this.$('.notes-wrapper');
+			var el = this.$('.note-annotations');
 			var newEl = $(this.make('div', { 
-				'class': 'notes-wrapper'
+				'class': 'notes note-annotations',
 				//'style': 'overflow: auto; max-height: ' + maxListHeight + 'px'
 			}));
 

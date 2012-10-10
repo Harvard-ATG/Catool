@@ -2,6 +2,7 @@
  * Application extensions to bootstrap.
  *
  */
+
 body {
 	padding-top: 60px;
 	padding-bottom: 40px;
@@ -10,24 +11,30 @@ body {
 	padding: 9px 0;
 }
 
-.note-comments-btn,
-.note-edit-btn,
-.note-delete-btn,
-.note-comment-btn {
-	margin-right: 12px;
-}
-.notes-empty {
-	margin-top: 10px;
-	padding: 3px;
-	background: @greenLighter;
-	line-height: @baseLineHeight * 1.25;
-}
-.note-wrapper {
-	border-top: 1px solid #ddd;
-	border-left: 1px solid #ddd;
-	border-right: 1px solid #ddd;
-	margin: 10px 0;
+/**
+ * Javascript Hooks 
+ *
+ * These "hook" classes are simply for selecting/querying different kinds of 
+ * elements via javascript. No style information should be associated with them.
+ * 
+ * NOTE: all hooks should be prefixed by "js-"
+ */
+ 
+.js-btn-reply {}
+.js-btn-edit {}
+.js-btn-comment {}
+.js-btn-comments {}
+.js-btn-delete {}
+.js-btn-save {}
+.js-btn-cancel {}
+.js-note-header {}
+.js-note-control-play {}
 
+/**
+ * Notes module
+ */
+.notes {
+	background: @white;
 	.fluid-img () {
 		max-width: 100%;
 		height: auto;
@@ -39,111 +46,103 @@ body {
 		min-width: 350px;
 		.fluid-img;
 	}
-	.highlight, .highlight.fadein {
+}
+.notes > li {
+	list-style-type: none;
+	margin: 0 10px 10px 0;
+}
+.note-annotations {
+	padding: 0;
+}
+.note-comments {
+	padding: 10px 0 10px 60px;
+}
+.notes-empty {
+	padding: 10px;
+	line-height: @baseLineHeight * 1.25;
+	background: @greenLighter;
+}
+.note {
+	margin: 0;
+	&.role-admin {
+		> .note-header {
+			background-color: lighten(@purple, 35%);
+		}
+		> .note-body {
+			background-color: lighten(@purple, 45%);
+		}
+		border: 1px solid lighten(@purple, 20%);
+	}
+	&.highlight > .note-body {
 		background-color: lighten(@yellow, 20%);
+	}
+	&.unhighlight > .note-body {
 		transition: background-color 1s linear;
 		-moz-transition: background-color 1s linear;    /* FF3.7+ */
 		-o-transition: background-color 1s linear;      /* Opera 10.5 */
 		-webkit-transition: background-color 1s linear; /* Saf3.2+, Chrome */
 	}
-	.highlight.fadeout {
-		background-color: transparent;
-	}
 }
-.note-compact-wrapper {
-	line-height: @baseLineHeight * 1.25;
-	background: @greenLighter;
-	border-bottom: 1px solid #ddd;
-	clear: right;
-	&:hover {
-		background: @white;
-		cursor: pointer;
-	}
-	.note-header {
-		padding: 3px 10px;
-	}
-}
-.note-expanded-wrapper {
-	border-bottom: 1px solid #ddd;
-}
-.note-detail-wrapper {
-	padding: 13px 10px; 
-}
-
-.note-wrapper.note-admin {
-	border-color: lighten(@purple, 20%) !important;
-	.note-expanded-wrapper, .note-compact-wrapper {
-		border-color: lighten(@purple, 20%) !important;
-	}
-	.note-compact-wrapper {
-		background-color: lighten(@purple, 30%) !important;
-	}
-}
-.note-comment.note-admin {
-	background-color: lighten(@purple, 45%) !important;
-}
-.note-comments-wrapper {
-	margin-right: 10px;
-	margin-bottom: 0px;
+.note-annotation {
+	border: 1px solid @grayLighter;
+	margin-bottom: 10px;
 }
 .note-comment {
-	margin: 0 0 10px 60px;
-	border-bottom: 1px solid #ccc; 
-	padding: 0 .5em .5em .5em;
-	&:last-child {
-		border-bottom: none;
+	border-bottom: 1px solid @grayLighter;
+}
+.note-header {
+	background: @greenLighter;
+	line-height: @baseLineHeight * 1.25;
+	clear: right;
+	&:hover {
+		cursor: pointer;
+		background: @white;
 	}
 }
-.note-col-left {
-	width:55%; 
+.note-col {
 	float:left;
 }
-.note-col-right {
-	width:42%;
-	float:right; 
-	margin-left: 3%; 
-}
-.note-clear-float {
-	clear: both;
-	height: 0;
-	font-size: 1px;
-	line-height: 0px;
+.note-body {
+	padding: .5em;
 }
 .note-title {
+	width: 55%;
+	margin-left: .5em;
 	font-weight: bold;
-}
-.note-byline {
-	color: #999; 
-	font-style: italic;
-	line-height: @baseLineHeight * 2;
 }
 .note-date {}
 .note-author {}
-.note-play-control {
+.note-byline {
+	color: @grayLight; 
+	font-style: italic;
+	line-height: @baseLineHeight * 2;
+}
+.note-control {
+}
+.note-control-play {
 	display:block;
 	position: relative;
 	width: 170px;
 	padding: 2px 4px;
-	color: @black;
 	vertical-align: middle;
 	text-align:center;
 	text-decoration: none; 
 	text-transform: uppercase;
+	height: 15px;
+	line-height: 15px;
+	color: @black;
 	font-weight: bold;
 	border: 1px solid #866;
 	-moz-border-radius: 8px;
 	-webkit-border-radius: 8px;
 	background-image: url(@imgNotePlayButton);
 	background-repeat: no-repeat;
-	background-position: -15px -24px;
-	height: 15px;
-	line-height: 15px;
-	
-	&:hover, &:hover {
+	background-position: -15px -24px;	
+
+	&:hover {
 		background-position: -15px -89px;
 		cursor: pointer;
 	}
-	
 	.note-play-label,
 	.note-play-time {
 		position: absolute;
@@ -156,6 +155,23 @@ body {
 		left: 60px;
 	}
 }
+.note-actions {
+	margin: .5em 0;
+	padding: 0;
+}
+.note-actions > li {
+	display: inline;
+	list-style-type: none;
+	padding-right: 12px;
+}
+.note-clear-float {
+	clear: both;
+	height: 0;
+	font-size: 1px;
+	line-height: 0px;
+}
+
+
 .note-comment-form {
   padding: (@baseLineHeight - 1) 5px @baseLineHeight;
   margin-top: @baseLineHeight;

@@ -116,7 +116,7 @@ $infoElements = array(
 	                    <a class="btn" href="#" data-sort="start-time">Start</a>
 	                </div>		
 				</div>
-				<div class="notes-wrapper"></div>
+				<div class="notes note-annotations"></div>
 			</div>
 			
 			<!-- NEW NOTE -->

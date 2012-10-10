@@ -4098,36 +4098,60 @@ body {
 .sidebar-nav {
   padding: 9px 0;
 }
-.note-comments-btn,
-.note-edit-btn,
-.note-delete-btn,
-.note-comment-btn {
-  margin-right: 12px;
+/**
+ * Javascript Hooks 
+ *
+ * These "hook" classes are simply for selecting/querying different kinds of 
+ * elements via javascript. No style information should be associated with them.
+ * 
+ * NOTE: all hooks should be prefixed by "js-"
+ */
+/**
+ * Notes module
+ */
+.notes {
+  background: #ffffff;
 }
-.notes-empty {
-  margin-top: 10px;
-  padding: 3px;
-  background: #f5fcfc;
-  line-height: 22.5px;
-}
-.note-wrapper {
-  border-top: 1px solid #ddd;
-  border-left: 1px solid #ddd;
-  border-right: 1px solid #ddd;
-  margin: 10px 0;
-}
-.note-wrapper img {
+.notes img {
   max-width: 100%;
   height: auto;
 }
-.note-wrapper img.slide {
+.notes img.slide {
   min-width: 350px;
   max-width: 100%;
   height: auto;
 }
-.note-wrapper .highlight,
-.note-wrapper .highlight.fadein {
+.notes > li {
+  list-style-type: none;
+  margin: 0 10px 10px 0;
+}
+.note-annotations {
+  padding: 0;
+}
+.note-comments {
+  padding: 10px 0 10px 60px;
+}
+.notes-empty {
+  padding: 10px;
+  line-height: 22.5px;
+  background: #f5fcfc;
+}
+.note {
+  margin: 0;
+}
+.note.role-admin {
+  border: 1px solid #ae8bd4;
+}
+.note.role-admin > .note-header {
+  background-color: #d5c3e9;
+}
+.note.role-admin > .note-body {
+  background-color: #efe8f7;
+}
+.note.highlight > .note-body {
   background-color: #ffdd73;
+}
+.note.unhighlight > .note-body {
   transition: background-color 1s linear;
   -moz-transition: background-color 1s linear;
   /* FF3.7+ */
@@ -4139,86 +4163,50 @@ body {
   /* Saf3.2+, Chrome */
 
 }
-.note-wrapper .highlight.fadeout {
-  background-color: transparent;
-}
-.note-compact-wrapper {
-  line-height: 22.5px;
-  background: #f5fcfc;
-  border-bottom: 1px solid #ddd;
-  clear: right;
-}
-.note-compact-wrapper:hover {
-  background: #ffffff;
-  cursor: pointer;
-}
-.note-compact-wrapper .note-header {
-  padding: 3px 10px;
-}
-.note-expanded-wrapper {
-  border-bottom: 1px solid #ddd;
-}
-.note-detail-wrapper {
-  padding: 13px 10px;
-}
-.note-wrapper.note-admin {
-  border-color: #ae8bd4 !important;
-}
-.note-wrapper.note-admin .note-expanded-wrapper,
-.note-wrapper.note-admin .note-compact-wrapper {
-  border-color: #ae8bd4 !important;
-}
-.note-wrapper.note-admin .note-compact-wrapper {
-  background-color: #c8b0e2 !important;
-}
-.note-comment.note-admin {
-  background-color: #efe8f7 !important;
-}
-.note-comments-wrapper {
-  margin-right: 10px;
-  margin-bottom: 0px;
+.note-annotation {
+  border: 1px solid #eeeeee;
+  margin-bottom: 10px;
 }
 .note-comment {
-  margin: 0 0 10px 60px;
-  border-bottom: 1px solid #ccc;
-  padding: 0 .5em .5em .5em;
+  border-bottom: 1px solid #eeeeee;
 }
-.note-comment:last-child {
-  border-bottom: none;
+.note-header {
+  background: #f5fcfc;
+  line-height: 22.5px;
+  clear: right;
 }
-.note-col-left {
-  width: 55%;
+.note-header:hover {
+  cursor: pointer;
+  background: #ffffff;
+}
+.note-col {
   float: left;
 }
-.note-col-right {
-  width: 42%;
-  float: right;
-  margin-left: 3%;
-}
-.note-clear-float {
-  clear: both;
-  height: 0;
-  font-size: 1px;
-  line-height: 0px;
+.note-body {
+  padding: .5em;
 }
 .note-title {
+  width: 55%;
+  margin-left: .5em;
   font-weight: bold;
 }
 .note-byline {
-  color: #999;
+  color: #999999;
   font-style: italic;
   line-height: 36px;
 }
-.note-play-control {
+.note-control-play {
   display: block;
   position: relative;
   width: 170px;
   padding: 2px 4px;
-  color: #000000;
   vertical-align: middle;
   text-align: center;
   text-decoration: none;
   text-transform: uppercase;
+  height: 15px;
+  line-height: 15px;
+  color: #000000;
   font-weight: bold;
   border: 1px solid #866;
   -moz-border-radius: 8px;
@@ -4226,24 +4214,36 @@ body {
   background-image: url("../img/note_play_button_bkg.png");
   background-repeat: no-repeat;
   background-position: -15px -24px;
-  height: 15px;
-  line-height: 15px;
 }
-.note-play-control:hover,
-.note-play-control:hover {
+.note-control-play:hover {
   background-position: -15px -89px;
   cursor: pointer;
 }
-.note-play-control .note-play-label,
-.note-play-control .note-play-time {
+.note-control-play .note-play-label,
+.note-control-play .note-play-time {
   position: absolute;
   top: 2px;
 }
-.note-play-control .note-play-label {
+.note-control-play .note-play-label {
   left: 5px;
 }
-.note-play-control .note-play-time {
+.note-control-play .note-play-time {
   left: 60px;
+}
+.note-actions {
+  margin: .5em 0;
+  padding: 0;
+}
+.note-actions > li {
+  display: inline;
+  list-style-type: none;
+  padding-right: 12px;
+}
+.note-clear-float {
+  clear: both;
+  height: 0;
+  font-size: 1px;
+  line-height: 0px;
 }
 .note-comment-form {
   padding: 17px 5px 18px;
