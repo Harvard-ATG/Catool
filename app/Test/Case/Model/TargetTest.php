@@ -16,7 +16,7 @@ class TargetTestCase extends CakeTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.target', 'app.collection', 'app.resource', 'app.note', 'app.user', 'app.segment');
+	public $fixtures = array('app.target', 'app.target_setting', 'app.collection', 'app.resource', 'app.note', 'app.user', 'app.segment');
 
 /**
  * setUp method

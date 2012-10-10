@@ -16,7 +16,7 @@ class VideosControllerTestCase extends ControllerTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.target', 'app.collection', 'app.resource', 'app.note', 'app.user', 'app.user_collection', 'app.role', 'app.segment');
+	public $fixtures = array('app.target', 'app.target_setting', 'app.collection', 'app.resource', 'app.note', 'app.user', 'app.user_collection', 'app.role', 'app.segment');
 
 /**
  * setUp method
@@ -124,13 +124,17 @@ class VideosControllerTestCase extends ControllerTestCase {
 		$data = array(
 			'Video' => array(
 				'id' => $id,
+				'target_setting_id' => 1,
 				'display_name' => 'Foo Bar!',
 				'display_description' => 'The terms foobar /ˈfʊːbɑːr/, fubar, or foo, bar, baz and qux (alternatively quux) are sometimes used as placeholder names (also referred to as metasyntactic variables) in computer programming or computer-related documentation.',
 				'display_creator' => 'Fooer of the Bar',
-				'hidden' => 0,
-				'synced_annotations' => 1,
-				'locked_annotations' => 1,
-				'locked_comments' => 1
+				'hidden' => 0
+			),
+			'TargetSetting' => array(
+				'id' => 1,
+				'lock_annotations' => 1,
+				'lock_comments' => 1,
+				'sync_annotations' => 1
 			),
 			'Resource' => array(
 				'duration' => 123,
@@ -144,11 +148,13 @@ class VideosControllerTestCase extends ControllerTestCase {
 		));
 		
 		$result = $this->controller->Video->find('first', array(
+			'recursive' => 0,
 			'fields' => array_keys(Set::flatten($data)),
 			'conditions' => array('Video.id' => $id)
 		));
 		
-		$this->assertEqual($result['Video'], $data['Video'], 'information updated');
+		$this->assertEqual($result['Video'], $data['Video'], 'video updated');
+		$this->assertEqual($result['TargetSetting'], $data['TargetSetting'], 'video settings updated');
 	}
 
 /**

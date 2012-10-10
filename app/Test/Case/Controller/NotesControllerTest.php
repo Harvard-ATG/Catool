@@ -19,7 +19,7 @@ class NotesControllerTestCase extends ControllerTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.collection', 'app.note', 'app.user', 'app.user_collection', 'app.target', 'app.segment', 'app.resource');
+	public $fixtures = array('app.collection', 'app.note', 'app.user', 'app.user_collection', 'app.target', 'app.target_setting', 'app.segment', 'app.resource');
 
 /**
  * setUp method

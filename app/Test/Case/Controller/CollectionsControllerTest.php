@@ -18,7 +18,7 @@ class CollectionsControllerTestCase extends ControllerTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.collection', 'app.user_collection', 'app.target', 'app.note', 'app.user', 'app.segment', 'app.role');
+	public $fixtures = array('app.collection', 'app.user_collection', 'app.target', 'app.target_setting', 'app.note', 'app.user', 'app.segment', 'app.role');
 
 /**
  * setUp method
