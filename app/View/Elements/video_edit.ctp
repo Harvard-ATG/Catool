@@ -109,7 +109,9 @@
 				<label class="checkbox">
 					<input type="hidden" name="data[TargetSetting][highlight_admins]" value="0">
 					<input type="checkbox" name="data[TargetSetting][highlight_admins]" value="1" <?php echo @$video['TargetSetting']['highlight_admins'] ? 'checked="checked"' : ''; ?>>
-					<?php echo __('Highlight administrator annotations and comments'); ?>
+					<?php echo __('Highlight'); ?>
+						<span class="role-legend role-admin"><?php echo __('administrator'); ?></span>
+					<?php echo __('annotations and comments'); ?>
 				</label>
 			</div>
 		</div>

@@ -18,6 +18,8 @@ body {
  * elements via javascript. No style information should be associated with them.
  * 
  * NOTE: all hooks should be prefixed by "js-"
+ * NOTE: these will be automatically eliminated in the final CSS document, but 
+ * they are listed here for documentation purposes.
  */
  
 .js-btn-reply {}
@@ -29,6 +31,14 @@ body {
 .js-btn-cancel {}
 .js-note-header {}
 .js-note-control-play {}
+
+/**
+ * Application Mixins
+ */
+.mixin-role-admin(@lighten: 35%) {
+	background-color: lighten(@purple, @lighten);
+	border-color: lighten(@purple, 20%);
+}
 
 /**
  * Notes module
@@ -66,12 +76,12 @@ body {
 	margin: 0;
 	&.role-admin {
 		> .note-header {
-			background-color: lighten(@purple, 35%);
+			.mixin-role-admin;
 		}
 		> .note-body {
-			background-color: lighten(@purple, 45%);
+			.mixin-role-admin(45%);
 		}
-		border: 1px solid lighten(@purple, 20%);
+		.mixin-role-admin;
 	}
 	&.highlight > .note-body {
 		background-color: lighten(@yellow, 20%);
@@ -170,7 +180,11 @@ body {
 	font-size: 1px;
 	line-height: 0px;
 }
-
+.role-legend {
+	&.role-admin {
+		.mixin-role-admin;
+	}
+}
 
 .note-comment-form {
   padding: (@baseLineHeight - 1) 5px @baseLineHeight;

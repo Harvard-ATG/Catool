@@ -720,8 +720,8 @@ body{padding-top:60px;padding-bottom:40px;}
 .note-annotations{padding:0;}
 .note-comments{padding:10px 0 10px 60px;}
 .notes-empty{padding:10px;line-height:22.5px;background:#f5fcfc;}
-.note{margin:0;}.note.role-admin{border:1px solid #ae8bd4;}.note.role-admin>.note-header{background-color:#d5c3e9;}
-.note.role-admin>.note-body{background-color:#efe8f7;}
+.note{margin:0;}.note.role-admin{background-color:#d5c3e9;border-color:#ae8bd4;}.note.role-admin>.note-header{background-color:#d5c3e9;border-color:#ae8bd4;}
+.note.role-admin>.note-body{background-color:#efe8f7;border-color:#ae8bd4;}
 .note.highlight>.note-body{background-color:#ffdd73;}
 .note.unhighlight>.note-body{transition:background-color 1s linear;-moz-transition:background-color 1s linear;-o-transition:background-color 1s linear;-webkit-transition:background-color 1s linear;}
 .note-annotation{border:1px solid #eeeeee;margin-bottom:10px;}
@@ -738,6 +738,7 @@ body{padding-top:60px;padding-bottom:40px;}
 .note-actions{margin:.5em 0;padding:0;}
 .note-actions>li{display:inline;list-style-type:none;padding-right:12px;}
 .note-clear-float{clear:both;height:0;font-size:1px;line-height:0px;}
+.role-legend.role-admin{background-color:#d5c3e9;border-color:#ae8bd4;}
 .note-comment-form{padding:17px 5px 18px;margin-top:18px;margin-bottom:18px;background-color:#eeeeee;border:1px solid #999999;}.note-comment-form textarea{width:95%;}
 .note-comment-form button{margin-right:5px;}
 .note-form.form-horizontal label{width:60px;}

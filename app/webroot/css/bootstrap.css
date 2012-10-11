@@ -4105,6 +4105,11 @@ body {
  * elements via javascript. No style information should be associated with them.
  * 
  * NOTE: all hooks should be prefixed by "js-"
+ * NOTE: these will be automatically eliminated in the final CSS document, but 
+ * they are listed here for documentation purposes.
+ */
+/**
+ * Application Mixins
  */
 /**
  * Notes module
@@ -4140,13 +4145,16 @@ body {
   margin: 0;
 }
 .note.role-admin {
-  border: 1px solid #ae8bd4;
+  background-color: #d5c3e9;
+  border-color: #ae8bd4;
 }
 .note.role-admin > .note-header {
   background-color: #d5c3e9;
+  border-color: #ae8bd4;
 }
 .note.role-admin > .note-body {
   background-color: #efe8f7;
+  border-color: #ae8bd4;
 }
 .note.highlight > .note-body {
   background-color: #ffdd73;
@@ -4244,6 +4252,10 @@ body {
   height: 0;
   font-size: 1px;
   line-height: 0px;
+}
+.role-legend.role-admin {
+  background-color: #d5c3e9;
+  border-color: #ae8bd4;
 }
 .note-comment-form {
   padding: 17px 5px 18px;
