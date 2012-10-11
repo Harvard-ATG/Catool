@@ -58,13 +58,7 @@ class InstallsController extends AppController {
 			$user_id = $default['User']['id'];
 		}
 
-		$role = 'role/super';
-		$user = array('model' => 'User', 'foreign_key' => $user_id);
-
-		if(!$this->Acl->check($user, $role)) {
-			$this->Acl->allow($user, $role);
-		}
-
+		$this->User->promoteToSuper(1);
 		$this->Session->setFlash(__('You have been promoted to super user.'), 'flash_success');
 		$this->redirect(array('controller' => 'collections', 'action' => 'index', 'admin' => true));
 	}

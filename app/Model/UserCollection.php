@@ -174,23 +174,29 @@ class UserCollection extends AppModel {
  * @param $collection_id
  * @return array 
  */
-	public function findAdminUsers($collection_id = null) {
+	public function findAdminUserIds($collection_id = null) {
 		$conditions = array(
 			"{$this->alias}.role_id" => $this->Role->getAdminRoleIds(),
 			"{$this->alias}.collection_id" => $collection_id
 		);
 
-		return $this->find('all', array(
+		$result = $this->find('all', array(
 			'conditions' => $conditions,
 			'recursive' => -1
 		));
+
+		if(!$result) {
+			return array();
+		}
+
+		$user_collection_admins = Set::classicExtract($result, '{n}.UserCollection.user_id');
+		$user_admins = $this->User->findAdminUserIds();
+
+		return array_unique(array_merge($user_collection_admins, $user_admins));
 	}
 
 /**
- * Find collection(s) that a user can administer.
- *
- * Finds a list of collections that the user has the ability to make changes
- * (i.e. admin permission).
+ * Find collection(s) that a user has admin permissions.
  *
  * @param number $user_id 
  * @param number $collection_id optional

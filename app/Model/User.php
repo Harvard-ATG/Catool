@@ -103,6 +103,28 @@ class User extends AppModel {
 	}
 
 /**
+ * Find all admin users.
+ * 
+ * Note: users who have the admin role should automatically be granted
+ * admin privileges to all collections.
+ * 
+ * @param $collection_id
+ * @return array 
+ */
+	public function findAdminUserIds() {
+		$result =  $this->find('all', array(
+			'conditions' => array('User.role_id' => $this->Role->getAdminRoleIds()),
+			'recursive' => -1
+		));
+
+		if(!$result) {
+			return array();
+		}
+
+		return Set::classicExtract($result, '{n}.User.id');
+	}
+
+/**
  * Finds all users and returns them keyed by their user ID.
  *
  * @return array keyed by user id
@@ -127,4 +149,16 @@ class User extends AppModel {
  	public function getDefaultRole() {
 		return $this->Role->getDefaultRole();
 	}
+
+/**
+ * Promotes user to super admin.
+ *
+ * @param $user_id
+ * @return void
+ */
+	public function promoteToSuper($user_id) {
+		$this->id = $user_id;
+		$this->saveField('role_id', $this->Role->getRoleIdByName(Role::SUPER));
+	}
+	
 }

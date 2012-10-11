@@ -132,8 +132,7 @@ class VideosController extends AppController implements TargetsControllerInterfa
 		);
 
 		$this->loadModel('UserCollection');
-		$admin_users = $this->UserCollection->findAdminUsers($target['Video']['collection_id']);
-		$admin_user_ids = Set::classicExtract($admin_users, '{n}.UserCollection.user_id');
+		$admin_user_ids = $this->UserCollection->findAdminUserIds($target['Video']['collection_id']);
 
 		$this->set(compact(array('collection', 'target', 'notes', 'neighbors', 'current_user', 'admin_user_ids')));
 		$this->set('note_id', isset($this->request->query['note_id']) ? $this->request->query['note_id'] : null);
