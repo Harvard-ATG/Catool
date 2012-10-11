@@ -1525,7 +1525,7 @@
 			var comments = this.getComments();
 
 			if(comments.length > 0) {
-				cls = this.$('.note-comments').get(0).className;
+				cls = 'notes note-comments'; 
 				el = $(this.make('div', { 
 						'class': cls + (this.state.showComments ? '' : ' hide')
 				}));
@@ -1999,32 +1999,43 @@ e* A class for displaying a list of annotations and their
 		 *
 		 * @return void
 		 */
-		 initCollection: function() {
-		 	var check, highlight;
+		initCollection: function() {
 
-			if(this.highlightAdmins && this.highlightAdmins.length > 0) {
-				 check = {};
-				 _.each(this.highlightAdmins, function(id) {
-						 check[id] = true;
-				 });
-				 
-				 highlight = function(model) {
-						 var user = model.get('user');
-						 var user_id = user.get('id');
-						 if(check[user_id]) {
-							 model.set({ highlightAdmin: true }, {silent:true});
-						 }
-				 };
-				 
-				 this.collection.each(highlight);
-				 this.collection.on('change add sync', highlight);
-			}
-
+			this.initHighlightAdmins();
 			this.collection.on('reset', this.render, this);
 			this.collection.on('add', this.onAddAnnotation, this);
 			this.collection.on('add', this._relayToCommentView('comment:add'), this);
 			this.collection.on('destroy', this._relayToCommentView('comment:destroy'), this);
 		 },
+
+		/**
+		 * Initialize the behavior for highlighting admin notes.
+		 *
+		 * @return void
+		 */
+		initHighlightAdmins: function() {
+		 	var check = {}; // map of admin user IDs
+
+			var setHighlight = function(model) {
+				 var user = model.get('user');
+				 var user_id = user.get('id');
+				 if(check[user_id]) {
+					 model.set({ highlightAdmin: true }, {silent:true});
+				 }
+			};
+				
+			if(this.highlightAdmins && this.highlightAdmins.length > 0) {
+				_.each(this.highlightAdmins, function(id) {
+						 check[id] = true;
+				});
+				
+				this.collection.on('change add sync', setHighlight);
+				this.collection.on('reset', function() {
+					this.each(setHighlight);
+				});
+				this.collection.each(setHighlight);
+			}
+		},
 
 		/**
 		 * This generates an event handler for collections. It is intended
@@ -2355,7 +2366,7 @@ e* A class for displaying a list of annotations and their
 			var maxListHeight = $(window).height() - 300;
 			var el = this.$('.note-annotations');
 			var newEl = $(this.make('div', { 
-				'class': 'notes note-annotations',
+				'class': 'notes note-annotations'
 				//'style': 'overflow: auto; max-height: ' + maxListHeight + 'px'
 			}));
 
