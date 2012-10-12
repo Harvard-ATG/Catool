@@ -50,7 +50,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 
     <?php
         //---- JAVASCRIPT
-        if(Configure::read('debug') > 0) {
+        if(Configure::read('debug') > 1) {
             // vendor libraries
             echo $this->Html->script(array(
                 'lib/jquery',
@@ -71,7 +71,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
                 'app/views',
                 'app/scripts'
             ));
-        } else {
+		} else {
             echo $this->Html->script(array(
                 'build/lib.min', 
                 'build/app.min'

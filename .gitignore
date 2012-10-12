@@ -4,7 +4,6 @@
 /app/webroots/docs
 ~/app/webroots/docs/phpdoc.xml
 /app/webroot/files
-/app/webroot/js/build/*.js
 /app/webroot/js/docs
 /lib/Cake/Console/Templates/skel/tmp/
 /plugins
