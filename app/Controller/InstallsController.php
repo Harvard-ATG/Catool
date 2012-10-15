@@ -36,7 +36,7 @@ class InstallsController extends AppController {
  *
  * @var array
  */
-	public $components = array('WebInstaller');
+	public $components = array('Auth', 'Acl');
 
 /**
  * beforeFilter method
@@ -47,41 +47,6 @@ class InstallsController extends AppController {
 		parent::beforeFilter();
 		$this->Auth->allow('*');
 	}
-
-/**
- * Displays the installer.
- *
- * @return void
- */
-	public function index() {
-		$db_config = new DATABASE_CONFIG();
-		$db_status = $this->WebInstaller->testDbConfig();
-
-		$this->set('db', $db_config);
-		$this->set('db_status', $db_status);
-
-		if(isset($this->request->params['create']) && $db_status['connected']) {
-			$db_schema = $this->WebInstaller->createSchema();
-			$this->set('db_schema', $db_schema);
-		}
-	}
-
-/**
- * Prompts the user for database configuration and checks the connection.
- *
- * @return void
- */
-	public function database() {
-		if($this->request->is('post')) {
-			$this->WebInstaller->saveDbConfig($this->request->data['DATABASE_CONFIG']);
-		} 
-		return $this->redirect(array('action' => 'index'));
-	}
-
-/**
- * Creates the schema. 
- *
- */
 
 /**
  * Either promotes the current user to super user or logs them

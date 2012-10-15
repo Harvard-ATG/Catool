@@ -1,11 +1,84 @@
 <?php 
+App::uses('ClassRegistry', 'Utility');
+App::uses('Aro', 'Model');
+App::uses('Aco', 'Model');
+App::Uses('Permission', 'Model');
+App::uses('Role', 'Model');
+App::uses('User', 'Model');
+App::uses('DbAcl', 'Controller/Component/Acl');
+
 class AppSchema extends CakeSchema {
 
 	public function before($event = array()) {
+		// flush cache so we can insert data into more than one table
+		$db = ConnectionManager::getDataSource($this->connection);
+		$db->cacheSources = false;
 		return true;
 	}
 
 	public function after($event = array()) {
+		static $createdTables = 0;
+
+		// determine how many tables there are using reflection
+		$totalTables = 0;
+		$refclass = new ReflectionClass($this);
+		foreach($refclass->getProperties() as $property) {
+			if($property->class === $refclass->name) {
+				++$totalTables;
+			}
+		}
+		
+		// initialize models and components
+		$aro = ClassRegistry::init('Aro');
+		$aco = ClassRegistry::init('Aco');
+		$user = ClassRegistry::init('User');
+		$role = ClassRegistry::init('Role');
+		$acl = new DbAcl(); // component
+		
+		// handle create table events
+		if(isset($event['create'])) {
+			++$createdTables;
+			switch($event['create']) {
+				case 'roles':
+					// Create hierarchical roles
+					$parent_id = null;
+					$role_names = $role->getRoleNames();
+					foreach($role_names as $role_name) {
+						$role->create();
+						$role->save(array(
+							'name' => $role_name, 
+							'display_name' => $role->getDisplayNameFor($role_name), 
+							'parent_id' => $parent_id
+						));
+						$parent_id = $role->id;
+					}
+					break;
+				case 'users':
+					// Create default user
+					$user->create();
+					$user->save(array('name' => 'Admin'));
+					break;
+				case 'aros':
+					// Create ARO root node for users and collection memberships
+					$aro->create();
+					$aro->save(array('alias' => 'users'));
+					break;
+				case 'acos':
+					// Create ACO root node for the role hierarchy
+					$aco->create();
+					$aco->save(array('alias' => 'role'));
+					break;
+				case 'aros_acos':
+					break;
+			}
+
+			// need to wait until all tables are created
+			if($createdTables === $totalTables) {
+				$acl->allow('users', 'role/super/admin/mod/user');
+				$acl->allow(array('model' => 'User', 'foreign_key' => 1), 'role/super');
+			}
+		}
+
 		return true;
 	}
 

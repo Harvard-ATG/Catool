@@ -79,11 +79,31 @@ class WebInstallerException extends Exception { }
  */
 class WebInstaller {
 
-	public $error = false;
+	public $errors = array(); // error messages
+	public $logs = array(); // log messages for the user
 	public $format = 'html';
 	public $action = '';
 	public $template = '';
 	public $templateParams = array();
+
+/**
+ * Default configuration settings to use
+ *
+ * @var array
+ */
+	protected $_defaultDbConfig = array(
+		'name' => 'default',
+		'datasource' => 'Mysql',
+		'persistent' => 'false',
+		'host' => 'localhost',
+		'login' => '',
+		'password' => '',
+		'database' => '',
+		'schema' => null,
+		'prefix' => null,
+		'encoding' => null,
+		'port' => null
+	);
 
 	/**
 	 * Run the installer.
@@ -96,6 +116,8 @@ class WebInstaller {
 		try {
 			$this->_invoke($method);
 		} catch(WebInstallerException $e) {
+			header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+			$this->template = 'error';
 			$this->error($e->getMessage());
 		}
 
@@ -106,8 +128,10 @@ class WebInstaller {
 	 * Renders the action.
 	 */
 	public function render() {
+		$this->templateParams['error'] = $this->errors;
+		$this->templateParams['log'] = $this->logs;
+
 		$out = '';
-		$template = $this->error ? 'error' : $this->template;
 		switch($this->format) {
 			case 'json':
 				header('Content-type: application/json');
@@ -115,7 +139,8 @@ class WebInstaller {
 				break;
 			case 'html':
 			default:
-				$out = $this->_invoke("template_$template");
+				header('Content-type: text/html');
+				$out = $this->_invoke("template_{$this->template}");
 		}
 
 		echo $out;
@@ -136,19 +161,24 @@ class WebInstaller {
 	}
 
 	/**
-	 * Creates an error message.
+	 * Adds an error message.
 	 */
-	public function error($message) {
-		$this->error = true;
-		$this->templateParams['error'] = $message;
-		header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+	public function error($message = null) {
+		$this->errors[] = $message;
+	}
+	
+	/**
+	 * Adds an action log message to display to the user.
+	 */
+	public function log($message = null) {
+		$this->logs[] = $message;
 	}
 
 	/**
-	 * Displays the error
+	 * Displays the error.
 	 */
 	public function template_error() {
-		return $this->get('error');
+		return "Error: ".implode("\n", $this->errors);
 	}
 
 	/**
@@ -173,27 +203,141 @@ class WebInstaller {
 <head>
 	<meta charset="utf-8" />
 	<title>Catool Install</title>
-	<link rel="stylesheet" type="text/css" href="css/install.css" />
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
 	<!--[if IE]>
 		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
 	<script type="text/javascript" src="js/lib/jquery.js"></script>
 	<script type="text/javascript" src="js/lib/underscore.js"></script>
 	<script type="text/javascript" src="js/lib/backbone.js"></script>
+	<script type="text/javascript" src="js/lib/bootstrap.js"></script>
 	<script type="text/javascript" src="js/app/install.js"></script>
 </head>
 
 <body id="home">
-<h1>CATool Web Install</h1>
-<div id="install-view">
+<div class="row">
+<div class="span10 offset2">
+<div class="page-header">
+	<h1>CATool Web Installation</h1>
 </div>
+
+<div id="InstallTaskError" class="alert alert-error hide" style="margin: 1em 0">
+	<a class="close" data-dismiss="alert">&times;</a>
+	<p class="js-error"></p>
+</div>
+
+<div id="InstallTasksView">
+</div>
+
 <script>
 $(function() {
-	var el = $('#install-view');
-	new Catool.InstallView({ el: el });
-	console.log(el);
+	var el = $('#InstallTasksView');
+	var view = new Catool.InstallTasksView({ el: el });
+	view.render();
 });
 </script>
+
+<!-- backbone view templates -->
+<script type="text/template" id="InstallTasksViewTemplate">
+	<div class="row">
+		<div class="span6">
+			<h3>Tasks</h3>
+		</div>
+		<div class="span3">
+			<h3>Status</h3>
+		</div>
+	</div>
+</script>
+
+<script type="text/template" id="InstallTaskViewTemplate">
+	<div class="js-header" style="cursor: pointer">
+		<div class="span6">
+			<h4><%= description %></h4>
+			<p class="js-error hide" style="white-space: pre-wrap"><%= error %></p>
+			<p class="js-log hide" style="white-space: pre-wrap"><%= log %></p>
+		</div>
+		<div class="span3 js-status"><%= status %></div>
+	</div>
+</script>
+
+<script type="text/template" id="InstallTaskErrorTemplate">
+	<h4>Install Task Error: <%= description %></h4>
+	<ul>
+		<li><%= message %></li>
+		<li style="white-space: pre-wrap"><%= error %></li>
+	</ul>
+</script>
+
+<script type="text/template" id="InstallTasksCompleteTemplate">
+	<hr/>
+	<h3>Installation Complete</h3>
+	<p>You may now <a href="?action=finish">login to the application</a>.
+	Don't forget to remove <em>app/webroot/install.php</em> and <em>app/Controller/InstallsController.php</em>
+	for production.
+	</p>
+</script>
+
+<script type="text/template" id="InstallTaskDatabaseForm">
+<div class="row" style="margin: 2em 0">
+	<div class="span8 well">
+		<form id="InstallTaskDatabaseFormInput" class="form form-vertical">
+		<fieldset>
+			<div class="control-group">
+				<label class="control-label" for="host">Host</label>
+				<div class="controls">
+					<input type="text" id="host" name="host" value="<%= host %>" />
+				</div>
+			</div>
+	
+			<div class="control-group">
+				<label class="control-label" for="port">Port (optional)</label>
+				<div class="controls">
+					<input type="text" id="port" name="port" value="<%= port %>" />
+				</div>
+			</div>
+	
+			<div class="control-group">
+				<label class="control-label" for="login">User</label>
+				<div class="controls">
+					<input type="text" id="login" name="login" value="<%= login %>" />
+				</div>
+			</div>
+	
+			<div class="control-group">
+				<label class="control-label" for="password">Password</label>
+				<div class="controls">
+					<input type="text" id="password" name="password" value="<%= password %>" />
+				</div>
+			</div>
+	
+			<div class="control-group">
+				<label class="control-label" for="database">Database Name</label>
+				<div class="controls">
+					<input type="text" id="database" name="database" value="<%= database %>" />
+				</div>
+			</div>
+	
+			<div class="control-group">
+				<label class="control-label" for="prefix">Table Prefix (optional)</label>
+				<div class="controls">
+					<input type="text" id="prefix" name="prefix" value="<%= prefix %>" />
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<div class="controls">
+					<input type="submit" name="submit" value="Save Configuration" class="js-submit-btn btn" />
+				</div>
+			</div>
+		</fieldset>
+		
+		</form>
+	</div>
+</div>
+</script>
+
+</div><!-- end span12 -->
+</div><!-- end row -->
 </body>
 </html>
 
@@ -216,16 +360,85 @@ __HTML;
 	 * dispatch requests to the install controller which will take care of
 	 * configuring the database connection and creating the schema.
 	 *
-	 * NOTE: this action is called via AJAX
+	 * NOTE: called as an AJAX query from default action
+	 *
+	 * @return void
 	 */
 	public function action_setup_cake() {
 		$this->format = 'json';
+
 		$this->_loadCakeBootstrap();
-		$this->_createTempDirs();
-		$this->_createDefaultDbConfig();
-		$this->set('success', true);
-		$this->set('message', 'Cake temporary directories and default database config created');
+
+		$success = $this->_makeTempDirs();
+
+		$this->set('success', $success);
+		$this->set('message', $success ? 'OK' : 'Error creating temporary directories');
 	}
+
+	/**
+	 * Creates the database config.
+	 *
+	 * NOTE: called as an AJAX query from default action
+	 *
+	 * @return void
+	 */
+	public function action_configure_database() {
+		$this->format = 'json';
+
+		$this->_loadCakeBootstrap();
+
+		$config = array();
+		foreach(array_keys($this->_defaultDbConfig) as $key) {
+			if(isset($_POST[$key])) {
+				$val = $_POST[$key];
+				$val = str_replace("'", "\\'", $val); // escape single quotes
+				$config[$key] = $val;
+			} else {
+				$config[$key] = $this->_defaultDbConfig[$key];
+			}
+		}
+
+		$success = $this->_writeDbConfig($config);
+		if($success) {
+			$success = $this->_testDbConnection();
+			if($success) {
+				$message = 'OK';
+			} else {
+				$message = 'Error connecting to the database. Please make sure your configuration settings are correct.';
+			}
+		} else {
+			$message = 'Error saving database config file.';
+		}
+
+		$this->set('success', $success);
+		$this->set('message', $message);
+	}
+	
+	/**
+	 * Creates the database schema.
+	 *
+	 * @return void
+	 */
+	 public function action_create_schema() {
+	 	 $this->format = 'json';
+	 	 
+	 	 $this->_loadCakeBootstrap();
+	 	 $success = $this->_createSchema();
+
+	 	 $this->set('success', $success);
+	 	 $this->set('message', $success ? 'OK' : 'Error creating schema');
+	 }
+	 
+	 /**
+	  * Finish the installation.
+	  *
+	  * @return void
+	  */
+	  public function action_finish() {
+	  	$this->_loadCakeBootstrap();
+		header('Location: '.FULL_BASE_URL.'/installs/promote');
+		exit;
+	  }
 
 	/**
 	 * Attempts to load the cake bootstrap library which defines a number
@@ -250,43 +463,247 @@ __HTML;
 			throw new WebInstallerException("CakePHP core could not be found.  Check the value of CAKE_CORE_INCLUDE_PATH in APP/webroot/install.php.  It should point to the directory containing your " . DS . "cake core directory and your " . DS . "vendors root directory.", E_USER_ERROR);
 		}
 	}
+	
+	/**
+	 * Test the database connection using the default configuration.
+	 *
+	 * @return boolean true if connected, false otherwise
+	 */
+	protected function _testDbConnection() {
+		App::uses('ConnectionManager', 'Model');
+		
+		$connected = false;
+		$error = '';
 
+		try {
+			$ds = ConnectionManager::getDataSource('default');
+			$connected = $ds->connect();
+		} catch (MissingDatasourceConfigException $e) {
+			$error = $e->getMessage();
+		
+		} catch(MissingConnectionException $e) {
+			$error = $e->getMessage();
+		}
+		
+		if(!$connected) {
+			$this->error($error);
+		}
+		
+		return $connected;
+	}
+
+	/**
+	 * Create the schema
+	 *
+	 */
+	
 	/**
 	 * Setup temporary directories before doing anything because Cake throws an 
 	 * internal error if these directoriers don't exist or aren't writable.
 	 *
-	 * Throws a WebInstallerException if the dirs can't be created.
+	 * @return boolean true if temp dirs created, false otherwise
 	 */
-	protected function _createTempDirs() {
+	protected function _makeTempDirs() {
 		$temp_dirs = array(TMP, CACHE, CACHE.'persistent', CACHE.'models', LOGS);
 		$temp_dir_errors = array();
 		foreach($temp_dirs as $dir) {
 			if(!file_exists($dir)) {
 				if(!mkdir($dir, 0770, true)) {
-					$temp_dir_errors[] = "Error creating tmp dir: $dir ";
+					$temp_dir_errors[] = "Can't create directory $dir";
 				}
 			}
-			if(count($temp_dir_errors) > 0) {
-				$error_str = implode("\n",$temp_dir_errors);
-				throw new WebInstallerException("Unable to create temporary directories for the application: $error_str");
+		}
+
+		if(count($temp_dir_errors) > 0) {
+			$error_str = "Error creating temporary directories: " . implode(', ', $temp_dir_errors);
+			$this->error($error_str);
+			return false;
+		}
+		
+		$log_str = "Created directories: ".implode(', ', $temp_dirs);
+		$this->log($log_str);
+
+		return true;
+	}
+
+	/**
+	 * Writes the database configuration file.
+	 *
+	 * @param array $default configuration
+	 * @return boolean
+	 */
+	protected function _writeDbConfig($default) {
+		$default['name'] = 'default'; // force this to be the default config
+		
+		$out = "<?php\n";
+		$out .= "class DATABASE_CONFIG {\n\n";
+
+		$configs = array($default);
+		foreach ($configs as $config) {
+			$config = array_merge($this->_defaultDbConfig, $config);
+			extract($config);
+
+			$out .= "\tpublic \${$name} = array(\n";
+			$out .= "\t\t'datasource' => 'Database/{$datasource}',\n";
+			$out .= "\t\t'persistent' => {$persistent},\n";
+			$out .= "\t\t'host' => '{$host}',\n";
+
+			if ($port) {
+				$out .= "\t\t'port' => {$port},\n";
+			}
+
+			$out .= "\t\t'login' => '{$login}',\n";
+			$out .= "\t\t'password' => '{$password}',\n";
+			$out .= "\t\t'database' => '{$database}',\n";
+
+			if ($schema) {
+				$out .= "\t\t'schema' => '{$schema}',\n";
+			}
+
+			if ($prefix) {
+				$out .= "\t\t'prefix' => '{$prefix}',\n";
+			}
+
+			if ($encoding) {
+				$out .= "\t\t'encoding' => '{$encoding}'\n";
+			}
+
+			$out .= "\t);\n";
+		}
+
+		$out .= "}\n";
+
+		$config_dir = APP . 'Config';
+		$config_file = $config_dir . DS . 'database.php';
+		$result = file_put_contents($config_file, $out, LOCK_EX);
+		
+		// check for some common issues if the config save failed
+		if($result === FALSE) {
+			if(!file_exists($config_dir)) {
+				$this->error(sprintf('Database config directory does NOT exist: %s', $config_dir));
+			} else if(!is_writable($config_dir)) {
+				$this->error(sprintf('Database config directory is NOT writable: %s', $config_dir));
+			} else if(!is_writable($config_file)) {
+				$this->error(sprintf('Database config is NOT writable: %s', $config_file));
+			}
+			return false;
+		}
+		
+		$this->log(sprintf('Saved config settings to PHP file: %s', $config_file));
+
+		return true;	
+	}
+
+	/**
+	 * Creates the schema.
+	 *
+	 * @return string messages
+	 */
+	protected function _createSchema() {
+		App::uses('ConnectionManager', 'Model');
+		App::uses('CakeSchema', 'Model');
+
+		$db = ConnectionManager::getDataSource('default');
+		$CakeSchema = new CakeSchema(array(
+			'name' => 'App', 
+			'connection' => $db
+		));
+
+		$Schema = $CakeSchema->load();
+		if(!$Schema) {
+			$this->error(sprintf('Schema could not be loaded: %s', $CakeSchema->path . DS . $CakeSchema->file));
+			return false;
+		}
+		
+		$out = '';
+		$drop = $create = array();
+
+		foreach ($Schema->tables as $table => $fields) {
+			$drop[$table] = $db->dropSchema($Schema, $table);
+			$create[$table] = $db->createSchema($Schema, $table);
+		}
+
+		if (empty($drop) || empty($create)) {
+			$out .= 'Schema is up to date.';
+			return $out;
+		}
+
+		$out .= "\n".'The following table(s) will be dropped.';
+		$out .= "\n".implode(", ", array_keys($drop));
+
+		$out .= "\n".'Dropping table(s).';
+		$result = $this->_runSchema($db, $drop, 'drop', $Schema);
+		if($result === false) {
+			return false;
+		} else {
+			$out .= $result;
+		}
+
+		$out .= "\n".'The following table(s) will be created.';
+		$out .= "\n".implode(", ", array_keys($create));
+
+		$out .= "\n".'Creating table(s).';
+		$result = $this->_runSchema($db, $create, 'create', $Schema);
+		if($result === false) {
+			return false;
+		} else {
+			$out .= $result;
+		}
+
+		$out .= "\n".'End create.';
+		$this->log($out);
+		
+		return true;
+	}
+
+	/**
+	 * Runs sql from _createSchema()
+	 *
+	 * @param array $contents
+	 * @param string $event
+	 * @param CakeSchema $Schema
+	 * @return string
+	 */
+	protected function _runSchema($db, $contents, $event, &$Schema) {
+		$out = '';
+		if (empty($contents)) {
+			$this->error('Sql could not be run');
+			return false;
+		}
+
+		foreach ($contents as $table => $sql) {
+			if (empty($sql)) {
+				$out .= sprintf("%s is up to date.\n", $table);
+			} else {
+				if (!$Schema->before(array($event => $table))) {
+					return false;
+				}
+				$error = null;
+				try {
+					$db->execute($sql);
+				} catch (PDOException $e) {
+					$error = $table . ': ' . $e->getMessage();
+				}
+
+				$Schema->after(array($event => $table, 'errors' => $error));
+
+				if (!empty($error)) {
+					$this->error($error);
+					return false;
+				} else {
+					$out .= sprintf("%s updated\n", $table);
+				}
 			}
 		}
+	
+		return $out;
 	}
-
-	/**
-	 * Copy the default database configuration. Cake throws an internal error
-	 * when this config file is missing.
-	 *
-	 * Throws a WebInstallerException if the config can't be copied.
-	 */
-	protected function _createDefaultDbConfig() {
-		if(!copy(APP.'Config'.DS.'database.php.default', APP.'Config'.DS.'database.php')) {
-			throw new WebInstallerException("Unable to create the default database config. Please check that your ".APP."Config directory is writable.");
-		}
-	}
-
+	
 	/**
 	 * Invokes a method on the class.
+	 * 
+	 * @param string $method name
+	 * @return mixed
 	 */
 	protected function _invoke($method) {
 		$rm = new ReflectionMethod(get_class($this), $method);
