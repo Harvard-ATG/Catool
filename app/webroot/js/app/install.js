@@ -120,7 +120,7 @@
 				taskUrl: '?action=setup_cake'
 			},{
 				name: 'database',
-				description: 'Database configuration',
+				description: 'MySQL Database configuration',
 				taskUrl: '?action=configure_database',
 				requireInput: true
 			},{
