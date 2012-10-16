@@ -215,6 +215,8 @@
 					this.$el.addClass('alert-success');
 				}
 			}
+
+			return this;
 		},
 		onTaskClick: function() {
 			if(this.model.hasLogMessage()) {
@@ -280,6 +282,7 @@
 			if(this.taskInput) {
 				this.renderForm();
 			}
+			return this;
 		},
 		renderForm: function() {
 			var template, data = {};
@@ -338,6 +341,8 @@
 			_.each(this.views, function(view) {
 					this.$el.append(view.render().el);
 			}, this);
+
+			return this;
 		},
 		getViews: function() {
 			return this.tasks.map(function(task) {
