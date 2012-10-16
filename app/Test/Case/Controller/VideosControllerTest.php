@@ -58,7 +58,7 @@ class VideosControllerTestCase extends ControllerTestCase {
 		$this->assertTrue(isset($result['notes']), 'has notes vars');
 		
 		$this->assertEquals(1, count($result['target']['Video']['id']), 'has video');
-		$this->asesrtGreaterThan(0, count($result['notes']), 'has notes');
+		$this->assertGreaterThan(0, count($result['notes']), 'has notes');
 	}
 
 /**

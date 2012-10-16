@@ -88,7 +88,8 @@ class UserIdentity extends AuthServiceAppModel {
 	 * @return void
 	 */
 	public function registerUser($claimed_id, $user_attributes = array()) {
-		$this->User->create(array('User' => $user_attributes));
+		$this->User->create();
+		$this->User->set($user_attributes);
 		$this->User->save();
 
 		$this->create();

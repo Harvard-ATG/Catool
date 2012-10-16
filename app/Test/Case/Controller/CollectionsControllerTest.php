@@ -77,7 +77,6 @@ class CollectionsControllerTestCase extends ControllerTestCase {
 			try {
 				$this->testAction("/collections/posts/$invalid_id");
 			} catch(NotFoundException $e) {
-				$this->pass("Invalid collection ID");
 				continue;
 			}
 			$this->fail("Invalid collection ID [$invalid_id] must raise an exception");

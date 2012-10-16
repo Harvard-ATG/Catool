@@ -23,7 +23,7 @@ App::uses('Hash', 'Utility');
 App::uses('Security', 'Utility');
 
 /**
- * The Security Component creates an easy way to integrate tighter security in 
+ * The Security Component creates an easy way to integrate tighter security in
  * your application. It provides methods for various tasks like:
  *
  * - Restricting which HTTP methods your application accepts.
@@ -130,6 +130,13 @@ class SecurityComponent extends Component {
 	public $unlockedFields = array();
 
 /**
+ * Actions to exclude from any security checks
+ *
+ * @var array
+ */
+	public $unlockedActions = array();
+
+/**
  * Whether to validate POST data.  Set to false to disable for data coming from 3rd party
  * services, etc.
  *
@@ -218,13 +225,11 @@ class SecurityComponent extends Component {
 			$controller->request->params['requested'] != 1
 		);
 
-		if ($isPost && $isNotRequestAction && $this->validatePost) {
-			if ($this->_validatePost($controller) === false) {
+		if (!in_array($this->_action, (array)$this->unlockedActions) && $isPost && $isNotRequestAction) {
+			if ($this->validatePost && $this->_validatePost($controller) === false) {
 				return $this->blackHole($controller, 'auth');
 			}
-		}
-		if ($isPost && $isNotRequestAction && $this->csrfCheck) {
-			if ($this->_validateCsrf($controller) === false) {
+			if ($this->csrfCheck && $this->_validateCsrf($controller) === false) {
 				return $this->blackHole($controller, 'csrf');
 			}
 		}
@@ -311,9 +316,8 @@ class SecurityComponent extends Component {
 	public function blackHole(Controller $controller, $error = '') {
 		if ($this->blackHoleCallback == null) {
 			throw new BadRequestException(__d('cake_dev', 'The request has been black-holed'));
-		} else {
-			return $this->_callback($controller, $this->blackHoleCallback, array($error));
 		}
+		return $this->_callback($controller, $this->blackHoleCallback, array($error));
 	}
 
 /**
@@ -385,7 +389,7 @@ class SecurityComponent extends Component {
 			$requireAuth = $this->requireAuth;
 
 			if (in_array($this->request->params['action'], $requireAuth) || $this->requireAuth == array('*')) {
-				if (!isset($controller->request->data['_Token'] )) {
+				if (!isset($controller->request->data['_Token'])) {
 					if (!$this->blackHole($controller, 'auth')) {
 						return null;
 					}
@@ -588,11 +592,10 @@ class SecurityComponent extends Component {
  * @throws BadRequestException When a the blackholeCallback is not callable.
  */
 	protected function _callback(Controller $controller, $method, $params = array()) {
-		if (is_callable(array($controller, $method))) {
-			return call_user_func_array(array(&$controller, $method), empty($params) ? null : $params);
-		} else {
+		if (!is_callable(array($controller, $method))) {
 			throw new BadRequestException(__d('cake_dev', 'The request has been black-holed'));
 		}
+		return call_user_func_array(array(&$controller, $method), empty($params) ? null : $params);
 	}
 
 }

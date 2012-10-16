@@ -20,7 +20,7 @@ class OpenidAuthServiceComponentTestCase extends CakeTestCase {
 	public $OpenidAuthServiceComponent = null;
 	public $Controller = null;
 	public $_SERVER = null;
-	public $fixtures = array('plugin.auth_service.openid_user', 'app.user');
+	public $fixtures = array('plugin.auth_service.openid_user', 'app.user', 'app.role');
 
 	public function setUp() {
 		parent::setUp();
