@@ -2,12 +2,20 @@
 // Use of this source code is governed by the LICENSE file found in the root of this project.
 (function(global) {
 	global.Catool = global.Catool || {};
-
+	
 	var View = Backbone.View.extend({});
 	var Model = Backbone.Model.extend({});
 	var Collection = Backbone.Collection.extend({});
 
-	
+	/**
+	 * Install task model
+	 *
+	 * Keeps track of the state of each task and handles logic for executing
+	 * tasks. Tasks are executed by submitting AJAX queries and examining
+	 * the response for success or failure.
+	 *
+	 * @constructor
+	 */
 	var InstallTaskModel = Model.extend({
 		idAttribute: 'name',
 		initialize: function(attributes) {
@@ -111,7 +119,14 @@
 		}
 	});
 
-	
+	/**
+	 * Install task collection
+	 *
+	 * Responsible for holding a queue of tasks and executing the next one
+	 * in sequence, or signaling that all tasks are done.
+	 *
+	 * @constructor
+	 */	
 	var InstallTasksCollection = Collection.extend({
 		model: InstallTaskModel,
 		initialize: function(models, options) {
@@ -159,7 +174,13 @@
 		}
 	});
 
-	
+	/**
+	 * View for an install task.
+	 *
+	 * Responsible for displaying the state of a task.
+	 *
+	 * @constructor
+	 */		
 	var InstallTaskView = View.extend({
 		tagname: 'li',
 		className: 'row task alert',
@@ -214,6 +235,9 @@
 		}
 	});
 
+	/**
+	 * Factory method to create a view object
+	 */
 	InstallTaskView.create = function(model) {
 		var options = { model: model };
 		if(model.get('name') === 'database') {
@@ -222,7 +246,15 @@
 		return new InstallTaskView(options);
 	};
 
-
+	/**
+	 * View for a database install task.
+	 *
+	 * Responsible for displaying the state of a database install task,
+	 * and more importantly, prompting the user to enter the database
+	 * configuration.
+	 *
+	 * @constructor
+	 */	
 	var InstallDatabaseTaskView = InstallTaskView.extend({
 		events: {
 			'click .js-submit-btn' : 'onSubmit',
@@ -279,7 +311,14 @@
 		}
 	});
 
-
+	/**
+	 * View a list of tasks.
+	 *
+	 * Responsible for displaying a list of tasks, prominently displaying
+	 * any errors that occur, and initiating the first task.
+	 *
+	 * @constructor
+	 */	
 	var InstallTasksView = View.extend({
 		className: 'tasks',
 		initialize: function(options) {
