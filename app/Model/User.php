@@ -158,7 +158,8 @@ class User extends AppModel {
  */
 	public function promoteToSuper($user_id) {
 		$this->id = $user_id;
-		$this->saveField('role_id', $this->Role->getRoleIdByName(Role::SUPER));
+		$this->set('role_id', $this->Role->getRoleIdByName(Role::SUPER));
+		$this->save();
 	}
 	
 }

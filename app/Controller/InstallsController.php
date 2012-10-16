@@ -63,7 +63,7 @@ class InstallsController extends AppController {
 			$user_id = $default['User']['id'];
 		}
 
-		$this->User->promoteToSuper(1);
+		$this->User->promoteToSuper($user_id);
 		$this->Session->setFlash(__('You are now logged in with super user permissions.'), 'flash_notice');
 		$this->redirect(array('controller' => 'collections', 'action' => 'index', 'admin' => true));
 	}
