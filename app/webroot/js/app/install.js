@@ -7,6 +7,7 @@
 	var Model = Backbone.Model.extend({});
 	var Collection = Backbone.Collection.extend({});
 
+	
 	var InstallTaskModel = Model.extend({
 		idAttribute: 'name',
 		initialize: function(attributes) {
@@ -110,6 +111,7 @@
 		}
 	});
 
+	
 	var InstallTasksCollection = Collection.extend({
 		model: InstallTaskModel,
 		initialize: function(models, options) {
@@ -157,6 +159,7 @@
 		}
 	});
 
+	
 	var InstallTaskView = View.extend({
 		tagname: 'li',
 		className: 'row task alert',
@@ -165,19 +168,11 @@
 		},
 		initialize: function(options) {
 			this.model.on('change', this.render, this);
-			this.model.on('taskload', this.onTaskLoad, this);
 		},
 		render: function() {
 			var template = $('#InstallTaskViewTemplate').html();
 			var data = this.model.toJSON();
-
-			if(data.success === true) {
-				data.status = 'OK';
-			} else if(data.success === false) {
-				data.status = 'ERROR';
-			} else {
-				data.status = '-';
-			}
+			data.success = this.getStatusMessage();
 
 			this.$el.html(_.template(template, data));
 
@@ -207,6 +202,15 @@
 			if(this.model.hasErrorMessage()) {
 				this.$('.js-error').toggleClass('hide');
 			}
+		},
+		getStatusMessage: function() {
+			var success = this.model.get('success');
+			if(success === true) {
+				return 'OK';
+			} else if(success === false) {
+				return 'ERROR';
+			}
+			return '-';
 		}
 	});
 
@@ -217,6 +221,7 @@
 		}
 		return new InstallTaskView(options);
 	};
+
 
 	var InstallDatabaseTaskView = InstallTaskView.extend({
 		events: {
@@ -245,7 +250,7 @@
 			}
 		},
 		renderForm: function() {
-			var template, data;
+			var template, data = {};
 
 			data = _.clone(this.data);
 			data = _.extend(data, this.model.get('data') || {});
@@ -274,6 +279,7 @@
 		}
 	});
 
+
 	var InstallTasksView = View.extend({
 		className: 'tasks',
 		initialize: function(options) {
@@ -286,21 +292,13 @@
 			this.beginTasks();
 		},
 		render: function() {
-			var template, $tasks;
-
-			_(this.views).each(function(view) {
-					view.render();
-			});
+			var template = _.template($('#InstallTasksViewTemplate').html());
 			
-			if(!this.renderedToDom) {
-				template = _.template($('#InstallTasksViewTemplate').html());
-				this.$el.html(template);
-				
-				_(this.views).each(function(view) {
-						this.$el.append(view.el);
-				}, this);
-				this.renderedToDom = true;
-			}
+			this.$el.html(template);
+
+			_.each(this.views, function(view) {
+					this.$el.append(view.render().el);
+			}, this);
 		},
 		getViews: function() {
 			return this.tasks.map(function(task) {

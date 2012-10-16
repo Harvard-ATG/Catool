@@ -84,19 +84,18 @@ class WebInstallerException extends Exception { }
  * A very minimal controller/view for installing the essential Cake dependencies.
  *
  * Cake dies early and often when key dependencies are missing, so the goal of 
- * this class is to facilitate the initial setup. Once the dependencies are resolved
- * and the Cake infrastructure is up and running, installation tasks are
- * delegated to the InstallsController.
+ * this class is to facilitate the initial setup.
  *
- * Installation tasks are kicked off by AJAX requests from the default view.
+ * Installation tasks are kicked off by AJAX requests from the default action
+ * (i.e. install.php?action=default or just install.php).
  */
 class WebInstaller {
 
 	public $errors = array(); // error messages
 	public $logs = array(); // log messages for the user
-	public $format = 'html';
-	public $action = '';
-	public $template = '';
+	public $format = 'html'; // html|json
+	public $action = ''; // action method name
+	public $template = ''; // template method name
 	public $templateParams = array();
 
 /**
@@ -174,14 +173,17 @@ class WebInstaller {
 	}
 
 	/**
-	 * Adds an error message.
+	 * Adds an error message to the stack.
 	 */
 	public function error($message = null) {
 		$this->errors[] = $message;
 	}
 	
 	/**
-	 * Adds an action log message to display to the user.
+	 * Adds a log message to the stack.
+	 *
+	 * NOTE: this is intended to be an audit log that will be displayed to 
+	 * the user, not for logging to disk.
 	 */
 	public function log($message = null) {
 		$this->logs[] = $message;
@@ -198,12 +200,10 @@ class WebInstaller {
 	 * Default action called by requesting install.php
 	 *
  	 * Just renders base HTML page. From here on out, the client should
-	 * proceed with the installation by submitting only AJAX requests to 
-	 * take care of CakePHP dependencies (see action_cake_setup)
-	 * and then to the CakePHP InstallsController.
+	 * proceed with the installation by submitting AJAX requests.
 	 */
 	public function action_default() {
-		// do nothing but serve up static page with html and js
+		$this->format = 'html';
    	}
 
 	/**
@@ -227,7 +227,7 @@ class WebInstaller {
 	<script type="text/javascript" src="js/app/install.js"></script>
 </head>
 
-<body id="home">
+<body>
 <div class="row">
 <div class="span10 offset2">
 <div class="page-header">
@@ -242,6 +242,9 @@ class WebInstaller {
 <div id="InstallTasksView">
 </div>
 
+<!----------------------------------------------------------------------------->
+<!-- Render Main BackboneJS View -->
+
 <script>
 $(function() {
 	var el = $('#InstallTasksView');
@@ -250,7 +253,9 @@ $(function() {
 });
 </script>
 
-<!-- backbone view templates -->
+<!----------------------------------------------------------------------------->
+<!-- BackboneJS View Templates -->
+
 <script type="text/template" id="InstallTasksViewTemplate">
 	<div class="row">
 		<div class="span6">
@@ -352,7 +357,7 @@ $(function() {
 </div>
 </script>
 
-</div><!-- end span12 -->
+</div><!-- end span -->
 </div><!-- end row -->
 </body>
 </html>
@@ -365,16 +370,9 @@ __HTML;
 	/**
 	 * Setup cake so that we can successfully bootstrap the application.
 	 *
-	 * The goal of this method is to setup all the pre-requisites so that
-	 * we can dispatch to the actual Cake controllers. In order to do that,
-	 * must ensure that the following are done:
-	 *
-	 * 		1) Temporary dirs for caching, logging, etc are writable.
-	 * 		2) Database config file exists.
-	 *
-	 * Once those things are setup, Cake should be functional so we can
-	 * dispatch requests to the install controller which will take care of
-	 * configuring the database connection and creating the schema.
+	 * This method attempts to bootstrap CakePHP and create temporary
+	 * directories. This is the first thing that needs to be done in
+	 * the installation, otherwise CakePHP will not work.
 	 *
 	 * NOTE: called as an AJAX query. 
 	 *
@@ -448,7 +446,7 @@ __HTML;
 	 }
 	 
 	 /**
-	  * Last step of the install.
+	  * Finishes the install.
 	  *
 	  * Just redirects to the CakePHP Controller/InstallsController 
 	  * (i.e. /installs) in order to login the user as the
@@ -465,11 +463,15 @@ __HTML;
 	  }
 
 	/**
-	 * Attempts to load the cake bootstrap library which defines a number
-	 * of useful constants, basic functions, etc. If this can't be loaded
-	 * then there is a major problem.
+	 * Load the cake bootstrap libraries.
 	 *
-	 * Throws a WebInstallerException if loading fails.
+	 * The CakePHP bootstrap library defines some useful constants, basic
+	 * functions, etc. If this can't be loaded successfully, then there is a 
+	 * serious problem and the install should immediately abort.
+	 *
+	 * NOTE: most actions require Cake to be bootstrapped.
+	 *
+	 * @throws a WebInstallerException if loading the bootstrap fails.
 	 */
 	protected function _loadCakeBootstrap() {
 		if (!defined('CAKE_CORE_INCLUDE_PATH')) {
@@ -520,10 +522,6 @@ __HTML;
 	/**
 	 * Setup temporary directories required by Cake. 
 	 *
-	 * If any of these temporary directories are missing or not writable,
-	 * Cake will throw an internal error very early in the bootstrapping
-	 * process. This should be the very first step in the install.
-	 *
 	 * @return boolean true if created, false otherwise
 	 */
 	protected function _makeTempDirs() {
@@ -551,6 +549,8 @@ __HTML;
 
 	/**
 	 * Writes the database configuration file.
+	 *
+	 * NOTE: adapated from lib/Cake/Console/Command/Task/DbConfigTask.php
 	 *
 	 * @param array $default configuration
 	 * @return boolean
@@ -620,7 +620,9 @@ __HTML;
 	/**
 	 * Creates the schema.
 	 *
-	 * @return mixed a string message if successful, or false if an error
+	 * NOTE: adapted from the schema shell lib/Cake/Console/Command/SchemaShell.php
+	 * 
+	 * @return mixed false on failure, otherwise a string message
 	 */
 	protected function _createSchema() {
 		App::uses('ConnectionManager', 'Model');
@@ -682,8 +684,7 @@ __HTML;
 	/**
 	 * Runs sql from _createSchema()
 	 *
-	 * Note: this was adapted from the schema shell:
-	 * 		lib/Cake/Console/Command/SchemaShell.php
+	 * NOTE: adapted from the schema shell lib/Cake/Console/Command/SchemaShell.php
 	 *
 	 * @param array $contents
 	 * @param string $event
