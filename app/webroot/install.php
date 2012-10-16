@@ -336,14 +336,12 @@ $(function() {
 			</div>
 
 			<!-- Disabling for now because there seems to be an issue with the prefix -->
-			<!--
 			<div class="control-group">
 				<label class="control-label" for="prefix">Table Prefix (optional)</label>
 				<div class="controls">
 					<input type="text" id="prefix" name="prefix" value="<%= prefix %>" />
 				</div>
 			</div>
-			-->
 			
 			<div class="control-group">
 				<div class="controls">
