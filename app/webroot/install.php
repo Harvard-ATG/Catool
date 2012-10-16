@@ -523,25 +523,50 @@ __HTML;
 	 * @return boolean true if created, false otherwise
 	 */
 	protected function _makeTempDirs() {
-		$temp_dirs = array(TMP, CACHE, CACHE.'persistent', CACHE.'models', LOGS);
+		// maps to a glob pattern for removing temp files
+		$temp_dirs = array(
+			TMP => false, 
+			CACHE => false, 
+			CACHE.'persistent' => '*cake_core_*', 
+			CACHE.'models' => '*cake_model_*', 
+			LOGS => '*.log'
+		);
+
 		$temp_dir_errors = array();
-		foreach($temp_dirs as $dir) {
-			if(!file_exists($dir)) {
-				if(!mkdir($dir, 0770, true)) {
+		foreach($temp_dirs as $dir => $glob_pattern) {
+			if(file_exists($dir)) {
+				if(is_writable($dir)) {
+					$this->log("Temporary directory $dir created (already exists).");
+				} else {
+					$temp_dir_errors[] = "Temporary directory $dir exists, but is NOT writable.";
+				}
+
+				if($glob_pattern !== false) {
+					$files_to_clear = glob($dir.DS.$glob_pattern);
+					foreach($files_to_clear as $file) {
+						if(is_file($file)) {
+							if(unlink($file)) {
+								$this->log("Cleared temporary file $file");
+							} else {
+								$temp_dir_errors[] = "Can't clear temporary file $file";
+							}
+						}
+					}
+				}
+			} else {
+				if(mkdir($dir, 0770, true)) {
+					$this->log("Created temporary directory $dir");
+				} else {
 					$temp_dir_errors[] = "Can't create directory $dir";
 				}
 			}
 		}
 
 		if(count($temp_dir_errors) > 0) {
-			$error_str = "Error creating temporary directories: " . implode(', ', $temp_dir_errors);
-			$this->error($error_str);
+			$this->error(implode("\n", $temp_dir_errors));
 			return false;
 		}
 		
-		$log_str = "Created directories: ".implode(', ', $temp_dirs);
-		$this->log($log_str);
-
 		return true;
 	}
 
