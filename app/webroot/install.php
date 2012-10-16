@@ -1,7 +1,20 @@
 <?php
+// Copyright (c) 2012 The President and Fellows of Harvard College
+// Use of this source code is governed by the LICENSE file found in the root of this project.
+?>
+<?php
+/**
+ * Basic web installer for the application.
+ *
+ * IMPORTANT:
+ * Please remember to remove this file in PRODUCTION!
+ *
+ * USAGE:
+ * Begin the install by accessing "install.php" withou parameters.
+ */
 
 //---------------------------------------------------------------------- 
-// Define Constants
+// Define Constants (taken from index.php)
 
 error_reporting(E_ALL);
 
@@ -363,7 +376,7 @@ __HTML;
 	 * dispatch requests to the install controller which will take care of
 	 * configuring the database connection and creating the schema.
 	 *
-	 * NOTE: called as an AJAX query from default action
+	 * NOTE: called as an AJAX query. 
 	 *
 	 * @return void
 	 */
@@ -379,7 +392,7 @@ __HTML;
 	}
 
 	/**
-	 * Creates the database config.
+	 * Creates the database config and tests the connection.
 	 *
 	 * NOTE: called as an AJAX query from default action
 	 *
@@ -420,6 +433,8 @@ __HTML;
 	/**
 	 * Creates the database schema.
 	 *
+	 * NOTE: called as an AJAX query. 
+	 *
 	 * @return void
 	 */
 	 public function action_create_schema() {
@@ -433,7 +448,13 @@ __HTML;
 	 }
 	 
 	 /**
-	  * Finish the installation.
+	  * Last step of the install.
+	  *
+	  * Just redirects to the CakePHP Controller/InstallsController 
+	  * (i.e. /installs) in order to login the user as the
+	  * default administrator. 
+	  *
+	  * This is NOT called as an AJAX query.
 	  *
 	  * @return void
 	  */
@@ -445,7 +466,8 @@ __HTML;
 
 	/**
 	 * Attempts to load the cake bootstrap library which defines a number
-	 * of constants, basic functions, etc that are need by the framework.
+	 * of useful constants, basic functions, etc. If this can't be loaded
+	 * then there is a major problem.
 	 *
 	 * Throws a WebInstallerException if loading fails.
 	 */
@@ -496,15 +518,13 @@ __HTML;
 	}
 
 	/**
-	 * Create the schema
+	 * Setup temporary directories required by Cake. 
 	 *
-	 */
-	
-	/**
-	 * Setup temporary directories before doing anything because Cake throws an 
-	 * internal error if these directoriers don't exist or aren't writable.
+	 * If any of these temporary directories are missing or not writable,
+	 * Cake will throw an internal error very early in the bootstrapping
+	 * process. This should be the very first step in the install.
 	 *
-	 * @return boolean true if temp dirs created, false otherwise
+	 * @return boolean true if created, false otherwise
 	 */
 	protected function _makeTempDirs() {
 		$temp_dirs = array(TMP, CACHE, CACHE.'persistent', CACHE.'models', LOGS);
@@ -600,7 +620,7 @@ __HTML;
 	/**
 	 * Creates the schema.
 	 *
-	 * @return string messages
+	 * @return mixed a string message if successful, or false if an error
 	 */
 	protected function _createSchema() {
 		App::uses('ConnectionManager', 'Model');
@@ -661,6 +681,9 @@ __HTML;
 
 	/**
 	 * Runs sql from _createSchema()
+	 *
+	 * Note: this was adapted from the schema shell:
+	 * 		lib/Cake/Console/Command/SchemaShell.php
 	 *
 	 * @param array $contents
 	 * @param string $event
