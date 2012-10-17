@@ -210,7 +210,11 @@ class WebInstaller {
 	 * Default action template. 
 	 */
 	public function template_default() {
-		$html = <<<'__HTML'
+		// variables used in the template below
+		$install_files_to_delete = implode("\n", $this->_getInstallFilesToDelete());
+
+		// HTML template 
+		$html = <<<__HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -289,9 +293,12 @@ $(function() {
 <script type="text/template" id="InstallTasksCompleteTemplate">
 	<hr/>
 	<h3>Installation Complete</h3>
-	<p>You may now <a href="?action=finish">login to the application</a>.
-	Don't forget to remove <em>app/webroot/install.php</em> and <em>app/Controller/InstallsController.php</em>
-	for production.
+	<p>You may now <a href="?action=finish">login to the application</a> with administrator permissions.</p>
+	<hr/>
+	<p><b>Note for production:</b> please <code>delete</code> the following install files when deploying to production:
+<pre>
+$install_files_to_delete
+</pre>
 	</p>
 </script>
 
@@ -335,7 +342,6 @@ $(function() {
 				</div>
 			</div>
 
-			<!-- Disabling for now because there seems to be an issue with the prefix -->
 			<div class="control-group">
 				<label class="control-label" for="prefix">Table Prefix (optional)</label>
 				<div class="controls">
@@ -747,6 +753,23 @@ __HTML;
 		}
 	
 		return $out;
+	}
+
+	/**
+	 * Returns a list of install files that should be deleted for production.
+	 *
+	 * NOTE: Since this method is called in the default action/template, which
+	 * doesn't load cake bootstrap to minimize things that could go wrong,
+	 * file names should be constructed using only the constants defined
+	 * here. Don't depend on any constants defined in cake bootsrap
+	 * such as APP or WEBROOT_DIR. 
+	 *
+	 * @return array of file names 
+	 */
+	protected function _getInstallFilesToDelete() {
+		$install_script_file = __FILE__;
+		$install_controller_file = ROOT.DS.APP_DIR.DS.'Controller'.DS.'InstallsController.php';
+		return array($install_script_file, $install_controller_file);
 	}
 	
 	/**
