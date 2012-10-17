@@ -193,7 +193,7 @@
 		render: function() {
 			var template = $('#InstallTaskViewTemplate').html();
 			var data = this.model.toJSON();
-			data.success = this.getStatusMessage();
+			data.status = this.getStatusMessage();
 
 			this.$el.html(_.template(template, data));
 
