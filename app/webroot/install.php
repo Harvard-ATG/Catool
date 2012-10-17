@@ -238,11 +238,6 @@ class WebInstaller {
 	<h1>CATool Web Installation</h1>
 </div>
 
-<div id="InstallTaskError" class="alert alert-error hide" style="margin: 1em 0">
-	<a class="close" data-dismiss="alert">&times;</a>
-	<p class="js-error"></p>
-</div>
-
 <div id="InstallTasksView">
 </div>
 
@@ -283,11 +278,14 @@ $(function() {
 </script>
 
 <script type="text/template" id="InstallTaskErrorTemplate">
+<div class="alert alert-error fade in" style="margin: 1em 0">
+	<a class="close" data-dismiss="alert">&times;</a>
 	<h4>Install Task Error: <%= description %></h4>
 	<ul>
 		<li><%= message %></li>
 		<li style="white-space: pre-wrap"><%= error %></li>
 	</ul>
+</div>
 </script>
 
 <script type="text/template" id="InstallTasksCompleteTemplate">
@@ -422,7 +420,7 @@ __HTML;
 			if($success) {
 				$message = 'OK';
 			} else {
-				$message = 'Error connecting to the database. Please make sure your configuration settings are correct.';
+				$message = 'Please make sure your database configuration settings are correct.';
 			}
 		} else {
 			$message = 'Error saving database config file.';
@@ -511,9 +509,10 @@ __HTML;
 			$connected = $ds->connect();
 		} catch (MissingDatasourceConfigException $e) {
 			$error = $e->getMessage();
-		
-		} catch(MissingConnectionException $e) {
+		} catch(MissingDatasourceException $e) {
 			$error = $e->getMessage();
+		} catch(MissingConnectionException $e) {
+			$error = "Error connecting to the database. ".$e->getMessage();
 		}
 		
 		if(!$connected) {
@@ -528,23 +527,28 @@ __HTML;
 	 *
 	 * @return boolean true if created, false otherwise
 	 */
-	protected function _makeTempDirs() {
-		// maps to a glob pattern for removing temp files
+	protected function _makeTempDirs($dirPermission = 0770, $dirRecursive = true) {
+		// this maps a directory path to a glob pattern for clearing tmp files
 		$temp_dirs = array(
-			TMP => false, 
-			CACHE => false, 
+			TMP                => false, 
+			LOGS               => '*.log', 
+			CACHE              => false, 
 			CACHE.'persistent' => '*cake_core_*', 
-			CACHE.'models' => '*cake_model_*', 
-			LOGS => '*.log'
+			CACHE.'models'     => '*cake_model_*', 
 		);
+		$log_str = "Temporary directory %s created with permission ".decoct($dirPermission).'.';
 
 		$temp_dir_errors = array();
 		foreach($temp_dirs as $dir => $glob_pattern) {
 			if(file_exists($dir)) {
-				if(is_writable($dir)) {
-					$this->log("Temporary directory $dir created (already exists).");
+				if(!is_writable($dir)) {
+					$temp_dir_errors[] = "Temporary directory $dir created, but is NOT writable.";
+				} else if(!is_readable($dir)) {
+					$temp_dir_errors[] = "Temporary directory $dir created, but is NOT readable.";
+				} else if(!is_executable($dir)) {
+					$temp_dir_errors[] = "Temporary directory $dir created, but is NOT executable.";
 				} else {
-					$temp_dir_errors[] = "Temporary directory $dir exists, but is NOT writable.";
+					$this->log(sprintf($log_str, $dir));
 				}
 
 				if($glob_pattern !== false) {
@@ -552,18 +556,18 @@ __HTML;
 					foreach($files_to_clear as $file) {
 						if(is_file($file)) {
 							if(unlink($file)) {
-								$this->log("Cleared temporary file $file");
+								$this->log("Cleared temporary file $file.");
 							} else {
-								$temp_dir_errors[] = "Can't clear temporary file $file";
+								$temp_dir_errors[] = "Can't clear temporary file $file.";
 							}
 						}
 					}
 				}
 			} else {
-				if(mkdir($dir, 0770, true)) {
-					$this->log("Created temporary directory $dir");
+				if(mkdir($dir, $dirPermission, $dirRecursive)) {
+					$this->log(sprintf($log_str, $dir));
 				} else {
-					$temp_dir_errors[] = "Can't create directory $dir";
+					$temp_dir_errors[] = "Can't create directory $dir with permission ".decoct($dirPermission).'.';
 				}
 			}
 		}
@@ -641,7 +645,7 @@ __HTML;
 			return false;
 		}
 		
-		$this->log(sprintf('Saved config settings to PHP file: %s', $config_file));
+		$this->log(sprintf('Saved config settings to file: %s', $config_file));
 
 		return true;	
 	}

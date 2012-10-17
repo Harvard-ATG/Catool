@@ -331,6 +331,7 @@
 			this.tasks.on('taskscomplete', this.onAllTasksComplete, this);
 
 			this.views = this.getViews();
+
 			this.beginTasks();
 		},
 		render: function() {
@@ -355,19 +356,28 @@
 			}
 		},
 		onTaskDone: function(task) {
+			this.clearError();
 			this.tasks.incrementTask();
 			this.tasks.doNext();
 		},
 		onTaskError: function(task) {
-			var $error = $('#InstallTaskError');
-			var template = _.template($('#InstallTaskErrorTemplate').html(), task.toJSON());
-
-			$error.find('.js-error').html(template);
-			$error.show();
+			this.clearError();
+			this.showError(task);
 		},
 		onAllTasksComplete: function() {
 			var template = _.template($('#InstallTasksCompleteTemplate').html(), {});
 			this.$el.append(template);
+		},
+		clearError: function() {
+			if(this.$error) {
+				this.$error.remove();
+				delete this.$error;
+			}
+		},
+		showError: function(task) {
+			var template = _.template($('#InstallTaskErrorTemplate').html(), task.toJSON());
+			this.$error = $(template);
+			this.$el.prepend(this.$error);
 		}
 	});
 
