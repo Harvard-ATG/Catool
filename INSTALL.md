@@ -7,7 +7,7 @@
 * Get the source either by downloading and unzipping a ZIP file (see the ZIP icon on github) or by cloning the repository:
   
 ```sh
-git clone git@github.com:arthurbarrett/Catool.git Catool
+git clone git@github.com:Harvard-ATG/Catool.git
 ```
 	 
 * Setup your Apache web server by adding the following section to your Apache vhosts config <code>conf/apache/extra/httpd-vhosts.conf</code>:
