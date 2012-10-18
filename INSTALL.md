@@ -53,7 +53,7 @@ Include /Applications/MAMP/conf/apache/extra/httpd-vhosts.conf
 
 ## DEPENDENCIES
 
-### The following third-party packages and libraries are bundled with this application:
+The following third-party packages and libraries are bundled with this application:
 
 * CakePHP. _PHP MVC Web Framework. MIT license._
 * Phpseclib. _PHP Secure Communications Library. MIT license._
