@@ -43,3 +43,9 @@ Include /Applications/MAMP/conf/apache/extra/httpd-vhosts.conf
 * Using phpMyAdmin or another MySQL admin tool, setup a database, username, and password for the application.
 * Run the application web installer by pointing your web browser to <code>install.php</code> (i.e. *http://catool.localhost/install.php*). You will be prompted for your MySQL database connection information.
 * Follow the instructions on the web installer to login to the application as a super user.
+
+## COMMON PROBLEMS
+* File permissions need to be setup such that:
+	* <code>Config</code> must be writable by the web server (during the install so configs can be saved).
+	* <code>tmp</code> must be writable by the web server for logging, caching, etc.
+* If configuration settings are changed by hand, make sure to clear cache files in <code>tmp/cache</code>, otherwise you may get an *Internal Server Error*.
