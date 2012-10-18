@@ -1,14 +1,45 @@
 # INSTALL
 
-* Get the source <code>git clone git@github.com:Harvard-ATG/Catool.git Catool</code>
-* Setup your web server vhost and point the document root to *app/webroot*.
-* Run the web installer from the document root:  *install.php*. You will be prompted for your database connection information.
-* Alternatively, you can run the install from the command line using the Cake console utility:
+## EXAMPLE CONFIGURATION FOR A STANDARD LAMP ENVIRONMENT
 
+*Disclaimer*: the configuration provided below is only an example. You should adapt this for your own specific environment (Ubuntu Linux, MAC OS X, etc). Do _not_ use this for production.
+
+* Get the source either by downloading and unzipping a ZIP file (see the ZIP icon on github) or by cloning the repository:
+  
 ```sh
-cd Catool/app
-Console/cake install app  # setup database/schema
-Console/cake install test # run tests
+git clone git@github.com:arthurbarrett/Catool.git Catool
+```
+	 
+* Setup your Apache web server by adding the following section to your Apache vhosts config <code>conf/apache/extra/httpd-vhosts.conf</code>:
+	 
+```apache
+<VirtualHost *:80>
+	ServerName catool.localhost # your server hostname
+	DocumentRoot "/Applications/MAMP/htdocs/Catool/app/webroot" # app/webroot should be public
+	<Directory /Applications/MAMP/htdocs/Catool/app/webroot>
+		Options All
+		AllowOverride All
+		Order deny,allow
+		Deny from all
+		Allow from 127.0.0.1 localhost
+	</Directory>
+</VirtualHost>
+```
+	 
+* Make sure that the Include line for vhosts is uncommented in <code>conf/apache/httpd.conf</code>:
+	 
+```apache
+# Virtual hosts
+Include /Applications/MAMP/conf/apache/extra/httpd-vhosts.conf
+```
+ 
+* If you are hosting the application on your local machine, update your <code>/etc/hosts</code> file to match the *ServerName*:
+ 
+```sh
+127.0.0.1	catool.localhost
 ```
 
-However, if you install with the console command, you have to manually create the database config and temporary directories for logging, caching, etc. To create the database config, copy *app/Config/database.php.default* to *app/Config/database.php* and modify the settings for your database. Make sure your *app/tmp* directory has been created and is writable by the web server.
+* Start the Apache & MySQL services.
+* Using phpMyAdmin or another MySQL admin tool, setup a database, username, and password for the application.
+* Run the application web installer by pointing your web browser to <code>install.php</code> (i.e. *http://catool.localhost/install.php*). You will be prompted for your MySQL database connection information.
+* Follow the instructions on the web installer to login to the application as a super user.
