@@ -11,24 +11,3 @@ _Please Note:_ This is *alpha* quality software that is untested in terms of pro
 * Run the web installer <code>install.php</code> from the document root.
 
 For more detailed installation instructions, see the *INSTALL* file.
-
-## Documentation
-
-There is no user documentation available for the application.
-
-To generate PHP documentation run  _phpdoc_ (no arguments) in the _app/webroot/docs_ directory. Note: requires phpDocumentor to be installed.
-
-## Dependencies
-
-### The following third-party packages and libraries are bundled with this application:
-
-* CakePHP. _PHP MVC Web Framework. MIT license._
-* Phpseclib. _PHP Secure Communications Library. MIT license._
-* LightOpenID. _PHP library for easy openid authentication. MIT license._
-* Less. _CSS Framework. MIT license._
-* Twitter Bootstrap. _HTML, CSS, and JS components. Apache license 2.0_
-* JQuery. _JS DOM utility library. GPL/MIT license._
-* VideoJS. _HTML5/flash media player. LGPLv3 license._
-* Backbone.js. _JS MVC framework. GPL/MIT license._
-* Underscore.js _JS functional programming utilities. MIT license._
-* Moment.js: _JS date library. MIT license._
