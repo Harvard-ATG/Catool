@@ -14,7 +14,7 @@ git clone git@github.com:Harvard-ATG/Catool.git
 	 
 ```apache
 <VirtualHost *:80>
-	ServerName catool.localhost # your server hostname
+	ServerName catool.localhost 
 	DocumentRoot "/Applications/MAMP/htdocs/Catool/app/webroot" # app/webroot should be public
 	<Directory /Applications/MAMP/htdocs/Catool/app/webroot>
 		Options All
