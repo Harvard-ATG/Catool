@@ -49,3 +49,19 @@ Include /Applications/MAMP/conf/apache/extra/httpd-vhosts.conf
 	* <code>Config</code> must be writable by the web server (during the install so configs can be saved).
 	* <code>tmp</code> must be writable by the web server for logging, caching, etc.
 * If configuration settings are changed by hand, make sure to clear cache files in <code>tmp/cache</code>, otherwise you may get an *Internal Server Error*.
+
+
+## DEPENDENCIES
+
+### The following third-party packages and libraries are bundled with this application:
+
+* CakePHP. _PHP MVC Web Framework. MIT license._
+* Phpseclib. _PHP Secure Communications Library. MIT license._
+* LightOpenID. _PHP library for easy openid authentication. MIT license._
+* Less. _CSS Framework. MIT license._
+* Twitter Bootstrap. _HTML, CSS, and JS components. Apache license 2.0_
+* JQuery. _JS DOM utility library. GPL/MIT license._
+* VideoJS. _HTML5/flash media player. LGPLv3 license._
+* Backbone.js. _JS MVC framework. GPL/MIT license._
+* Underscore.js _JS functional programming utilities. MIT license._
+* Moment.js: _JS date library. MIT license._
