@@ -31542,9 +31542,13 @@ window.VideoJS = window._V_ = VideoJS;
 
 	var RangeSliderHandle = Component.extend({
 		handleValue: null, // position of handle on bar, number between 0 and 1
+		locked: false, // true if the handle position is locked, false otherwise 
 		init: function(player, options) {
 			this._super(player, options);
 			this.on('mousedown', this.onMouseDown);
+
+			player.on('rangesliderlock', this.proxy(this.onLock));
+			player.on('rangesliderunlock', this.proxy(this.onUnlock));
 		},
 		createElement: function(){
 			var handle = this._super("div", {
@@ -31560,18 +31564,28 @@ window.VideoJS = window._V_ = VideoJS;
 			
 			return handle;
 		},
+		onLock: function(event) {
+			this.locked = true;
+		},
+		onUnlock: function(event) {
+			this.locked = false;
+		},
 		onMouseDown: function(event) {
 			event.preventDefault();
 			_V_.blockTextSelection();
 
-			_V_.on(document, "mousemove", this.proxy(this.onMouseMove));
-			_V_.on(document, "mouseup", this.proxy(this.onMouseUp));
+			if(!this.locked) {
+				_V_.on(document, "mousemove", this.proxy(this.onMouseMove));
+				_V_.on(document, "mouseup", this.proxy(this.onMouseUp));
+			}
 		},
 		onMouseUp: function(event) {
 			_V_.off(document, "mousemove", this.onMouseMove, false);
 			_V_.off(document, "mouseup", this.onMouseUp, false);
 			
-			this.player.trigger('rangesliderchange');
+			if(!this.locked) {
+				this.player.trigger('rangesliderchange');
+			}
 		},
 		onMouseMove: function(event) {
 			var left = this.calculateDistance(event);
@@ -31579,30 +31593,41 @@ window.VideoJS = window._V_ = VideoJS;
 		},
 		setPosition: function(left) {
 			var handle = this;
+
+			// Position shouldn't change when handle is locked
+			if(handle.locked) {
+				return false;
+			}
+
+			// Check for invalid position
 			if(isNaN(left)) {
 				this.player.trigger('rangeslidererror');
-			} else {
-				// Move the handle and bar from the left based on the current distance
-				if(this.updateBar(handle, left)) {
-					this.handleValue = left;
-					this.el.style.left = _V_.round(this.handleValue * 100, 2) + '%';
-				} else {
-					this.player.trigger('rangeslidererror');
-				}
+				return false;
 			}
+
+			// Move the handle and bar from the left based on the current distance
+			if(this.updateBar(handle, left)) {
+				this.handleValue = left;
+				this.el.style.left = _V_.round(this.handleValue * 100, 2) + '%';
+			} else {
+				this.player.trigger('rangeslidererror');
+				return false;
+			}
+
+			return true;
 		},
 		calculateDistance: function(event){
 			var boxX = this.getBoxX();
 			var boxW = this.getBoxWidth();
 			var handleW = this.getWidth();
 
-		 // Adjusted X and Width, so handle doesn't go outside the bar
+			// Adjusted X and Width, so handle doesn't go outside the bar
 			boxX = boxX + (handleW / 2);
 			boxW = boxW - handleW;
 
-		// Percent that the click is through the adjusted area
+			// Percent that the click is through the adjusted area
 			return Math.max(0, Math.min(1, (event.pageX - boxX) / boxW));
-	  },
+		},
 		getBoxWidth: function() {
 			return this.box.offsetWidth;
 		},
@@ -31709,9 +31734,15 @@ window.VideoJS = window._V_ = VideoJS;
 	//-- Plugin
 	var RangeSliderPlugin = function(player, options) {
 		this.player = player; // player component
-		this.options = options; // plugin options
 		this.components = {}; // holds any custom components we add to the player
-		
+
+		options = options || {}; // plugin options
+		if(!options.hasOwnProperty('locked')) {
+			options.locked = false; // lock slider handles
+		}
+
+		this.options = options;
+
 		this.init(player, options);
 	};
 	
@@ -31723,7 +31754,11 @@ window.VideoJS = window._V_ = VideoJS;
 			// augment player with plugin components
 			for(i = 0, len = components.length; i < len; i++) {
 				name = components[i];
-				this.components[name] = player.controlBar.addComponent(name);
+				this.components[name] = player.controlBar.addComponent(name, options);
+			}
+
+			if(this.options.locked) {
+				this.lock();
 			}
 		},
 		hide: function() {
@@ -31735,6 +31770,14 @@ window.VideoJS = window._V_ = VideoJS;
 			_V_.eachProp(this.components, function(name, component) {
 				component.show();
 			});
+		},
+		lock: function() {
+			this.options.locked = true;
+			this.player.trigger('rangesliderlock');
+		},
+		unlock: function() {
+			this.options.locked = false;
+			this.player.trigger('rangesliderunlock');
 		},
 		currentStatus: function() {
 			var left = this._left().getValue();
@@ -31748,9 +31791,14 @@ window.VideoJS = window._V_ = VideoJS;
 		},
 		setValue: function(index, value, suppressEvent) {
 			var val = this._percent(value);
-			if(index === 0 || index === 1) {
+			var isValidIndex = (index === 0 || index === 1);
+			var isChangeable = !this.locked;
+
+			if(isChangeable && isValidIndex) {
 				this[index === 0 ? '_left' : '_right']().setPosition(val);
-				this.player.trigger('rangesliderchange');
+				if(!suppressEvent) {
+					this.player.trigger('rangesliderchange');
+				}
 			}
 		},
 		_percent: function(value) {

@@ -1483,8 +1483,10 @@ Catool = (function() {
 			'volumechange',
 			'error',
 			'fullscreenchange',
-			'rangesliderchange', // custom vjs plugin event
-			'rangeslidererror' // custom vjs plugin event
+			'rangesliderchange', // slider plugin handle changed
+			'rangeslidererror', // slider plugin error
+			'rangesliderlock', // slider plugin locked
+			'rangesliderunlock' // slider plugin unlocked
 		],
 
 		/**
@@ -1561,6 +1563,10 @@ Catool = (function() {
 				this.initSegmentHandler(start, end);
 				this.player.currentTime(start);
 				this.player.play();
+
+				this.showRangeSlider(); 
+				this.setRangeSliderValues(start, end);
+				this.lockRangeSlider();
 			}
 		},
 
@@ -1585,6 +1591,8 @@ Catool = (function() {
 		clearSegmentHandler: function() {
 			if(this.segmentHandler) {
 				this.player.removeEvent('timeupdate', this.segmentHandler);
+				this.hideRangeSlider();
+				this.unlockRangeSlider();
 				this.segmentHandler = null;
 			}
 		},
@@ -1599,8 +1607,21 @@ Catool = (function() {
 		makeSegmentHandler: function(start, end) {
 			var lower_bound = Math.floor(start);
 			var upper_bound = Math.ceil(end) + 1; // extra padding for pause window
+			var last_time = null;
 
-			return _.bind(function(e) {
+			// only execute callback once we know the current time has changed
+			var doAfterTimeChanges = _.bind(function(callback) {
+				return _.bind(function(e) {
+					var now = this.player.currentTime();
+					if(last_time === null || last_time === now) {
+						last_time = now;
+					} else {
+						callback.apply(this, arguments);
+					}
+				}, this);
+			}, this);
+
+			var callback = function(e) {
 				var now = this.player.currentTime();
 				var is_pause_window = (now >= end && now <= upper_bound);
 
@@ -1613,7 +1634,9 @@ Catool = (function() {
 					this.clearSegmentHandler();	
 				}
 
-			}, this);
+			};
+
+			return doAfterTimeChanges(callback);
 		},
 
 		/**
@@ -1780,47 +1803,96 @@ Catool = (function() {
 		},
 
 		/**
-		 * Add the range slider UI to the video player.
-		 * Used for annotating IN/OUT points.
+		 * Gets the range slider plugin and executes a callback.
 		 *
-		 * @method showRangeSlider
+		 * @method rangeSliderDo
 		 */
-		showRangeSlider: function() {
+		rangeSliderDo: function(callback) {
 			var plugin;
 			if(this.player) {
 				plugin = this.player.getPlugin('rangeslider');
-				plugin && plugin.show();
+				if(plugin) {
+					if(typeof callback === 'function') {
+						return callback.call(this, plugin);
+					} else if(typeof callback === 'string') {
+						return plugin[callback].call(plugin);
+					}
+				}
 			}
+			return false;
 		},
 
 		/**
-		 * Hides the range slider UI to the video player.
-		 * Used for annotating IN/OUT points.
+		 * Display the range slider UI on the video player.
+		 * For annotating IN/OUT points.
 		 *
 		 * @method showRangeSlider
 		 */
+		showRangeSlider: function(locked) {
+			this.rangeSliderDo('show');
+		},
+
+		/**
+		 * Hides the range slider. 
+		 *
+		 * @method hideRangeSlider
+		 */
 		hideRangeSlider: function() {
-			var plugin;
-			if(this.player) {
-				plugin = this.player.getPlugin('rangeslider');
-				plugin && plugin.hide();
-			}
+			this.rangeSliderDo('hide');
+		},
+
+		/**
+		 * Lock range slider.
+		 *
+		 * @method lockRangeSlider
+		 */
+		lockRangeSlider: function() {
+			this.rangeSliderDo('lock');
+		},
+
+		/**
+		 * Unlock range slider.
+		 *
+		 * @method unlockRangeSlider
+		 */
+		unlockRangeSlider: function() {
+			this.rangeSliderDo('unlock');
 		},
 
 		/**
 		 * Sync the range slider to the current time.
 		 *
-		 * @method showRangeSlider
+		 * @method syncRangeSlider
 		 */
 		syncRangeSlider: function() {
-			var plugin, time;
-			if(this.player) {
-				plugin = this.player.getPlugin('rangeslider');
-				if(plugin) {
-					plugin.setValue(1, this.player.duration());
-					plugin.setValue(0, this.player.currentTime());
-				}
-			}
+			this.rangeSliderDo(function(plugin) {
+				plugin.setValue(1, this.player.duration());
+				plugin.setValue(0, this.player.currentTime());
+			});
+		},
+
+		/**
+		 * Reset the range slider to span the width of the seek bar. 
+		 *
+		 * @method resetRangeSlider
+		 */
+		resetRangeSlider: function() {
+			this.rangeSliderDo(function(plugin) {
+				plugin.setValue(1, this.player.duration());
+				plugin.setValue(0, 0);
+			});
+		},
+
+		/**
+		 * Set the range slider handle values.
+		 *
+		 * @method setRangeSliderValues
+		 */
+		setRangeSliderValues: function(left, right) {
+			this.rangeSliderDo(function(plugin) {
+				plugin.setValue(1, right, true);
+				plugin.setValue(0, left, true);
+			});
 		}
 	});
 	
@@ -3134,7 +3206,6 @@ e* A class for displaying a list of annotations and their
 						$focus = this.$(selector).addClass('highlight');
 						if($focus.length === 1) {
 							$focus.get(0).scrollIntoView();
-							console.log($focus.get(0));
 							$focus.on('mouseover', function() {
 								$focus.removeClass('highlight').addClass('unhighlight');
 							});
@@ -3360,6 +3431,7 @@ e* A class for displaying a list of annotations and their
 
 			// activate/deactive player UI controls depending on the tab 
 			$('#new_comment_tab').on('click', function() {
+				self.videoPlayerView.clearSegmentHandler();
 				self.videoPlayerView.showRangeSlider();
 				self.videoPlayerView.syncRangeSlider();
 			});

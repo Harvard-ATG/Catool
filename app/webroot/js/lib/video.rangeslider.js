@@ -297,6 +297,10 @@
 				name = components[i];
 				this.components[name] = player.controlBar.addComponent(name, options);
 			}
+
+			if(this.options.locked) {
+				this.lock();
+			}
 		},
 		hide: function() {
 			_V_.eachProp(this.components, function(name, component) {
@@ -333,7 +337,9 @@
 
 			if(isChangeable && isValidIndex) {
 				this[index === 0 ? '_left' : '_right']().setPosition(val);
-				this.player.trigger('rangesliderchange');
+				if(!suppressEvent) {
+					this.player.trigger('rangesliderchange');
+				}
 			}
 		},
 		_percent: function(value) {
