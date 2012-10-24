@@ -138,18 +138,12 @@ class AppSchema extends CakeSchema {
 		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1), 'name_UNIQUE' => array('column' => 'name', 'unique' => 1)),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
-	public $note_tags = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'primary'),
-		'note_id' => array('type' => 'integer', 'null' => true, 'default' => NULL, 'key' => 'index'),
-		'tag_id' => array('type' => 'integer', 'null' => true, 'default' => NULL, 'key' => 'index'),
-		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1), 'note_tags_note_fk' => array('column' => 'note_id', 'unique' => 0), 'note_tags_tag_fk' => array('column' => 'tag_id', 'unique' => 0)),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
-	);
 	public $notes = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'primary'),
 		'type' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 25, 'key' => 'index', 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'user_id' => array('type' => 'integer', 'null' => true, 'default' => NULL, 'key' => 'index'),
 		'target_id' => array('type' => 'integer', 'null' => true, 'default' => NULL, 'key' => 'index'),
+		'tag_collection_id' => array('type' => 'integer', 'null' => true, 'default' => NULL, 'key' => 'index'),
 		'parent_id' => array('type' => 'integer', 'null' => true, 'default' => NULL, 'key' => 'index'),
 		'lft' => array('type' => 'integer', 'null' => true, 'default' => NULL),
 		'rght' => array('type' => 'integer', 'null' => true, 'default' => NULL),
@@ -159,7 +153,7 @@ class AppSchema extends CakeSchema {
 		'modified' => array('type' => 'datetime', 'null' => true, 'default' => NULL),
 		'deleted' => array('type' => 'integer', 'null' => false, 'default' => 0, 'length' => 1),
 		'hidden' => array('type' => 'integer', 'null' => false, 'default' => 0, 'length' => 1),
-		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1), 'note_target_fk' => array('column' => 'target_id', 'unique' => 0), 'note_user_fk' => array('column' => 'user_id', 'unique' => 0), 'note_parent_fk' => array('column' => 'parent_id', 'unique' => 0), 'note_type_fk' => array('column' => 'type', 'unique' => 0)),
+		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1), 'note_target_fk' => array('column' => 'target_id', 'unique' => 0), 'note_user_fk' => array('column' => 'user_id', 'unique' => 0), 'note_tag_collection_fk' => array('column' => 'tag_collection_id', 'unique' => 0), 'note_parent_fk' => array('column' => 'parent_id', 'unique' => 0), 'note_type_fk' => array('column' => 'type', 'unique' => 0)),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
 	public $resources = array(
@@ -188,10 +182,25 @@ class AppSchema extends CakeSchema {
 	public $tags = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'primary'),
 		'name' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
-		'slug' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'created' => array('type' => 'datetime', 'null' => true, 'default' => NULL),
-		'count' => array('type' => 'integer', 'null' => true, 'default' => NULL),
 		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1)),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
+	);
+	public $tag_collections = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'primary'),
+		'instance_count' => array('type' => 'integer', 'null' => false, 'default' => 0),
+		'tag_count' => array('type' => 'integer', 'null' => false, 'default' => 0),
+		'hash' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 20, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+		'created' => array('type' => 'datetime', 'null' => true, 'default' => NULL),
+		'serialized' => array('type' => 'text', 'null' => true, 'default' => NULL, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1), 'tag_collections_hash_uk' => array('column' => 'hash', 'unique' => 1)),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
+	);
+	public $tag_collections_tags = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'primary'),
+		'tag_collection_id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'index'),
+		'tag_id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'index'),
+		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1), 'tag_collections_tags_fk1' => array('column' => 'tag_collection_id', 'unique' => 0),'tag_collections_tags_fk2' => array('column' => 'tag_id', 'unique' => 0)),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
 	public $targets = array(
@@ -200,7 +209,7 @@ class AppSchema extends CakeSchema {
 		'collection_id' => array('type' => 'integer', 'null' => true, 'default' => NULL, 'key' => 'index'),
 		'resource_id' => array('type' => 'integer', 'null' => true, 'default' => NULL, 'key' => 'index'),
 		'target_setting_id' => array('type' => 'integer', 'null' => true, 'default' => NULL, 'key' => 'index'),
-		'sort_order' => array('type' => 'integer', 'null' => true, 'default' => NULL),
+		'sort_order' => array('type' => 'integer', 'null' => false, 'default' => 0),
 		'note_count' => array('type' => 'integer', 'null' => false, 'default' => 0),
 		'display_name' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 500, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'display_description' => array('type' => 'text', 'null' => true, 'default' => NULL, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
