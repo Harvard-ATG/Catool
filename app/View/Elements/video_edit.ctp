@@ -75,7 +75,7 @@
 		<legend><?php echo __('Settings') ?></legend>
 		
 		<div class="control-group">
-			<label class="control-label" for="visibility"><?php echo __('Visibility'); ?></label>
+			<label class="control-label"><?php echo __('Visibility'); ?></label>
 			<div class="controls">
 				<label class="radio inline">
 					<input type="radio" name="data[Video][hidden]" value="0" <?php echo @$video['Video']['hidden'] ? '' : 'checked="checked"'; ?>>
@@ -89,7 +89,7 @@
 		</div>
 
 		<div class="control-group">
-			<label class="control-label" for="visibility"><?php echo __('Annotations'); ?></label>
+			<label class="control-label"><?php echo __('Annotations'); ?></label>
 			<div class="controls">
 				<label class="checkbox">
 					<input type="hidden" name="data[TargetSetting][lock_annotations]" value="1">
@@ -115,7 +115,7 @@
 				</label>
 			</div>
 		</div>
-	
+
 		<div class="form-actions">
 			<?php if(!empty($video['Video']['id'])): ?>
 				<span class="pull-right">

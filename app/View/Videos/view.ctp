@@ -152,6 +152,13 @@ $infoElements = array(
 								<textarea class="input-xlarge" rows="3" name="body"></textarea>
 							</div>
 						</div>
+						<div class="control-group">
+							<label class="control-label">Tags</label>
+							<div class="controls">
+								<input type="text" class="input-xlarge" name="tags" />
+								<p class="help-block"><small>Comma separated list of tags (max: 5)</small></p>
+							</div>
+						</div>
 						<div class="form-actions">
 							<button type="submit" class="btn btn-primary">Save Comment</button>
 							<button class="btn cancel">Cancel</button>

@@ -342,6 +342,9 @@
 			var $body = this.$('textarea[name=body]');
 			var $start_time = this.$('input[name=start_time]');
 			var $end_time = this.$('input[name=end_time]');
+			var $tags = this.$('input[name=tags]');
+
+			$tags.tagit(); // tag-it jquery plugin
 
 			this.video = options.video;
 			this.player = options.player;
@@ -349,7 +352,8 @@
 			this.inputFields = {
 				Note : {
 					title: $title,
-					body: $body
+					body: $body,
+					tags: $tags
 				},
 				Segment: {
 					start_time: $start_time,
