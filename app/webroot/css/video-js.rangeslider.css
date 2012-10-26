@@ -69,7 +69,12 @@
 	margin-left: -1em;	
 	opacity: 0.8;
 }
-
+.vjs-default-skin div.vjs-rangeslider-handle.active > div.vjs-rangeslider-handle-arrow {
+	border-top-color: #5F5FB3;
+}
+.vjs-default-skin div.vjs-rangeslider-handle.active > div.vjs-rangeslider-handle-line {
+	background-color: #5F5FB3;
+}
 .vjs-default-skin div.vjs-rangeslider-bar {
 	position: absolute;
 	height: 1.0em;

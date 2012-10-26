@@ -46794,11 +46794,13 @@ window.VideoJS = window._V_ = VideoJS;
 			if(!this.locked) {
 				_V_.on(document, "mousemove", this.proxy(this.onMouseMove));
 				_V_.on(document, "mouseup", this.proxy(this.onMouseUp));
+				this.addClass('active');
 			}
 		},
 		onMouseUp: function(event) {
 			_V_.off(document, "mousemove", this.onMouseMove, false);
 			_V_.off(document, "mouseup", this.onMouseUp, false);
+			this.removeClass('active');
 			
 			if(!this.locked) {
 				this.player.trigger('rangesliderchange');
