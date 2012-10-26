@@ -610,6 +610,15 @@ Catool = (function() {
 		urlRoot: url('/notes'),
 
 		/**
+		 * Initialize the note model.
+		 */
+		initialize: function() {
+			if(!this.get('tags')) {
+				this.set({ tags: [] });
+			}
+		},
+
+		/**
 		 * Parse the server response.
 		 *
 		 * Overridden to parse the CakePHP response and associate 
@@ -679,6 +688,13 @@ Catool = (function() {
 				return this.collection.getCommentsFor(this);
 			}
 			return null;
+		},
+
+		/**
+		 * Checks if the model has any tags.
+		 */
+		hasTags: function() {
+			return this.get('tags').length > 0;	
 		}
 	});
 	App.models.Note = Note;
@@ -2341,6 +2357,7 @@ Catool = (function() {
 				'</div>',
 				'<div class="note-byline">On <%= created_date %> <%= author %>:</div>',
 				'<div class="note-text"><%= body %></div>',
+				'<div class="note-tags hide"><b>Tags:</b> <%= tags %></div>',
 				'<ul class="note-actions">',
 					'<li><a class="js-btn-reply <%= replyCls %>" href="#">Comment</a></li>',
 					'<li><a class="js-btn-comments hide" href="#">Show Comments (<span class="note-num-comments"><%= numComments %></span>)</a></li>',
@@ -2404,6 +2421,9 @@ Catool = (function() {
 			if(this.model.get('highlightAdmin')) {
 				this.$el.addClass('role-admin');
 			}
+			if(this.model.hasTags()) { 
+				this.$('.note-tags').removeClass('hide');
+			}
 			this.$('.note-comments').before(commentForm.render().el);
 			this.renderComments();
 			this.commentForm = commentForm;
@@ -2464,6 +2484,7 @@ Catool = (function() {
 			data.body = nl2br(data.body);
 			data.author = this.model.get('user').get('fullname');
 			data.created_date = 'n/a';
+			data.tags = data.tags.length > 0 ? data.tags.join(', ') : '';
 			if(data.created_unix) {
 				data.created_date = moment.unix(data.created_unix).format('MMMM Do YYYY, h:mm a');
 			}

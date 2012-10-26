@@ -85,6 +85,15 @@
 		urlRoot: url('/notes'),
 
 		/**
+		 * Initialize the note model.
+		 */
+		initialize: function() {
+			if(!this.get('tags')) {
+				this.set({ tags: [] });
+			}
+		},
+
+		/**
 		 * Parse the server response.
 		 *
 		 * Overridden to parse the CakePHP response and associate 
@@ -154,6 +163,13 @@
 				return this.collection.getCommentsFor(this);
 			}
 			return null;
+		},
+
+		/**
+		 * Checks if the model has any tags.
+		 */
+		hasTags: function() {
+			return this.get('tags').length > 0;	
 		}
 	});
 	App.models.Note = Note;
