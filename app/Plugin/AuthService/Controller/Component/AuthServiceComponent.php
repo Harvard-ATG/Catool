@@ -3,6 +3,15 @@
 // Use of this source code is governed by the LICENSE file found in the root of this project.
 ?>
 <?php
+
+class BadAuthServiceLoginType extends CakeException {
+	protected $_messageTemplate = 'Invalid login type %s.'; 
+
+	public function __construct($message, $code = 500) {
+		parent::__construct($message, $code);
+	}
+}
+
 class AuthServiceComponent extends Component {
 	
 	/**
@@ -10,21 +19,23 @@ class AuthServiceComponent extends Component {
 	 * 
 	 * @var array
 	 */
-	public static $authServices = array('Demo', 'Openid', 'Isites');
+	public static $validLoginTypes = array('Demo', 'Openid');
 	
 	/**
 	 * Default authentication service if none is configured.
 	 * 
 	 * @var string
 	 */
-	public static $defaultAuthService = 'Demo';
+	public static $defaultLoginType = 'Demo';
 	
 	/**
-	 * Specifies the login action.
+	 * Specifies the login method to use.
+	 * Determined at run time. Uses the value specified on the configuration, 
+	 * otherwise the default.
 	 *
 	 * @var string
 	 */
-	public $loginType = 'null';
+	public $loginType = null;
 	
 	/**
 	 * The initialize method is called before the controller’s beforeFilter method.
@@ -33,12 +44,19 @@ class AuthServiceComponent extends Component {
 	 * @return void
 	 */
 	public function initialize($controller) {
-		$loginType = self::$defaultAuthService;
-		if(isset($this->loginType) && in_array($this->loginType, self::$authServices)) {
+		if(!isset($this->loginType)) {
+			$configLoginType = Configure::read('App.loginType');
+			$this->loginType = isset($configLoginType) ? $configLoginType : self::$defaultLoginType;
+		}
+
+		if(in_array($this->loginType, self::$validLoginTypes)) {
 			$loginType = $this->loginType;
+		} else {
+			throw new BadAuthServiceLoginType(array('loginType' => $this->loginType));
 		}
 
 		$controller->loginRedirect = Router::url('/'); // shouldnt require auth
+
 		$this->{'initAuth'.$loginType}($controller);
 	}
 	
@@ -69,17 +87,5 @@ class AuthServiceComponent extends Component {
 			'action' => 'login'
 		);
 	}
-	
-	/**
-	 * Initializes authentication for demo.
-	 * 
-	 * @param $controller Controller
-	 * @return void
-	 */
-	public function initAuthIsites($controller) {
-		$component = $controller->Components->load('AuthService.IsitesAuthService');
-		$component->initialize(&$controller);
-		$component->login();
-	}
 }
-	
+

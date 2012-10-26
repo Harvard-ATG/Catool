@@ -22,13 +22,7 @@
 class AllTest extends CakeTestSuite {
 
 	/**
-	 * test suite getting everything including 
-	 *
-	 * app/Test/Case/*
-	 * 
-	 * app/Plugin/*
-	 * 
-	 * app/Vendor/Isitestool/Tests/*
+	 * Test suite to run everything
 	 */
     public static function suite() {
         $suite = new CakeTestSuite('All test cases');
@@ -38,9 +32,6 @@ class AllTest extends CakeTestSuite {
 		foreach(array('AuthService') as $plugin) {
 			$suite->addTestDirectoryRecursive(APP . 'Plugin' . DS . $plugin . DS . 'Test' . DS . 'Case');
 		}
-		
-		// test vendor libraries that are part of the app
-		$suite->addTestDirectory(APP . 'Vendor' . DS . 'Isitestool' . DS . 'Tests');
 
         return $suite;
     }

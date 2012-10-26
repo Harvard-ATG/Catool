@@ -35,6 +35,19 @@
 	Configure::write('debug', 0);
 
 /**
+ * Configures the default authentication method or type.
+ * Defaults to `Demo` if not set.
+ *
+ * Options:
+ * - `Demo` - enter a user id to login (user must already exist)
+ * - `Openid` - use google's openid service to login
+ *
+ * Uncomment to change the default.
+ */
+
+//	Configure::write('App.loginType', 'Demo');
+
+/**
  * Configure the Error handler used to handle errors for your application.  By default
  * ErrorHandler::handleError() is used.  It will display errors using Debugger, when debug > 0
  * and log errors with CakeLog when debug = 0.

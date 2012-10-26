@@ -41,7 +41,7 @@ class AppController extends Controller {
 	* helpers
 	* @var array
 	*/
-	public $helpers = array('Form', 'Text', 'Session', 'NavRenderer', 'Js');
+	public $helpers = array('Html', 'Form', 'Text', 'Session', 'NavRenderer', 'Js');
 	
 	/**
 	* constructor
@@ -50,22 +50,8 @@ class AppController extends Controller {
 	*/
 	function __construct($request = null, $response = null) {
 		parent::__construct($request, $response);
-		
-		$authService = $this->Components->load('AuthService.AuthService');
-		$helpers = array();
-		if(Configure::read('App.Isites')) {
-			$authService->loginType = 'Isites';
-			$helpers = array(
-				'Html' => array('className' => 'IsitesHtml')
-			);
-		} else {
-			$authService->loginType = 'Demo';
-			$helpers = array(
-				'Html' => array('className' => 'Html')
-			);
-		}
-		
-		$this->helpers = array_merge($this->helpers, $helpers);
+
+		$this->Components->load('AuthService.AuthService'); 
 	}
 
 	/**
