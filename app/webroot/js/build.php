@@ -12,7 +12,7 @@
  **/
 
 return array(
-	// 3rd party libraries
+	// package of 3rd party libraries and extensions/plugins
 	'lib' => array(
 		'lib/jquery.js',
 		'lib/jquery.dataTables.js',
@@ -21,9 +21,9 @@ return array(
 		'lib/backbone.js',
 		'lib/moment.js',
 		'lib/video.js',
-		'lib/video.rangeslider.js'
+		'app/lib/video.rangeslider.js'
 	),
-	// application libraries
+	// package of application
 	'app' => array(
 		'app/core.js',
 		'app/utils.js',

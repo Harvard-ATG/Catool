@@ -31456,7 +31456,7 @@ window.VideoJS = window._V_ = VideoJS;
 
 // End self-executing function
 })(window);
-// @file lib/video.rangeslider.js
+// @file app/lib/video.rangeslider.js
 // Copyright (c) 2012 The President and Fellows of Harvard College
 // Use of this source code is governed by the LICENSE file found in the root of this project.
 

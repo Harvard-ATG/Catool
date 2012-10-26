@@ -60,7 +60,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
                 'lib/backbone',
                 'lib/moment',
                 'lib/video',
-                'lib/video.rangeslider'
+                'app/lib/video.rangeslider'
             ));
 
             // custom app libraries
@@ -108,17 +108,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
         <?php echo $this->Session->flash('flash',  array('params' => array('class' => 'alert'))); ?>
         <?php echo $this->fetch('content'); ?>
 
-        <footer>
-            <p>
-            <?php 
-            echo $this->Html->link($this->Html->image('cake.power.gif',
-                array('alt' => $cakeDescription, 'border' => '0')),
-                'http://www.cakephp.org/',
-                array('target' => '_blank', 'escape' => false)
-            );
-            ?>
-            </p>
-        </footer>
+        <footer></footer>
 
         <div class="row">
             <div class="span12">
