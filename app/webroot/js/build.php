@@ -15,6 +15,8 @@ return array(
 	// package of 3rd party libraries and extensions/plugins
 	'lib' => array(
 		'lib/jquery.js',
+		'lib/jquery-ui-1.9.1.custom.js',
+		'lib/jquery.tagit.js',
 		'lib/jquery.dataTables.js',
 		'lib/bootstrap.js',
 		'lib/underscore.js',
