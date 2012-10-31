@@ -16,7 +16,7 @@ class TagCollectionTestCase extends CakeTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.tag', 'app.tag_collection');
+	public $fixtures = array('app.tag_collection');
 
 /**
  * setUp method
@@ -35,7 +35,6 @@ class TagCollectionTestCase extends CakeTestCase {
  */
 	public function tearDown() {
 		unset($this->TagCollection);
-
 		parent::tearDown();
 	}
 
