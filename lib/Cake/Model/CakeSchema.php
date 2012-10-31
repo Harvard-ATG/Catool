@@ -156,7 +156,9 @@ class CakeSchema extends Object {
  */
 	public function load($options = array()) {
 		if (is_string($options)) {
-			$options = array('path' => $options);
+			$options = array_merge(get_object_vars($this), array('path' => $options));
+		} else {
+			$options = array_merge(get_object_vars($this), $options);
 		}
 
 		$this->build($options);
