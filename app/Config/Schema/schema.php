@@ -27,20 +27,15 @@ class AppSchema extends CakeSchema {
 				++$totalTables;
 			}
 		}
-		
-		// initialize models and components
-		$aro = ClassRegistry::init('Aro');
-		$aco = ClassRegistry::init('Aco');
-		$user = ClassRegistry::init('User');
-		$role = ClassRegistry::init('Role');
-		$acl = new DbAcl(); // component
-		
+
 		// handle create table events
 		if(isset($event['create'])) {
 			++$createdTables;
 			switch($event['create']) {
 				case 'roles':
 					// Create hierarchical roles
+					$role = ClassRegistry::init('Role');
+					$role->setDataSource($this->connection);
 					$parent_id = null;
 					$role_names = $role->getRoleNames();
 					foreach($role_names as $role_name) {
@@ -55,16 +50,22 @@ class AppSchema extends CakeSchema {
 					break;
 				case 'users':
 					// Create default user
+					$user = ClassRegistry::init('User');
+					$user->setDataSource($this->connection);
 					$user->create();
 					$user->save(array('name' => 'Admin'));
 					break;
 				case 'aros':
 					// Create ARO root node for users and collection memberships
+					$aro = ClassRegistry::init('Aro');
+					$aro->setDataSource($this->connection);
 					$aro->create();
 					$aro->save(array('alias' => 'users'));
 					break;
 				case 'acos':
 					// Create ACO root node for the role hierarchy
+					$aco = ClassRegistry::init('Aco');
+					$aco->setDataSource($this->connection);
 					$aco->create();
 					$aco->save(array('alias' => 'role'));
 					break;
@@ -74,6 +75,7 @@ class AppSchema extends CakeSchema {
 
 			// need to wait until all tables are created
 			if($createdTables === $totalTables) {
+				$acl = new DbAcl(); // component
 				$acl->allow('users', 'role/super/admin/mod/user');
 				$acl->allow(array('model' => 'User', 'foreign_key' => 1), 'role/super');
 			}
