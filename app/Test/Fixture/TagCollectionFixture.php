@@ -31,8 +31,8 @@ class TagCollectionFixture extends CakeTestFixture {
 		array(
 			'id' => 2,
 			'instance_count' => 1,
-			'tag_count' => 3,
-			'hash' => '7a9b4cf81dbc165538c09738d6066a7b2aad31d0'
+			'tag_count' => 2,
+			'hash' => 'b1cb774dc4534166b52d4c22d6cd85c1dec54bdc'
 		),
 		array(
 			'id' => 3,

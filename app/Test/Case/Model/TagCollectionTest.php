@@ -69,6 +69,9 @@ class TagCollectionTestCase extends CakeTestCase {
 	 	 	 	 'data' => array('foo+bar', 'moe larry and curly', 'foo'), 
 	 	 	 	 'expected' => true),
 	 	 	 array(
+	 	 	 	 'data' => array('foo+bar', 'foo'), 
+	 	 	 	 'expected' => true),
+	 	 	 array(
 	 	 	 	 'data' => 'foo+bar, moe larry and curly, foo', 
 	 	 	 	 'expected' => true),
 	 	 	 array(
@@ -105,8 +108,71 @@ class TagCollectionTestCase extends CakeTestCase {
 	 	 	 }
 	 	 }
 	 }
-	
+
 /**
+ * testFindTagCollectionIdByTags
+ *
+ * @return void
+ */
+	public function testFindTagCollectionIdByTags() {
+		$tests = array(
+			array('data' => 'foo+bar, moe larry and curly, foo', 'expected' => 1),
+			array('data' => 'foo, foo+bar', 'expected' => 2),
+			array('data' => array('!@#$%^&*()_+-=[]{};:\'".?\/~', '<my local="var">you betcha</my>'), 'expected' => 3),
+			array('data' => '<my local="var">you betcha</my>', 'expected' => 4)
+		);
+		
+		foreach($tests as $test) {
+			$data = $test['data'];
+			$expected = $test['expected'];
+			$actual = $this->TagCollection->findTagCollectionIdByTags($data);
+			$this->assertEquals($expected, $actual, 'tag collection id matched');
+		}
+	}
+
+/**
+ * testCreateTagCollection
+ *
+ * @return void
+ */
+	public function testCreateTagCollection() {
+		// stub
+	}
+
+/**
+ * testSaveTags
+ *
+ * @return void
+ */
+	public function testSaveTags() {
+		// stub
+	}
+
+/**
+ * testUniqueTags
+ *
+ * @return void
+ */
+	public function testUniqueTags() {
+ 		$tests = array(
+ 			 array('data' => array(), 'expected' => array()),
+ 			array('data' => array('a'), 'expected' => array('a')),
+ 			array('data' => array('a','a'), 'expected' => array('a')),
+  			array('data' => array('a','a','b'), 'expected' => array('a','b')),
+ 			array('data' => array('a','a','b','b'), 'expected' => array('a','b')),
+ 			array('data' => array('b','a','b','a'), 'expected' => array('b','a')),
+  			array('data' => array('a','b','a','b'), 'expected' => array('a','b')),
+  			array('data' => array('b','b','b','a'), 'expected' => array('b', 'a'))
+ 		);
+
+ 		foreach($tests as $test) {
+ 			$actual = $this->TagCollection->uniqueTags($test['data']);
+ 			$expected = $test['expected'];
+ 			$this->assertEquals($expected, $actual, 'unique tags');
+ 		}
+	}
+
+ /**
  * testParseTags
  *
  * @return void

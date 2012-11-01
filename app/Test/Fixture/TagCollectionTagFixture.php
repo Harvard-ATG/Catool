@@ -49,21 +49,16 @@ class TagCollectionTagFixture extends CakeTestFixture {
 		),
 		array(
 			'id' => 6,
-			'tag_collection_id' => 2,
-			'tag_id' => 3
-		),
-		array(
-			'id' => 7,
 			'tag_collection_id' => 3,
 			'tag_id' => 4
 		),
 		array(
-			'id' => 8,
+			'id' => 7,
 			'tag_collection_id' => 3,
 			'tag_id' => 5
 		),
 		array(
-			'id' => 9,
+			'id' => 8,
 			'tag_collection_id' => 4,
 			'tag_id' => 5
 		)
