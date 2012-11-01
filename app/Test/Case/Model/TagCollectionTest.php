@@ -116,10 +116,18 @@ class TagCollectionTestCase extends CakeTestCase {
  */
 	public function testFindTagCollectionIdByTags() {
 		$tests = array(
-			array('data' => 'foo+bar, moe larry and curly, foo', 'expected' => 1),
-			array('data' => 'foo, foo+bar', 'expected' => 2),
-			array('data' => array('!@#$%^&*()_+-=[]{};:\'".?\/~', '<my local="var">you betcha</my>'), 'expected' => 3),
-			array('data' => '<my local="var">you betcha</my>', 'expected' => 4)
+			array(
+				'data' => 'foo+bar, moe larry and curly, foo', 
+				'expected' => 1),
+			array(
+				'data' => 'foo, foo+bar', 
+				'expected' => 2),
+			array(
+				'data' => array('!@#$%^&*()_+-=[]{};:\'".?\/~', '<my local="var">you betcha</my>'), 
+				'expected' => 3),
+			array(
+				'data' => '<my local="var">you betcha</my>', 
+				'expected' => 4)
 		);
 		
 		foreach($tests as $test) {
@@ -145,7 +153,16 @@ class TagCollectionTestCase extends CakeTestCase {
  * @return void
  */
 	public function testSaveTags() {
-		// stub
+		$tag_collection_id = $this->TagCollection->saveTags(array('foo+bar', 'moe larry and curly', 'foo'));
+		$this->assertEquals(1, $tag_collection_id, 'saved tags that already have an existing collection');
+		
+		$all_tag_collection_ids = $this->TagCollection->find('list', array(
+			'field' => 'TagCollection.id',
+			'recursive' => -1
+		));
+		$tag_collection_id = $this->TagCollection->saveTags(array('TAG_DOES_NOT_EXIST', 'ANOTHER_TAG_DNE'));
+		
+		$this->assertTrue(!in_array($tag_collection_id, $all_tag_collection_ids), 'new tag collection created');
 	}
 
 /**
