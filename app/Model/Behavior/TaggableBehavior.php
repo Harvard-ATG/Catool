@@ -13,8 +13,8 @@ App::uses('AppModel', 'Model');
  * 'tag_collection_id'. The behavior will look for a 'tags' field in the model
  * which may either be an array of tag names or a comma-separated string of tags.
  *
- * During the save operation, the behavior will save/update/delete the tags and set
- * the 'tag_collection_id' foreign key to reference the appropriate tag collection 
+ * During the save operation, the behavior will validate and save/update/delete the tags.
+ * The 'tag_collection_id' foreign key will reference the appropriate tag collection 
  * containing those tags or NULL if it doesn't have any tags. During find operations, 
  * the behavior will automatically include an array of Tag models in the result set.
  *
