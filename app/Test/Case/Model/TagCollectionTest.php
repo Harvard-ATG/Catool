@@ -144,7 +144,21 @@ class TagCollectionTestCase extends CakeTestCase {
  * @return void
  */
 	public function testCreateTagCollection() {
-		// stub
+		$tags = array('humble', 'grumble', 'mumble', 'fumble', 'tumble');
+		
+		$all_tag_collection_ids = $this->TagCollection->findAllTagCollectionIds();
+		$created_id = $this->TagCollection->createTagCollection($tags);
+		$this->assertFalse(in_array($created_id, $all_tag_collection_ids), 'new tag collection created');
+
+		$found_id = $this->TagCollection->findTagCollectionIdByTags(array_reverse($tags));
+		$this->assertEquals($created_id, $found_id, 'found newly created collection by tags');
+		
+		$tag_collection = $this->TagCollection->loadTagCollection($created_id);
+		error_log(var_export($tag_collection,1));
+		$this->assertFalse(empty($tag_collection['TagCollection']['hash']), 'tag collection hash is non-empty');
+		$this->assertEquals($this->TagCollection->hashOf($tags), $tag_collection['TagCollection']['hash'], 'tag collection hash matches');
+		$this->assertEquals(count($tags), intval($tag_collection['TagCollection']['tag_count']));
+		$this->assertEquals(0, $tag_collection['TagCollection']['instance_count'], 'no instances are referencing this tag collection yet');
 	}
 
 /**
@@ -158,12 +172,9 @@ class TagCollectionTestCase extends CakeTestCase {
 		$this->assertEquals(1, $tag_collection_id, 'saved tags that already have an existing collection');
 		
 		// test a collection that doesn't already exist, should get a new collection ID
-		$all_tag_collection_ids = $this->TagCollection->find('list', array(
-			'field' => 'TagCollection.id',
-			'recursive' => -1
-		));
+		$all_tag_collection_ids = $this->TagCollection->findAllTagCollectionIds();
 		$tag_collection_id = $this->TagCollection->saveTags(array('TAG_DOES_NOT_EXIST', 'ANOTHER_TAG_DNE'));
-		$this->assertTrue(!in_array($tag_collection_id, $all_tag_collection_ids), 'new tag collection created');
+		$this->assertFalse(in_array($tag_collection_id, $all_tag_collection_ids), 'new tag collection created');
 	}
 
 /**

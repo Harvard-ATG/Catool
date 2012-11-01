@@ -256,4 +256,18 @@ class TagCollection extends AppModel {
 
 		return hash(self::HASH_ALGORITHM, $tag_str, FALSE);
 	}
+	
+/**
+ * Fetches a list of all the tag collection IDs
+ *
+ * @return array of ids
+ */
+	public function findAllTagCollectionIds() {
+		$list = $this->find('list', array(
+			'field' => array("{$this->alias}.id"),
+			'recursive' => -1
+		));
+
+		return array_values($list);
+	}
 }

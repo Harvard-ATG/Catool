@@ -16,5 +16,15 @@ class TagCollectionTag extends AppModel {
  *
  * @var array
  */
-	public $belongsTo = array('Tag', 'TagCollection');
+	public $belongsTo = array(
+		'Tag' => array(
+			'foreignKey' => 'tag_id',
+			'type' => 'INNER'
+		),
+		'TagCollection' => array(
+			'foreignKey' => 'tag_collection_id',
+			'type' => 'INNER',
+			'counterCache' => 'tag_count'
+		)
+	);
 }
