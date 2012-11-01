@@ -153,15 +153,16 @@ class TagCollectionTestCase extends CakeTestCase {
  * @return void
  */
 	public function testSaveTags() {
+		// test a collection that already exists, should return that tag collection ID
 		$tag_collection_id = $this->TagCollection->saveTags(array('foo+bar', 'moe larry and curly', 'foo'));
 		$this->assertEquals(1, $tag_collection_id, 'saved tags that already have an existing collection');
 		
+		// test a collection that doesn't already exist, should get a new collection ID
 		$all_tag_collection_ids = $this->TagCollection->find('list', array(
 			'field' => 'TagCollection.id',
 			'recursive' => -1
 		));
 		$tag_collection_id = $this->TagCollection->saveTags(array('TAG_DOES_NOT_EXIST', 'ANOTHER_TAG_DNE'));
-		
 		$this->assertTrue(!in_array($tag_collection_id, $all_tag_collection_ids), 'new tag collection created');
 	}
 
