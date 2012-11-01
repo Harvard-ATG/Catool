@@ -59,22 +59,50 @@ class TagCollectionTestCase extends CakeTestCase {
  */
 	 public function testExistsTagCollection() {
 	 	 $tests = array(
-	 	 	 array('data' => array('foo', 'foo+bar', 'moe larry and curly'), 'expected' => true),
-	 	 	 array('data' => array('moe larry and curly', 'foo', 'foo+bar'), 'expected' => true),
-	 	 	 array('data' => array('foo+bar', 'moe larry and curly', 'foo'), 'expected' => true),
-	 	 	 array('data' => 'foo+bar, moe larry and curly, foo', 'expected' => true),
-	 	 	 array('data' => 'foo+bar, moe larry and curly, FOO', 'expected' => false),
-	 	 	 array('data' => 'foo', 'expected' => false),
-	 	 	 array('data' => 'foo+bar', 'expected' => false),
-	 	 	 array('data' => 'moe larry and curly', 'expected' => false),
-	 	 	 array('data' => array('!@#$%^&*()_+-=[]{};:\'".?\/~', '<my local="var">you betcha</my>'), 'expected' => true),
-	 	 	 array('data' => array('<my local="var">you betcha</my>', '!@#$%^&*()_+-=[]{};:\'".?\/~'), 'expected' => true)
+	 	 	 array(
+	 	 	 	 'data' => array('foo', 'foo+bar', 'moe larry and curly'), 
+	 	 	 	 'expected' => true),
+	 	 	 array(
+	 	 	 	 'data' => array('moe larry and curly', 'foo', 'foo+bar'), 
+	 	 	 	 'expected' => true),
+	 	 	 array(
+	 	 	 	 'data' => array('foo+bar', 'moe larry and curly', 'foo'), 
+	 	 	 	 'expected' => true),
+	 	 	 array(
+	 	 	 	 'data' => 'foo+bar, moe larry and curly, foo', 
+	 	 	 	 'expected' => true),
+	 	 	 array(
+	 	 	 	 'data' => 'foo+bar, moe larry and curly, FOO', 
+	 	 	 	 'expected' => false),
+	 	 	 array(
+	 	 	 	 'data' => 'foo', 
+	 	 	 	 'expected' => false),
+	 	 	 array(
+	 	 	 	 'data' => 'foo+bar', 
+	 	 	 	 'expected' => false),
+	 	 	 array(
+	 	 	 	 'data' => 'moe larry and curly', 
+	 	 	 	 'expected' => false),
+	 	 	 array(
+	 	 	 	 'data' => array('!@#$%^&*()_+-=[]{};:\'".?\/~', '<my local="var">you betcha</my>'), 
+	 	 	 	 'expected' => true),
+	 	 	 array(
+	 	 	 	 'data' => array('<my local="var">you betcha</my>', '!@#$%^&*()_+-=[]{};:\'".?\/~'), 
+	 	 	 	 'expected' => true)
 	 	 );
 	 	 
 	 	 foreach($tests as $test) {
+	 	 	 $data = $test['data'];
+	 	 	 $data_dump = var_export($data,1);
 	 	 	 $expected = $test['expected'];
-	 	 	 $actual = $this->TagCollection->existsTagCollection($test['data']);
-	 	 	 $this->assertEquals($expected, $actual, 'tag collection exists check failed. Expected value='.var_export($expected,1).', data= '.var_export($test['data'],1));
+	 	 	 $actual = $this->TagCollection->existsTagCollection($data);
+	 	 	 if($expected === true) {
+	 	 	 	 $this->assertTrue($actual, "tag collection EXISTS for data: $data_dump");
+	 	 	 } else if($expected === false) {
+	 	 	 	 $this->assertFalse($actual, "tag collection DOES NOT EXIST for data: $data_dump");
+	 	 	 } else {
+	 	 	 	 $this->fail('invalid "expected" value for test (must be a boolean):'.var_export($expected,1));
+	 	 	 }
 	 	 }
 	 }
 	

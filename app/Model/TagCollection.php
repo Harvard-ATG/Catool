@@ -44,7 +44,7 @@ class TagCollection extends AppModel {
  	}
  	
  /**
-  * Tests if a tag collection exists for a string of tags.
+  * Tests if a tag collection exists for some combination of tags.
   *
   * @param mixed $tags comma-separated string or array of tags
   * @return boolean true if it exists, false otherwise
@@ -95,8 +95,8 @@ class TagCollection extends AppModel {
  	
  /**
   * Formats a list of tags as a string in canonical order.
-  *
-  * Used primarily in conjunction with the hash function.
+  * 
+  * Note: used in conjunction with the tag hashing method.
   *
   * @param array $tags a list of tags
   * @returns string of tags in canonical order
