@@ -22,6 +22,46 @@ class TagCollection extends AppModel {
  */
  	const TAG_SEPARATOR = ',';
 
+ /**
+  * One-to-many associations
+  *
+  * @var array
+  */
+  	public $hasMany = array('TagCollectionTag');
+
+/**
+ * Loads a tag collection by id.
+ *
+ * @param integer $tag_collection_id
+ * @return array
+ */
+ 	public function loadTagCollection($tag_collection_id) {
+ 		return $this->find('first', array(
+ 			'conditions' => array(
+ 				'TagCollection.id' => $tag_collection_id
+ 			)
+ 		));
+ 	}
+ 	
+ /**
+  * Tests if a tag collection exists for a string of tags.
+  *
+  * @param mixed $tags comma-separated string or array of tags
+  * @return boolean true if it exists, false otherwise
+  */
+  	public function existsTagCollection($tags = array()) {
+  		$count = 0;
+  		$hash = $this->hashOf($tags);
+  		if($hash !== false) {
+			$count = $this->find('count', array(
+				'recursive' => -1,
+				'conditions' => array('TagCollection.hash' => $hash)
+			));
+		}
+
+   		return $count > 0;
+  	}
+  
 /**
  * Parses a comma-separated string of tags.
  *
@@ -90,7 +130,6 @@ class TagCollection extends AppModel {
 			$tags = $this->parseTags($tags);
 		}
 		$tag_str = $this->stringifyCanonical($tags);
-		
 		if($tag_str === '') {
 			return false;
 		}

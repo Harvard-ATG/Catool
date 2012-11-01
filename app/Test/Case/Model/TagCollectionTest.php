@@ -16,7 +16,7 @@ class TagCollectionTestCase extends CakeTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.tag_collection');
+	public $fixtures = array('app.tag_collection', 'app.tag', 'app.tag_collection_tag');
 
 /**
  * setUp method
@@ -38,6 +38,46 @@ class TagCollectionTestCase extends CakeTestCase {
 		parent::tearDown();
 	}
 
+/**
+ * testLoadTagCollection method
+ *
+ * @return void
+ */
+	public function testLoadTagCollection() {
+		$expected = array('TagCollection' => array('id' => '1'));
+		$actual = $this->TagCollection->loadTagCollection(1);
+		
+		$this->assertTrue(!empty($actual), 'loading a tag collection returned results');
+		$this->assertEquals($expected['TagCollection']['id'], $actual['TagCollection']['id'], 'loaded complete tag collection');
+		$this->assertEquals(3, count($actual['TagCollectionTag']), 'three tags loaded for collection');
+	}
+
+/**
+ * testExistsTagCollection method
+ *
+ * @return void
+ */
+	 public function testExistsTagCollection() {
+	 	 $tests = array(
+	 	 	 array('data' => array('foo', 'foo+bar', 'moe larry and curly'), 'expected' => true),
+	 	 	 array('data' => array('moe larry and curly', 'foo', 'foo+bar'), 'expected' => true),
+	 	 	 array('data' => array('foo+bar', 'moe larry and curly', 'foo'), 'expected' => true),
+	 	 	 array('data' => 'foo+bar, moe larry and curly, foo', 'expected' => true),
+	 	 	 array('data' => 'foo+bar, moe larry and curly, FOO', 'expected' => false),
+	 	 	 array('data' => 'foo', 'expected' => false),
+	 	 	 array('data' => 'foo+bar', 'expected' => false),
+	 	 	 array('data' => 'moe larry and curly', 'expected' => false),
+	 	 	 array('data' => array('!@#$%^&*()_+-=[]{};:\'".?\/~', '<my local="var">you betcha</my>'), 'expected' => true),
+	 	 	 array('data' => array('<my local="var">you betcha</my>', '!@#$%^&*()_+-=[]{};:\'".?\/~'), 'expected' => true)
+	 	 );
+	 	 
+	 	 foreach($tests as $test) {
+	 	 	 $expected = $test['expected'];
+	 	 	 $actual = $this->TagCollection->existsTagCollection($test['data']);
+	 	 	 $this->assertEquals($expected, $actual, 'tag collection exists check failed. Expected value='.var_export($expected,1).', data= '.var_export($test['data'],1));
+	 	 }
+	 }
+	
 /**
  * testParseTags
  *

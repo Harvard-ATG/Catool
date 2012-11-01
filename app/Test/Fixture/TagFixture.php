@@ -9,11 +9,11 @@
  */
 class TagFixture extends CakeTestFixture {
 
-/**
- * Import table definition
- *
- * @var array
- */
+	/**
+	 * Import table definition
+	 *
+	 * @var array
+	 */
 	public $import = 'Tag';
 
 /**
@@ -25,8 +25,8 @@ class TagFixture extends CakeTestFixture {
 		array('id' => 1, 'name' => 'foo'),
 		array('id' => 2, 'name' => 'foo+bar'),
 		array('id' => 3, 'name' => 'moe larry and curly'),
-		array('id' => 4, 'name' => 'Фёдор Михайлович Достоевский'),
-		array('id' => 5, 'name' => '서울의 빛')
+		array('id' => 4, 'name' => '!@#$%^&*()_+-=[]{};:\'".?\/~'),
+		array('id' => 5, 'name' => '<my local="var">you betcha</my>')
 
 	);
 }

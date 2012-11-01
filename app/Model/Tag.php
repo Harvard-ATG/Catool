@@ -16,6 +16,12 @@ class Tag extends AppModel {
  */
 	const NAME_MAX_LENGTH = 50;
 
+/**
+ * hasMany association
+ *
+ * @var array
+ */
+	public $hasMany = array('TagCollectionTag');
 
 /**
  * Validation rules for tags.

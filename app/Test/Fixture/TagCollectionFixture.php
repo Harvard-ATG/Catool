@@ -26,19 +26,25 @@ class TagCollectionFixture extends CakeTestFixture {
 			'id' => 1, 
 			'instance_count' => 0,
 			'tag_count' => 3,
-			'hash' => '6b8d87d1ce485d5aa360dded97e0609dd3d0287c'
+			'hash' => '7a9b4cf81dbc165538c09738d6066a7b2aad31d0'
 		),
 		array(
 			'id' => 2,
 			'instance_count' => 1,
 			'tag_count' => 3,
-			'hash' => '6b8d87d1ce485d5aa360dded97e0609dd3d0287c'
+			'hash' => '7a9b4cf81dbc165538c09738d6066a7b2aad31d0'
 		),
 		array(
 			'id' => 3,
-			'instance_count' => 0,
+			'instance_count' => 1,
+			'tag_count' => 2,
+			'hash' => '76731c481cfc8d9a8c43abd4327388a2fe091c7e'
+		),
+		array(
+			'id' => 4,
+			'instance_count' => 1,
 			'tag_count' => 1,
-			'hash' => '0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33'
-		)
+			'hash' => 'd172ff6d331e021724a8deeeccb9bfc4efb77417'
+		),
 	);
 }

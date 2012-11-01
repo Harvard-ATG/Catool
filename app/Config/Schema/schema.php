@@ -197,11 +197,11 @@ class AppSchema extends CakeSchema {
 		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1), 'tag_collections_hash_uk' => array('column' => 'hash', 'unique' => 1)),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
-	public $tag_collections_tags = array(
+	public $tag_collection_tags = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'primary'),
 		'tag_collection_id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'index'),
 		'tag_id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'index'),
-		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1), 'tag_collections_tags_fk1' => array('column' => 'tag_collection_id', 'unique' => 0),'tag_collections_tags_fk2' => array('column' => 'tag_id', 'unique' => 0)),
+		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1), 'tag_collection_tags_fk1' => array('column' => 'tag_collection_id', 'unique' => 0),'tag_collections_tag_fk2' => array('column' => 'tag_id', 'unique' => 0)),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
 	public $targets = array(
