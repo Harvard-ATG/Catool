@@ -562,6 +562,37 @@ Catool = (function() {
 	});
 	App.collections.Segments = Segments;
 
+	/**
+	 * Tag model.
+	 *
+	 * @class Tag
+	 * @namespace Catool.models
+	 * @extends Catool.Model
+	 * @constructor
+	 */
+	var Tag = Model.extend({
+		idAttribute: 'id'
+	});
+	App.models.Tag = Tag;
+
+	/**
+	 * Tags collection.
+	 *
+	 * @class Tags
+	 * @namespace Catool.collections
+	 * @extends Catool.Collection
+	 * @constructor
+	 */
+	var Tags = Collection.extend({
+		/**
+		 * Associate this collection with Segment models.
+		 *
+		 * @property model
+		 */
+		model: Tag 
+	});
+	App.collections.Tag = Tags;
+
 	
 	/**
 	 * User model.
@@ -613,9 +644,6 @@ Catool = (function() {
 		 * Initialize the note model.
 		 */
 		initialize: function() {
-			if(!this.get('tags')) {
-				this.set({ tags: [] });
-			}
 		},
 
 		/**
@@ -641,6 +669,9 @@ Catool = (function() {
 			}
 			if(response.Segment) {
 				attrs.segments = new Segments(response.Segment);
+			}
+			if(response.Tag) {
+				attrs.tags = new Tags(response.Tag);
 			}
 			
 			return attrs;
@@ -694,7 +725,7 @@ Catool = (function() {
 		 * Checks if the model has any tags.
 		 */
 		hasTags: function() {
-			return this.get('tags').length > 0;	
+			return this.get('tags').size() > 0;
 		}
 	});
 	App.models.Note = Note;
@@ -2360,15 +2391,31 @@ Catool = (function() {
 				'</div>',
 				'<div class="note-byline">On <%= created_date %> <%= author %>:</div>',
 				'<div class="note-text"><%= body %></div>',
-				'<div class="note-tags hide"><b>Tags:</b> <%= tags %></div>',
-				'<ul class="note-actions">',
-					'<li><a class="js-btn-reply <%= replyCls %>" href="#">Comment</a></li>',
-					'<li><a class="js-btn-comments hide" href="#">Show Comments (<span class="note-num-comments"><%= numComments %></span>)</a></li>',
-					'<li><a class="js-btn-edit <%= actionCls %>" href="#">Edit</a></li>',
-					'<li><a class="js-btn-delete <%= actionCls %>" href="#">Delete</a></li>',
-				'</ul>',
-				'<ul class="notes note-comments"></ul>',
+				'<div class="note-footer">',
+					'<%= tags %>',
+					'<ul class="note-actions">',
+						'<li><a class="js-btn-reply <%= replyCls %>" href="#">Comment</a></li>',
+						'<li><a class="js-btn-comments hide" href="#">Show Comments (<span class="note-num-comments"><%= numComments %></span>)</a></li>',
+						'<li><a class="js-btn-edit <%= actionCls %>" href="#">Edit</a></li>',
+						'<li><a class="js-btn-delete <%= actionCls %>" href="#">Delete</a></li>',
+					'</ul>',
+					'<ul class="notes note-comments"></ul>',
+				'</div>',
 			'</div>'
+		].join("")),
+
+		/**
+		 * Template for displaying annotation tags.
+		 *
+		 * @property tagsTemplate
+		 */
+		tagsTemplate: _.template([
+			'<ul class="note-tags">',
+				'<li><b>Tags:</b></li>',
+				'<% _.each(tags, function(tag) { %>',
+					'<li><%= tag %></li>',
+				'<% }); %>',
+			'</ul>'
 		].join("")),
 
 		/**
@@ -2423,9 +2470,6 @@ Catool = (function() {
 			this.$el.html(this.template(data));
 			if(this.model.get('highlightAdmin')) {
 				this.$el.addClass('role-admin');
-			}
-			if(this.model.hasTags()) { 
-				this.$('.note-tags').removeClass('hide');
 			}
 			this.$('.note-comments').before(commentForm.render().el);
 			this.renderComments();
@@ -2487,7 +2531,14 @@ Catool = (function() {
 			data.body = nl2br(data.body);
 			data.author = this.model.get('user').get('fullname');
 			data.created_date = 'n/a';
-			data.tags = data.tags.length > 0 ? data.tags.join(', ') : '';
+
+			data.tags = '';
+			if(this.model.hasTags()) {
+				data.tags = this.tagsTemplate({ 
+					tags: this.model.get('tags').pluck('name')
+				});
+			} 
+
 			if(data.created_unix) {
 				data.created_date = moment.unix(data.created_unix).format('MMMM Do YYYY, h:mm a');
 			}

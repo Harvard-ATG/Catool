@@ -96,6 +96,8 @@ body {
 .note-annotation {
 	border: 1px solid @grayLighter;
 	margin-bottom: 10px;
+	overflow: auto;
+	width: 100%;
 }
 .note-comment {
 	border-bottom: 1px solid @grayLighter;
@@ -115,13 +117,16 @@ body {
 .note-body {
 	padding: .5em;
 }
+.note-text {
+	margin-bottom: .5em;
+}
 .note-title {
 	width: 55%;
-	margin-left: .5em;
 	font-weight: bold;
 }
-.note-date {}
-.note-author {}
+.note-title, .note-date, .note-author {
+	margin-left: .5em;
+}
 .note-byline {
 	color: @grayLight; 
 	font-style: italic;
@@ -164,6 +169,15 @@ body {
 	.note-play-time {
 		left: 60px;
 	}
+}
+.note-tags {
+	margin: 0;
+	padding: 0;
+}
+.note-tags > li {
+	display: inline;
+	list-style-type: none;
+	padding-right: 6px;
 }
 .note-actions {
 	margin: .5em 0;

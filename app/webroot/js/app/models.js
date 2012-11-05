@@ -37,6 +37,37 @@
 	});
 	App.collections.Segments = Segments;
 
+	/**
+	 * Tag model.
+	 *
+	 * @class Tag
+	 * @namespace Catool.models
+	 * @extends Catool.Model
+	 * @constructor
+	 */
+	var Tag = Model.extend({
+		idAttribute: 'id'
+	});
+	App.models.Tag = Tag;
+
+	/**
+	 * Tags collection.
+	 *
+	 * @class Tags
+	 * @namespace Catool.collections
+	 * @extends Catool.Collection
+	 * @constructor
+	 */
+	var Tags = Collection.extend({
+		/**
+		 * Associate this collection with Segment models.
+		 *
+		 * @property model
+		 */
+		model: Tag 
+	});
+	App.collections.Tag = Tags;
+
 	
 	/**
 	 * User model.
@@ -88,9 +119,6 @@
 		 * Initialize the note model.
 		 */
 		initialize: function() {
-			if(!this.get('tags')) {
-				this.set({ tags: [] });
-			}
 		},
 
 		/**
@@ -116,6 +144,9 @@
 			}
 			if(response.Segment) {
 				attrs.segments = new Segments(response.Segment);
+			}
+			if(response.Tag) {
+				attrs.tags = new Tags(response.Tag);
 			}
 			
 			return attrs;
@@ -169,7 +200,7 @@
 		 * Checks if the model has any tags.
 		 */
 		hasTags: function() {
-			return this.get('tags').length > 0;	
+			return this.get('tags').size() > 0;
 		}
 	});
 	App.models.Note = Note;
