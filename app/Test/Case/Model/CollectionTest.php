@@ -120,7 +120,6 @@ class CollectionTestCase extends CakeTestCase {
 		foreach($tests as $test) {
 			$result = $this->Collection->findPostsByCollection($test['collection_id'], $test['user_id']);
 			foreach($result as $row) {
-				$this->assertEquals(array('Target', 'Note', 'User', 'Collection'), array_keys($row), 'should contain data associated with each note');
 				$this->assertNotNull($row['Note']['id'], 'Note ID should be non-null');
 				$this->assertNotNull($row['Target']['id'], 'Target ID should be non-null');
 				$this->assertNotNull($row['Collection']['id'], 'Collection ID should be non-null');
