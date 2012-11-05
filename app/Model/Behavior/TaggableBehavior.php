@@ -4,6 +4,10 @@
 ?>
 <?php
 App::uses('AppModel', 'Model');
+App::uses('Tag', 'Model');
+App::uses('TagCollection', 'Model');
+App::uses('TagCollectionTag', 'Model');
+
 /**
  * Taggable Behavior
  * 
@@ -25,13 +29,46 @@ App::uses('AppModel', 'Model');
  * @package       app.Model.Behavior
  */
 class TaggableBehavior extends ModelBehavior {
-	
+
+/**
+ * Constant for the tag field in the model.
+ */
+	const TAG_FIELD = 'tags';
+
+/**
+ * Constant for the name of the tag collection foreign key in the model.
+ */
+	const TAG_FOREIGN_KEY = 'tag_collection_id';
+ 
 /**
  * Settings per model.
  *
  * @var array
  */
 	public $settings = array();
+	
+/**
+ * Default settings for each model.
+ *
+ * @var array
+ */
+	public $defaultSettings = array(
+		'maxTags' => 5
+	);
+	
+/**
+ * Tag Collection model.
+ * 
+ * @var Model
+ */
+	public $TagCollection;
+	
+/**
+ * Tag model.
+ * 
+ * @var Model
+ */
+	public $Tag;
 
 /**
  * Setup this behavior with the specified configuration settings.
@@ -41,10 +78,12 @@ class TaggableBehavior extends ModelBehavior {
  * @return void
  */
 	public function setup(Model $Model, $settings = array()) {
-		$default_settings = array('foreignKey' => 'tag_collection_id');
-		$this->settings[$Model->alias] = array_merge($default_settings, $settings);
+		$this->settings[$Model->alias] = array_merge($this->defaultSettings, $settings);
+		
+		$this->Tag = ClassRegistry::init('Tag');
+		$this->TagCollection = ClassRegistry::init('TagCollection');
 	}
-	
+
 /**
  * beforeValidate callback
  *
@@ -52,6 +91,29 @@ class TaggableBehavior extends ModelBehavior {
  * @return boolean False or null will abort the operation. Any other result will continue.
  */
 	public function beforeValidate(Model $Model) {
+		if(isset($Model->data[$Model->alias][self::TAG_FIELD])) {
+			$tags = $this->TagCollection->parseTags($Model->data[$Model->alias][self::TAG_FIELD]);
+			if(empty($tags)) {
+				return true;
+			}
+			
+			// check number of tags
+			if(isset($this->settings[$Model->alias]['maxTags']) && count($tags) > $this->settings[$Model->alias]['maxTags']) {
+				$Model->invalidate(self::TAG_FIELD, __('Too many tags. Maximum number of tags: %d', $this->settings[$Model->alias]['maxTags']));
+				return false;
+			}
+			
+			// check length of tags
+			foreach($tags as $tag) {
+				$this->Tag->create();
+				$this->Tag->set('name', $tag);
+				if(!$this->Tag->validates()) {
+					$Model->invalidate(self::TAG_FIELD, __('Invalid tag: %s. Max length: %d', $tag, Tag::NAME_MAX_LENGTH));
+					return false;
+				}
+			}
+		}
+
 		return true;
 	}
 
@@ -63,6 +125,17 @@ class TaggableBehavior extends ModelBehavior {
  * @return boolean
  */
 	public function beforeSave(Model $Model, $options = array()) {
+		if(isset($Model->data[$Model->alias][self::TAG_FIELD])) {
+			$tags = $Model->data[$Model->alias][self::TAG_FIELD];
+			$tag_collection_id = $this->TagCollection->saveTags($tags);
+			
+			if(isset($Model->data[$Model->alias][self::TAG_FOREIGN_KEY])) {
+				$this->TagCollection->decrementInstances($Model->data[$Model->alias][self::TAG_FOREIGN_KEY]);
+			}
+
+			$Model->data[$Model->alias][self::TAG_FOREIGN_KEY] = $tag_collection_id;
+		}
+
 		return true;
 	}
 
@@ -74,7 +147,7 @@ class TaggableBehavior extends ModelBehavior {
  * @return void
  */
 	public function afterSave(Model $Model, $created) {
-		return true;
+		$this->TagCollection->incrementInstances($Model->data[$Model->alias][self::TAG_FOREIGN_KEY]);
 	}
 
 /**

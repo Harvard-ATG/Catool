@@ -30,6 +30,13 @@ class TagCollection extends AppModel {
 	public $hasMany = array('TagCollectionTag');
 
 /**
+ * Validation rules.
+ *
+ * @var array
+ */
+	public $validate = array();
+
+/**
  * Loads a tag collection by id.
  *
  * @param integer $tag_collection_id
@@ -136,6 +143,36 @@ class TagCollection extends AppModel {
 		}
 		
 		return $tag_collection_id;
+	}
+
+/**
+ * Decrements instance count.
+ * 
+ * @param number $tag_collection_id
+ * @return boolean true on update, false otherwise
+ */
+	public function decrementInstances($tag_collection_id) {
+		if(!empty($tag_collection_id)) {
+			$fields = array('instance_count' => 'instance_count - 1');
+			$conditions = array("{$this->alias}.id" => $tag_collection_id);
+			return $this->updateAll($fields, $conditions);
+		}
+		return false;
+	}
+	
+/**
+ * Increments instance count.
+ * 
+ * @param number $tag_collection_id
+ * @return boolean true on update, false otherwise
+ */
+	public function incrementInstances($tag_collection_id) {
+		if(!empty($tag_collection_id)) {
+			$fields = array('instance_count' => 'instance_count + 1');
+			$conditions = array("{$this->alias}.id" => $tag_collection_id);
+			return $this->updateAll($fields, $conditions);
+		}
+		return false;
 	}
 
 /**
