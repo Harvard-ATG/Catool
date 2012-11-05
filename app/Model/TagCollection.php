@@ -81,6 +81,10 @@ class TagCollection extends AppModel {
 		if(is_string($tags)) {
 			$tags = $this->parseTags($tags);
 		}
+		
+		if(empty($tags)) {
+			return null;
+		}
 
 		$tag_collection_id = false;
 		if($this->existsTagCollection($tags)) {
@@ -118,16 +122,7 @@ class TagCollection extends AppModel {
 		}
 		
 		$tag_collection_id = $this->id;
-		$tag_ids = array();
-		foreach($tags as $tag) {
-			$this->TagCollectionTag->Tag->create();
-			$tag_result = $this->TagCollectionTag->Tag->save(array('name' => $tag));
-			if($tag_result === false) {
-				error_log("Error creating tag: $tag");
-			} else {
-				$tag_ids[] = $this->TagCollectionTag->Tag->id;
-			}
-		}
+		$tag_ids = $this->createTags($tags);
 		
 		$tag_collection_tags = array();
 		foreach($tag_ids as $tag_id) {
@@ -143,6 +138,45 @@ class TagCollection extends AppModel {
 		}
 		
 		return $tag_collection_id;
+	}
+
+/**
+ * Creates tags that don't already exist.
+ * 
+ * @param mixed $tags
+ * @return array of tag ids
+ */
+	public function createTags($tags = array()) {
+		$found_tags = $this->TagCollectionTag->Tag->find('all', array(
+			'recursive' => -1,
+			'conditions' => array('Tag.name' => $tags)		
+		));
+		
+		$id_of = array();
+		foreach($found_tags as $record) {
+			$tag_name = $record['Tag']['name'];
+			$tag_id = $record['Tag']['id'];
+			$id_of[$tag_name] = $tag_id;
+		}
+		
+		$missing_tags = array();
+		foreach($tags as $tag) {
+			if(!isset($id_of[$tag])) {
+				$missing_tags[] = $tag;
+			}
+		}
+		
+		foreach($missing_tags as $tag) {
+			$this->TagCollectionTag->Tag->create();
+			$result = $this->TagCollectionTag->Tag->save(array('name' => $tag));
+			if($result === false) {
+				error_log("Error creating tag: $tag");
+			} else {
+				$id_of[$tag] = $this->TagCollectionTag->Tag->id;
+			}
+		}
+		
+		return array_values($id_of);
 	}
 
 /**

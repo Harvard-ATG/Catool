@@ -201,6 +201,30 @@ class TagCollectionTestCase extends CakeTestCase {
  		}
 	}
 
+/**
+ * testCreateTags
+ * 
+ * @return void
+ */
+	public function testCreateTags() {
+		$tags = array('foo', 'foo+bar');
+		$expected_tag_ids = array('1','2');
+		$actual_tag_ids = $this->TagCollection->createTags($tags);
+		$this->assertEquals($expected_tag_ids, $actual_tag_ids, 'no new tags created, tags already exist');
+		
+		$tags = array('foo', 'foo+bar', 'foo-bar');
+		$expected_tag_ids = array('1','2');
+		$actual_tag_ids = $this->TagCollection->createTags($tags);
+		$diff = array_diff($actual_tag_ids, $expected_tag_ids);
+		$this->assertEquals(1, count($diff), 'one new tag should be created');
+
+		$tags = array('foo', 'foo+bar', 'foo-bar', 'foo*bar');
+		$expected_tag_ids = array('1','2');
+		$actual_tag_ids = $this->TagCollection->createTags($tags);
+		$diff = array_diff($actual_tag_ids, $expected_tag_ids);
+		$this->assertEquals(2, count($diff), 'two new tags should be created');	
+	}
+ 
  /**
  * testParseTags
  *

@@ -1388,6 +1388,9 @@ Catool = (function() {
 			this.closeMessage();
 			this.unhighlightErrors();
 			this._foreachField(function(model, name, field) {
+				if(name === 'tags') {
+					field.tagit("removeAll");
+				}
 				field.val('');
 			});		
 			this.onRangeSliderChange();	
