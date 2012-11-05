@@ -53,6 +53,49 @@ class TagCollection extends AppModel {
 	}
 	
 /**
+ * Finds all tags for a set of collections.
+ * 
+ * @param array $tag_collection_ids
+ * @return array that maps tag_collection_id to tag_name
+ */	
+	public function findAllTagsFor($tag_collection_ids = array()) {
+		$result = $this->find('all', array(
+			'fields' => array('TagCollection.id', 'Tag.id', 'Tag.name'),
+			'recursive' => -1,
+			'conditions' => array("TagCollection.id" => $tag_collection_ids),
+			'joins' => array(
+				array('table' => 'tag_collection_tags',
+					'alias' => 'TagCollectionTag',
+					'type' => 'INNER',
+					'conditions' => 'TagCollection.id = TagCollectionTag.tag_collection_id'
+				), 
+				array('table' => 'tags',
+					'alias' => 'Tag',
+					'type' => 'INNER',
+					'conditions' => 'Tag.id = TagCollectionTag.tag_id')
+			)
+		));
+		
+		if(!$result) {
+			return array();
+		}
+		
+		$tags_for = array();
+		foreach($result as $record) {
+			$tag_collection_id = $record['TagCollection']['id'];
+			$tag = $record['Tag'];
+			
+			if(isset($tags_for[$tag_collection_id])) {
+				$tags_for[$tag_collection_id][] = $tag;
+			} else {
+				$tags_for[$tag_collection_id] = array($tag);
+			}
+		}
+		
+		return $tags_for;
+	}
+	
+/**
  * Tests if a tag collection exists for a set of tags.
  *
  * @param mixed $tags comma-separated string or array of tags

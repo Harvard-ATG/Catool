@@ -419,7 +419,7 @@ class DboSource extends DataSource {
  * @return mixed Resource or object representing the result set, or false on failure
  */
 	public function execute($sql, $options = array(), $params = array()) {
-		//error_log("SQL:\n$sql");
+		error_log("SQL:\n$sql");
 		$options += array('log' => $this->fullDebug);
 
 		$t = microtime(true);

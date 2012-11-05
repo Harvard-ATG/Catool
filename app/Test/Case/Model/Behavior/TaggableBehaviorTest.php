@@ -50,12 +50,16 @@ class TaggableBehaviorTestCase extends CakeTestCase {
 	public function testValidateTags() {
 		$this->Note->Behaviors->load('Taggable');
 
-		$tag_too_long = str_pad('', Tag::NAME_MAX_LENGTH + 1, 'x');
+		$max_tags = $this->Note->Behaviors->Taggable->defaultSettings['maxTags'];
+		$max_len = Tag::NAME_MAX_LENGTH;
+		$exceeds_tag_length = str_pad('', $max_len + 1, 'x');
+		$exceeds_max_tags = implode(',', range(1, $max_tags + 1));
+
 		$tests = array(
 			array('data' => '', 'expected' => true, 'msg' => 'no tags to validate'),
 			array('data' => 'one,two,three,four,five', 'expected' => true, 'msg' => 'max number of allowed tags'),
-			array('data' => 'one,two,three,four,five,six', 'expected' => false, 'msg' => 'exceeds maximum number of tags'),
-			array('data' => $tag_too_long, 'expected' => false, 'msg' => 'exceeds max tag length')
+			array('data' => $exceeds_tag_length, 'expected' => false, 'msg' => "exceeds max tag length: $max_len"),
+			array('data' => $exceeds_max_tags, 'expected' => false, 'msg' => "exceeds maximum number of tags: $max_tags")
 		);
 
 		foreach($tests as $test) {
@@ -118,6 +122,37 @@ class TaggableBehaviorTestCase extends CakeTestCase {
 		
 		$this->assertTrue($new_instance_count >= 0, 'instance count should always be a positive integer');
 		$this->assertEquals($old_instance_count - 1, $new_instance_count, 'instance count should be decremented by one after delete');
+	}
+	
+/**
+ * testFindTags
+ * 
+ * @return void
+ */
+	public function testFindTags() {
+		$this->Note->Behaviors->load('Taggable');
+
+		$expected_tags = array('a','b','c');
+		$this->Note->create();
+		$this->Note->set('tags', implode(',', $expected_tags));
+		$saved = $this->Note->save();
+		$this->assertTrue($saved !== false, 'saved note');
+
+		$result = $this->Note->find('first', array(
+			'conditions' => array(
+				'Note.id' => $this->Note->id
+			)
+		));
+
+		$this->assertTrue(isset($result['Tag']), 'note has an associated Tag model');
+		$this->assertCount(count($expected_tags), $result['Tag'], 'note has the expected number of Tag models');
+		
+		$actual_tags = array();
+		foreach($result['Tag'] as $tag) {
+			$actual_tags[] = $tag['name'];
+		}
+		
+		$this->assertEquals($expected_tags, $actual_tags, 'the note tags match');
 	}
 
 /**

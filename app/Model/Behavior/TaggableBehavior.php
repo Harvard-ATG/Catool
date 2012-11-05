@@ -174,6 +174,34 @@ class TaggableBehavior extends ModelBehavior {
  * @return void
  */
 	public function afterFind(Model $Model, $result, $primary) {
+		// we only want to retrieve tags if the model was queried directly
+		if(!$primary) {
+			return $result;
+		}
+		
+		// pre-process result to find which collections we need to lookup
+		$tag_collection_ids = array();
+		foreach($result as $row) {
+			if(isset($row[$Model->alias][self::TAG_FOREIGN_KEY])) {
+				$id = $row[$Model->alias][self::TAG_FOREIGN_KEY];
+				$tag_collection_ids[$id] = true;
+			}
+		}
+		$tag_collection_ids = array_keys($tag_collection_ids);
+		
+		// fetch the tags from the db
+		$tags_for = $this->TagCollection->findAllTagsFor($tag_collection_ids);
+
+		// augment the result set with tags
+		foreach($result as &$row) {
+			if(isset($row[$Model->alias][self::TAG_FOREIGN_KEY])) {
+				$id = $row[$Model->alias][self::TAG_FOREIGN_KEY];
+				if(isset($tags_for[$id])) {
+					$row['Tag'] = $tags_for[$id];
+				}
+			}
+		}
+
 		return $result;
 	}
 
