@@ -194,11 +194,10 @@ class TaggableBehavior extends ModelBehavior {
 
 		// augment the result set with tags
 		foreach($result as &$row) {
+			$row['Tag'] = array();
 			if(isset($row[$Model->alias][self::TAG_FOREIGN_KEY])) {
 				$id = $row[$Model->alias][self::TAG_FOREIGN_KEY];
-				if(isset($tags_for[$id])) {
-					$row['Tag'] = $tags_for[$id];
-				}
+				$row['Tag'] = isset($tags_for[$id]) ? $tags_for[$id] : array();
 			}
 		}
 
