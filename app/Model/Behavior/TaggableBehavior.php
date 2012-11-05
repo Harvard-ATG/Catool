@@ -53,7 +53,7 @@ class TaggableBehavior extends ModelBehavior {
  * @var array
  */
 	public $defaultSettings = array(
-		'maxTags' => 5
+		'maxTags' => 10
 	);
 	
 /**
