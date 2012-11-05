@@ -45,7 +45,7 @@ class Note extends AppModel {
  * actsAs
  * @var array
  */
-    public $actsAs = array('Tree');
+    public $actsAs = array('Tree', 'Taggable');
 	
 /**
  * Called after every save operation.

@@ -27,7 +27,10 @@ class TaggableBehaviorTestCase extends CakeTestCase {
 	public function setUp() {
 		parent::setUp();
 		$this->Note = new Model(array('table' => 'notes', 'name' => 'Note', 'ds' => 'default'));
+		$this->Note->create();
+		
 		$this->TagCollection = ClassRegistry::init('TagCollection');
+		$this->TagCollection->create();
 	}
 
 /**
@@ -97,6 +100,25 @@ class TaggableBehaviorTestCase extends CakeTestCase {
 		$this->assertEquals(4, $tag_collection['TagCollection']['tag_count'], 'tag count');		
 		$this->assertTrue(!empty($tag_collection['TagCollection']['hash']), 'collection hash is non-empty');
 }
+
+/**
+ * testDeleteTags
+ * 
+ * @return void
+ */
+ 	public function testDeleteTags() {
+ 		$this->Note->Behaviors->load('Taggable');
+		$this->Note->create(array('tags' => 'a,b,c,d'));
+		$result = $this->Note->save();
+
+		$this->TagCollection->id = $result['Note'][TaggableBehavior::TAG_FOREIGN_KEY];
+		$old_instance_count = $this->TagCollection->field('instance_count');
+		$this->Note->delete();
+		$new_instance_count = $this->TagCollection->field('instance_count');
+		
+		$this->assertTrue($new_instance_count >= 0, 'instance count should always be a positive integer');
+		$this->assertEquals($old_instance_count - 1, $new_instance_count, 'instance count should be decremented by one after delete');
+	}
 
 /**
  * tearDown method

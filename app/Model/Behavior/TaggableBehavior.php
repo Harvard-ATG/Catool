@@ -147,7 +147,22 @@ class TaggableBehavior extends ModelBehavior {
  * @return void
  */
 	public function afterSave(Model $Model, $created) {
-		$this->TagCollection->incrementInstances($Model->data[$Model->alias][self::TAG_FOREIGN_KEY]);
+		if(isset($Model->data[$Model->alias][self::TAG_FOREIGN_KEY])) {
+			$this->TagCollection->incrementInstances($Model->data[$Model->alias][self::TAG_FOREIGN_KEY]);
+		}
+	}
+
+/**
+ * afterDelete callback
+ *
+ * @param Model $Model Model using this behavior
+ * @return boolean
+ */	
+	public function beforeDelete(Model $Model, $cascade = true) {
+		$tag_collection_id = $Model->field(self::TAG_FOREIGN_KEY);
+		if(isset($tag_collection_id)) {
+			$this->TagCollection->decrementInstances($tag_collection_id);
+		}	
 	}
 
 /**
