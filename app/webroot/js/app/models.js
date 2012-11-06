@@ -108,12 +108,11 @@
 		idAttribute: 'id',
 
 		/**
-		 * Defines the url root for updates to the model.
-		 *
-		 * @property urlRoot
-		 * @default /notes
+		 * Returns the url for the model resource.
 		 */
-		urlRoot: url('/notes'),
+		url: function() {
+			return url('/notes');
+		},
 
 		/**
 		 * Initialize the note model.
@@ -268,7 +267,7 @@
 			success = options.success;
 			data = options.data;
 
-			options.url = url('/notes?target_id=' + this.targetModel.get('id'));
+			options.url = url('/notes', { target_id: this.targetModel.get('id') });
 			options.success = _.bind(function() {
 				if(success) {
 					success.apply(this, arguments);
@@ -331,12 +330,11 @@
 		idAttribute: 'id',
 
 		/**
-		 *  Defines the url root for updates to the model.
-		 *
-		 * @property urlRoot
-		 * @default /videos
+		 * Returns the url for the model resource.
 		 */
-		urlRoot: url('/videos')
+		url: function() {
+			return url('/videos');
+		},
 	});
 	App.models.Video = Video;
 

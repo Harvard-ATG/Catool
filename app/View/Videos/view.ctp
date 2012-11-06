@@ -198,7 +198,9 @@ $viewOptions = array(
 ?>
 
 <script>
+
 $(function(){
+	Catool.baseUrl = <?php echo json_encode($this->Html->url('/')); ?>;
 	Catool.user.set(<?php echo json_encode($current_user); ?>);
 
 	new Catool.views.VideoAppView({

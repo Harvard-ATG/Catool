@@ -500,7 +500,29 @@ Catool = (function() {
 			 * @return {String} Returns a URL
 			 * @static
 			 */
-			url: function(value) { return value; },
+			url: function(path, params) { 
+				var url = path;
+				var baseUrl = App.baseUrl || '';
+				var pathBeginsWithSlash = (path.charAt(0) === '/');
+				var baseEndsWithSlash = (baseUrl.charAt(baseUrl.length - 1) === '/');
+				var isExternalUrl = (path.indexOf('http') !== -1);
+				params = params || {};
+
+				if(!isExternalUrl && baseUrl) {
+					if(baseEndsWithSlash && pathBeginsWithSlash) {
+						path = path.substr(1);
+					} else if(!baseEndsWithSlash && !pathBeginsWithSlash) {
+						path = '/' + path;
+					}
+					url = baseUrl + path;
+				}
+
+				if($.param(params)) {
+					url = url + '?' + $.param(params);
+				}
+
+				return url; 
+			},
 
 			/**
 			 * Converts newlines to HTML breaks.
@@ -633,12 +655,11 @@ Catool = (function() {
 		idAttribute: 'id',
 
 		/**
-		 * Defines the url root for updates to the model.
-		 *
-		 * @property urlRoot
-		 * @default /notes
+		 * Returns the url for the model resource.
 		 */
-		urlRoot: url('/notes'),
+		url: function() {
+			return url('/notes');
+		},
 
 		/**
 		 * Initialize the note model.
@@ -793,7 +814,7 @@ Catool = (function() {
 			success = options.success;
 			data = options.data;
 
-			options.url = url('/notes?target_id=' + this.targetModel.get('id'));
+			options.url = url('/notes', { target_id: this.targetModel.get('id') });
 			options.success = _.bind(function() {
 				if(success) {
 					success.apply(this, arguments);
@@ -856,12 +877,11 @@ Catool = (function() {
 		idAttribute: 'id',
 
 		/**
-		 *  Defines the url root for updates to the model.
-		 *
-		 * @property urlRoot
-		 * @default /videos
+		 * Returns the url for the model resource.
 		 */
-		urlRoot: url('/videos')
+		url: function() {
+			return url('/videos');
+		},
 	});
 	App.models.Video = Video;
 
