@@ -156,7 +156,7 @@ $infoElements = array(
 							<label class="control-label">Tags</label>
 							<div class="controls">
 								<input type="text" class="input-xlarge" name="tags" />
-								<p class="help-block"><small>Comma separated list of tags (max: 5)</small></p>
+								<p class="help-block"><small>Comma separated list of tags (max: 10)</small></p>
 							</div>
 						</div>
 						<div class="form-actions">
