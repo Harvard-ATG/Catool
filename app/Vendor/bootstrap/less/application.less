@@ -177,7 +177,12 @@ body {
 .note-tags > li {
 	display: inline;
 	list-style-type: none;
-	padding-right: 6px;
+	padding-right: .5em;
+}
+.note-tags > li.note-tag {
+	&:after { content: ", "; }
+	/* &:last-child:before { content: "and "; } */
+	&:last-child:after { content: ""; } 
 }
 .note-actions {
 	margin: .5em 0;

@@ -2413,7 +2413,7 @@ Catool = (function() {
 			'<ul class="note-tags">',
 				'<li><b>Tags:</b></li>',
 				'<% _.each(tags, function(tag) { %>',
-					'<li><%= tag %></li>',
+					'<li class="note-tag"><%= tag %></li>',
 				'<% }); %>',
 			'</ul>'
 		].join("")),

@@ -738,7 +738,9 @@ body{padding-top:60px;padding-bottom:40px;}
 .note-control-play .note-play-label{left:5px;}
 .note-control-play .note-play-time{left:60px;}
 .note-tags{margin:0;padding:0;}
-.note-tags>li{display:inline;list-style-type:none;padding-right:6px;}
+.note-tags>li{display:inline;list-style-type:none;padding-right:.5em;}
+.note-tags>li.note-tag{}.note-tags>li.note-tag:after{content:", ";}
+.note-tags>li.note-tag:last-child:after{content:"";}
 .note-actions{margin:.5em 0;padding:0;}
 .note-actions>li{display:inline;list-style-type:none;padding-right:12px;}
 .note-clear-float{clear:both;height:0;font-size:1px;line-height:0px;}
