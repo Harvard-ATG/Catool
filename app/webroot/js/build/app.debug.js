@@ -655,16 +655,11 @@ Catool = (function() {
 		idAttribute: 'id',
 
 		/**
-		 * Returns the url for the model resource.
-		 */
-		url: function() {
-			return url('/notes');
-		},
-
-		/**
 		 * Initialize the note model.
 		 */
 		initialize: function() {
+			// set url root at run time since we need the base url, which is set at run time
+			this.urlRoot = url('/notes');
 		},
 
 		/**
@@ -877,11 +872,13 @@ Catool = (function() {
 		idAttribute: 'id',
 
 		/**
-		 * Returns the url for the model resource.
+		 * Initialize the model.
 		 */
-		url: function() {
-			return url('/videos');
-		},
+		initialize: function() {
+			// set url root at run time since we need the base url, which is set at run time
+			this.urlRoot = url('/videos');
+		}
+
 	});
 	App.models.Video = Video;
 
