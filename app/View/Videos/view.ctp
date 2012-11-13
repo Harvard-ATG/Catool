@@ -2,7 +2,7 @@
 	array(__('Home'), '/'),
 	array(__('My Collections'), '/collections'),
 	array($this->Text->truncate($collection['Collection']['display_name'], 25), array('controller' => 'collections', 'action' => 'view', $target['Video']['collection_id'])), 
-	array($this->Text->truncate($target['Video']['display_name'], 25), $this->Html->request->here)
+	array($this->Text->truncate($target['Video']['display_name'], 25), $this->Html->request->here(false))
 ))); ?>
 
 <?php

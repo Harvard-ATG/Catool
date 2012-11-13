@@ -2,7 +2,7 @@
 	array(__('Home'), '/'),
 	array(__('My Collections'), '/collections'),
 	array($this->Text->truncate($collection['Collection']['display_name'], 25), array('controller' => 'collections', 'action' => 'view', $collection_id)), 
-	array(__('Posts'), $this->Html->request->here)
+	array(__('Posts'), $this->Html->request->here(false))
 ))); ?>
 
 <div class="page-header">

@@ -2,7 +2,7 @@
 echo $this->element('breadcrumbs', array('crumbs' => array(
 	array(__('Home'), '/'),
 	array(__('Manage Collections'), '/admin/collections'),
-	array(__('Edit Collection'), $this->Html->request->here)
+	array(__('Edit Collection'), $this->Html->request->here(false))
 ))); 
 
 $tabs = array(
@@ -22,7 +22,7 @@ $tabs = array(
 	<div class="span12">
 		<ul class="nav nav-tabs">
 			<?php foreach($tabs as $tab): ?>
-				<li <?php echo Router::url($this->Html->request->here) === Router::url($tab[1]) ? 'class="active"' : ''; ?>>
+				<li <?php echo $this->Html->request->here === Router::url($tab[1]) ? 'class="active"' : ''; ?>>
 					<?php echo $this->Html->link($tab[0], $tab[1]); ?>
 				</li>
 			<?php endforeach; ?>

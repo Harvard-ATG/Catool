@@ -2,7 +2,7 @@
 	array(__('Home'), '/'),
 	array(__('Manage Collections'), '/admin/collections'),
 	array(__('Edit Collection'), '/admin/collections/edit/'.$video['Video']['collection_id']),
-	array(__('Edit Video'), $this->Html->request->here)
+	array(__('Edit Video'), $this->Html->request->here(false))
 ))); ?>
 
 <div class="page-header">

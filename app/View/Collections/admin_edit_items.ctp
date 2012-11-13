@@ -3,7 +3,7 @@
 <div class="row">
 	<div class="span12">
 		<span class="pull-right">
-			<?php echo $this->element('search_box', array('search_url' => $this->Html->url($this->request->here))); ?>
+			<?php echo $this->element('search_box', array('search_url' => $this->request->here)); ?>
 		</span>
 		<?php echo $this->Html->link(__('Add Item'), array('controller' => 'videos', 'action' => 'add', 'admin' => true, $collection['Collection']['id']), array('class' => 'btn btn-success')); ?>
 

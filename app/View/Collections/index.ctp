@@ -1,6 +1,6 @@
 <?php echo $this->element('breadcrumbs', array('crumbs' => array(
 	array(__('Home'), '/'),
-	array(__('My Collections'), $this->Html->request->here)
+	array(__('My Collections'), $this->Html->request->here(false))
 ))); ?>
 
 <div class="page-header">

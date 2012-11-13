@@ -1,7 +1,7 @@
 <?php echo $this->element('breadcrumbs', array('crumbs' => array(
 	array(__('Home'), '/'),
 	array(__('Manage Collections'), '/admin/collections'),
-	array(__('Create Collection'), $this->Html->request->here)
+	array(__('Create Collection'), $this->Html->request->here(false))
 ))); ?>
 
 <div class="page-header">

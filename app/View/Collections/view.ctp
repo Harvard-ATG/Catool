@@ -1,7 +1,7 @@
 <?php echo $this->element('breadcrumbs', array('crumbs' => array(
 	array(__('Home'), '/'),
 	array(__('My Collections'), '/collections'),
-	array($this->Text->truncate($collection['Collection']['display_name'], 25), $this->Html->request->here)
+	array($this->Text->truncate($collection['Collection']['display_name'], 25), $this->Html->request->here(false))
 ))); ?>
 
 <div class="page-header">
@@ -10,7 +10,7 @@
 <div class="row">
 	<div class="span12">
 		<div class="pull-right">
-			<?php echo $this->element('search_box', array('search_url' => $this->Html->url($this->request->here))); ?>
+			<?php echo $this->element('search_box', array('search_url' => $this->request->here)); ?>
 		</div>
 		<div class="pull-right" style="margin-right: 1em">
 			<?php echo $this->Html->link(__('Posts by User'), array('controller' => 'collections', 'action' => 'posts', $collection['Collection']['id']), array('class' => 'btn')); ?>
