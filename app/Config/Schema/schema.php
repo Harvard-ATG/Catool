@@ -10,16 +10,13 @@ App::uses('DbAcl', 'Controller/Component/Acl');
 class AppSchema extends CakeSchema {
 
 	public function before($event = array()) {
-		// flush cache so we can insert data into more than one table
-		$db = ConnectionManager::getDataSource($this->connection);
-		$db->cacheSources = false;
 		return true;
 	}
 
 	public function after($event = array()) {
-		static $createdTables = 0;
+		static $createdTables = 0; // tracks number of created tables
 
-		// determine how many tables there are using reflection
+		// determines how many tables are in this schema class
 		$totalTables = 0;
 		$refclass = new ReflectionClass($this);
 		foreach($refclass->getProperties() as $property) {
@@ -27,6 +24,17 @@ class AppSchema extends CakeSchema {
 				++$totalTables;
 			}
 		}
+		
+		// when called from the console schema utility, the connection parameter is
+		// a string, but when it's called from the web installer it's an object
+		if(is_string($this->connection)) {
+			$dataSourceName = $this->connection;
+		} else {
+			$dataSourceName = ConnectionManager::getSourceName($this->connection);
+		}
+		
+		$db = ConnectionManager::getDataSource($dataSourceName);
+		$db->cacheSources = false; // must be disabled to populate the tables
 
 		// handle create table events
 		if(isset($event['create'])) {
@@ -35,7 +43,7 @@ class AppSchema extends CakeSchema {
 				case 'roles':
 					// Create hierarchical roles
 					$role = ClassRegistry::init('Role');
-					$role->setDataSource($this->connection);
+					$role->setDataSource($dataSourceName);
 					$parent_id = null;
 					$role_names = $role->getRoleNames();
 					foreach($role_names as $role_name) {
@@ -51,21 +59,21 @@ class AppSchema extends CakeSchema {
 				case 'users':
 					// Create default user
 					$user = ClassRegistry::init('User');
-					$user->setDataSource($this->connection);
+					$user->setDataSource($dataSourceName);
 					$user->create();
 					$user->save(array('name' => 'Admin'));
 					break;
 				case 'aros':
 					// Create ARO root node for users and collection memberships
 					$aro = ClassRegistry::init('Aro');
-					$aro->setDataSource($this->connection);
+					$aro->setDataSource($dataSourceName);
 					$aro->create();
 					$aro->save(array('alias' => 'users'));
 					break;
 				case 'acos':
 					// Create ACO root node for the role hierarchy
 					$aco = ClassRegistry::init('Aco');
-					$aco->setDataSource($this->connection);
+					$aco->setDataSource($dataSourceName);
 					$aco->create();
 					$aco->save(array('alias' => 'role'));
 					break;
@@ -73,9 +81,9 @@ class AppSchema extends CakeSchema {
 					break;
 			}
 
-			// need to wait until all tables are created
+			// final step -- requires all tables to be created 
 			if($createdTables === $totalTables) {
-				$acl = new DbAcl(); // component
+				$acl = new DbAcl(); // component object
 				$acl->allow('users', 'role/super/admin/mod/user');
 				$acl->allow(array('model' => 'User', 'foreign_key' => 1), 'role/super');
 			}
