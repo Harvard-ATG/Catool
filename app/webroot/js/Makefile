@@ -8,8 +8,8 @@
 app: combinejs minifyjs
 
 combinejs:
-	php -r '$$js = include "build.php"; foreach($$js["app"] as $$name) { echo "// @file $$name\n"; readfile($$name)!==false || die("**BUILDERROR> $$name"); }' > build/app.debug.js
-	php -r '$$js = include "build.php"; foreach($$js["lib"] as $$name) { echo "// @file $$name\n"; readfile($$name)!==false || die("**BUILDERROR> $$name"); }' > build/lib.debug.js
+	php -r '$$js = include "build.php"; foreach($$js["app"] as $$name) { echo "\n\n// @file $$name\n"; readfile($$name)!==false || die("**BUILDERROR> $$name"); }' > build/app.debug.js
+	php -r '$$js = include "build.php"; foreach($$js["lib"] as $$name) { echo "\n\n// @file $$name\n"; readfile($$name)!==false || die("**BUILDERROR> $$name"); }' > build/lib.debug.js
 
 minifyjs:
 #	uglifyjs -nc build/app.js > build/app.min.js

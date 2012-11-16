@@ -19,6 +19,8 @@ return array(
 		'lib/jquery.tagit.js',
 		'lib/jquery.dataTables.js',
 		'lib/bootstrap.js',
+		'lib/wysihtml5/parser_rules/advanced.js',
+		'lib/wysihtml5-0.3.0.js',
 		'lib/underscore.js',
 		'lib/backbone.js',
 		'lib/moment.js',
