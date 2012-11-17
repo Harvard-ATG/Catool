@@ -1,6 +1,7 @@
 
+// ### build ### js-app ### Sat, 17 Nov 2012 13:37:28 -0800
 
-// @file app/core.js
+// ### file ### app/core.js
 // Copyright (c) 2012 The President and Fellows of Harvard College
 // Use of this source code is governed by the LICENSE file found in the root of this project.
 /**
@@ -76,8 +77,7 @@ Catool = (function() {
 	};
 })();
 
-
-// @file app/utils.js
+// ### file ### app/utils.js
 // Copyright (c) 2012 The President and Fellows of Harvard College
 // Use of this source code is governed by the LICENSE file found in the root of this project.
 (function(App) {
@@ -549,8 +549,7 @@ Catool = (function() {
 })(Catool);
 
 
-
-// @file app/models.js
+// ### file ### app/models.js
 // Copyright (c) 2012 The President and Fellows of Harvard College
 // Use of this source code is governed by the LICENSE file found in the root of this project.
 (function(App) {
@@ -890,8 +889,7 @@ Catool = (function() {
 
 })(Catool);
 
-
-// @file app/views.js
+// ### file ### app/views.js
 // Copyright (c) 2012 The President and Fellows of Harvard College
 // Use of this source code is governed by the LICENSE file found in the root of this project.
 
@@ -3550,8 +3548,7 @@ e* A class for displaying a list of annotations and their
 	App.views.VideoAppView = VideoAppView;
 })(Catool);
 
-
-// @file app/scripts.js
+// ### file ### app/scripts.js
 // Copyright (c) 2012 The President and Fellows of Harvard College
 // Use of this source code is governed by the LICENSE file found in the root of this project.
 /**

@@ -50,12 +50,12 @@ class JstestsController extends JstestAppController {
 	 * the correct build order.
 	 */
 	protected function _getAllModules() {
-		$modules = include(WWW_ROOT . DS . 'js/build.php');
+		$modules = include(ROOT . DS . 'build' . DS . 'build.php');
 		if($modules === FALSE || !is_array($modules)) {
 			error_log("Error loading javascript modules or files that are being tested");
 		}
 		
-		return array_merge($modules['lib'], $modules['app']);
+		return array_merge($modules['js-lib'], $modules['js-app']);
 	}
 
 	/**

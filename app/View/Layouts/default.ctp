@@ -17,6 +17,7 @@
  */
 
 $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework');
+$buildConfig = include ROOT.DS.'build'.DS.'build.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -33,15 +34,13 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
         echo $this->fetch('meta');
 
         //---- CSS
-        echo $this->Html->css(array(
-			'jquery-ui/jquery-ui-1.9.1.custom',
-			'jquery.dataTables',
-			'jquery.tagit',
-            'video-js',
-            'video-js.rangeslider',
-            'bootstrap',
-            'bootstrap-responsive'
-        ));
+        if(Configure::read('debug') > 1) {
+            echo $this->Html->css($buildConfig['css-app']);
+        } else if(Configure::read('debug') === 1) {
+            echo $this->Html->css('app.debug.css');
+        } else {
+            echo $this->Html->css('app.min.css');
+        }
         echo $this->fetch('css');
     ?>
 
@@ -53,11 +52,10 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
     <?php
         //---- JAVASCRIPT
         if(Configure::read('debug') > 1) {
-			$build = require JS.'build.php';
-            echo $this->Html->script(array_merge($build['lib'], $build['app']));
-		} else if(Configure::read('debug') === 1) {
+            echo $this->Html->script(array_merge($buildConfig['js-lib'], $buildConfig['js-app']));
+        } else if(Configure::read('debug') === 1) {
             echo $this->Html->script(array('build/lib.debug', 'build/app.debug'));
-		} else {
+        } else {
             echo $this->Html->script(array('build/lib.min', 'build/app.min'));
         }
         echo $this->fetch('script');
