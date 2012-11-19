@@ -19,7 +19,7 @@ if(isset($build[$key])) {
 	die("Invalid build key: $key");
 }
 
-echo_comment("### build ### $key ### " . date('r'));
+echo_comment("### build: $key ###"); 
 foreach($build[$key] as $file_name) {
 	echo_comment("### file ### $file_name");
 

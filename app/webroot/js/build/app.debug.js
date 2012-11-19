@@ -1,5 +1,5 @@
 
-// ### build ### js-app ### Mon, 19 Nov 2012 11:15:27 -0800
+// ### build: js-app ###
 
 // ### file ### app/core.js
 // Copyright (c) 2012 The President and Fellows of Harvard College

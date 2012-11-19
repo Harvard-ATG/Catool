@@ -1,5 +1,5 @@
 
-// ### build ### js-lib ### Mon, 19 Nov 2012 11:15:27 -0800
+// ### build: js-lib ###
 
 // ### file ### lib/jquery.js
 /*!
