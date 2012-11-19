@@ -27,11 +27,11 @@ minify:
 
 copy:
 	cp -v build/*.js app/webroot/js/build
-	cp -v build/*.css app/webroot/css/
+	cp -v build/*.css app/webroot/css/build
 
 clean: 
 	rm -fv app/webroot/js/build/*.js *.js
-	rm -fv app/webroot/css/app.debug.css app/webroot/css/app.min.css
+	rm -fv app/webroot/css/build/*.css *.css 
 
 ##################################################
 # Generate static or live docs using yuidoc

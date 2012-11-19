@@ -149,7 +149,7 @@ $infoElements = array(
 						<div class="control-group">
 							<label class="control-label">Comment</label>
 							<div class="controls">
-								<textarea class="input-xlarge" rows="3" name="body"></textarea>
+								<textarea class="input-xxlarge" rows="5" name="body"></textarea>
 							</div>
 						</div>
 						<div class="control-group">

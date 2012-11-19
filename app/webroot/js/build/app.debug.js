@@ -1,5 +1,5 @@
 
-// ### build ### js-app ### Sat, 17 Nov 2012 13:37:28 -0800
+// ### build ### js-app ### Sun, 18 Nov 2012 19:22:24 -0800
 
 // ### file ### app/core.js
 // Copyright (c) 2012 The President and Fellows of Harvard College
@@ -48,7 +48,7 @@ Catool = (function() {
 	var Events = _.extend({}, Backbone.Events);
 
 	/**
-	 * User is the currently logged-in user to the application.
+	 * Current user data. 
 	 */
 	var user = {
 		id: null,
@@ -62,18 +62,37 @@ Catool = (function() {
 		}
 	};
 
+	/**
+	 * Settings for the wysihtml5 editor.
+	 */
+	var wysihtml5Config = {
+		"font-styles": true, //Font styling, e.g. h1, h2, etc. Default true
+		"emphasis": true, //Italics, bold, etc. Default true
+		"lists": true, //(Un)ordered lists, e.g. Bullets, Numbers. Default true
+		"html": false, //Button which allows you to edit the generated HTML. Default false
+		"link": true, //Button to insert a link. Default true
+		"image": true, //Button to insert an image. Default true,
+		"color": false //Button to change color of font  
+	};
+
 	return {
+		// classes
 		Model: Model,
 		View: View,
 		Collection: Collection,
 		Events: Events,
 
-		user: user,
-
+		// namespaces
 		models: {},
 		views: {},
 		collections: {},
-		utils:  {} 
+		utils:  {},
+		data: {
+			wysihtml5Config: wysihtml5Config
+		},
+
+		// instances
+		user: user
 	};
 })();
 
@@ -1209,6 +1228,7 @@ Catool = (function() {
 	var View = App.View;
 	var AlertView = App.views.AlertView;
 	var TimeConverter = App.utils.TimeConverter;
+	var wysihtml5Config = App.data.wysihtml5Config || {};
 	
 	var VideoNoteFormView = View.extend({
 		events: {
@@ -1237,6 +1257,7 @@ Catool = (function() {
 			var $tags = this.$('input[name=tags]');
 
 			$tags.tagit(); // tag-it jquery plugin
+			$body.wysihtml5(wysihtml5Config); // wysihtml5 jquery plugin
 
 			this.video = options.video;
 			this.player = options.player;
@@ -1442,10 +1463,17 @@ Catool = (function() {
 			this.closeMessage();
 			this.unhighlightErrors();
 			this._foreachField(function(model, name, field) {
-				if(name === 'tags') {
-					field.tagit("removeAll");
+				switch(name) {
+					case 'tags':
+						field.tagit("removeAll");
+						break;
+					case 'body':
+						field.data('wysihtml5').editor.clear();
+						break;
+					default:
+						field.val('');
+						break;
 				}
-				field.val('');
 			});		
 			this.onRangeSliderChange();	
 		},

@@ -317,6 +317,7 @@
 	var View = App.View;
 	var AlertView = App.views.AlertView;
 	var TimeConverter = App.utils.TimeConverter;
+	var wysihtml5Config = App.data.wysihtml5Config || {};
 	
 	var VideoNoteFormView = View.extend({
 		events: {
@@ -345,6 +346,7 @@
 			var $tags = this.$('input[name=tags]');
 
 			$tags.tagit(); // tag-it jquery plugin
+			$body.wysihtml5(wysihtml5Config); // wysihtml5 jquery plugin
 
 			this.video = options.video;
 			this.player = options.player;
@@ -550,10 +552,17 @@
 			this.closeMessage();
 			this.unhighlightErrors();
 			this._foreachField(function(model, name, field) {
-				if(name === 'tags') {
-					field.tagit("removeAll");
+				switch(name) {
+					case 'tags':
+						field.tagit("removeAll");
+						break;
+					case 'body':
+						field.data('wysihtml5').editor.clear();
+						break;
+					default:
+						field.val('');
+						break;
 				}
-				field.val('');
 			});		
 			this.onRangeSliderChange();	
 		},
