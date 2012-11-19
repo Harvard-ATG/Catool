@@ -13,7 +13,7 @@
 #	make
 #	make clean
 
-app: combine minify copy
+assets: combine minify copy
 
 combine:
 	php build/cat.php js-app > build/app.debug.js
@@ -30,19 +30,5 @@ copy:
 	cp -v build/*.css app/webroot/css # relative paths to images must be preserved
 
 clean: 
-	rm -fv app/webroot/js/build/*.js *.js
-	rm -fv app/webroot/css/app.debug.css app/webroot/css/app.min.css *.css 
-
-##################################################
-# Generate static or live docs using yuidoc
-# (must be installed on your system to work).
-#
-# Usage:
-#	make docs
-#	make livedocs
-
-docs:
-	yuidoc -o docs app
-
-livedocs:
-	yuidoc --server 5000 app
+	rm -fv app/webroot/js/build/*.js build/*.js
+	rm -fv app/webroot/css/app.debug.css app/webroot/css/app.min.css build/*.css 

@@ -280,13 +280,17 @@ class TagCollection extends AppModel {
 /**
  * Parses a comma-separated string of tags.
  *
- * @param string $tag_str a comma-separated list of tags
+ * @param mixed $taglist a comma-separated list of tags or array of tags
  * @return array of tags
  */
- 	public function parseTags($tag_str = '') {
- 		$tags = array();
- 		$items = explode(self::TAG_SEPARATOR, $tag_str);
+ 	public function parseTags($taglist = '') {
+		if(is_array($taglist)) {
+			$items = $taglist;
+		} else {
+ 			$items = explode(self::TAG_SEPARATOR, $taglist);
+ 		}
  		
+ 		$tags = array();
  		foreach($items as $item) {
  			$tag = preg_replace( "/(^\s+)|(\s+$)/us", "", $item);
  			$is_valid_trimmed_tag = ($tag !== null && $tag !== '');

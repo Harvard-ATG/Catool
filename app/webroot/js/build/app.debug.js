@@ -1,5 +1,5 @@
 
-// ### build ### js-app ### Sun, 18 Nov 2012 19:37:06 -0800
+// ### build ### js-app ### Mon, 19 Nov 2012 11:15:27 -0800
 
 // ### file ### app/core.js
 // Copyright (c) 2012 The President and Fellows of Harvard College
@@ -40,7 +40,8 @@ Catool = (function() {
 	var Collection = Backbone.Collection.extend({});
 
 	/**
-	 * Events is an application-wide event manager.
+	 * Events class derived from from Backbone.Events.
+	 * Can be mixed into any object to priovide custom events.
 	 *
 	 * @class Events
 	 * @extends Backbone.Events
@@ -62,19 +63,6 @@ Catool = (function() {
 		}
 	};
 
-	/**
-	 * Settings for the wysihtml5 editor.
-	 */
-	var wysihtml5Config = {
-		"font-styles": true, //Font styling, e.g. h1, h2, etc. Default true
-		"emphasis": true, //Italics, bold, etc. Default true
-		"lists": true, //(Un)ordered lists, e.g. Bullets, Numbers. Default true
-		"html": false, //Button which allows you to edit the generated HTML. Default false
-		"link": true, //Button to insert a link. Default true
-		"image": true, //Button to insert an image. Default true,
-		"color": false //Button to change color of font  
-	};
-
 	return {
 		// classes
 		Model: Model,
@@ -87,14 +75,39 @@ Catool = (function() {
 		views: {},
 		collections: {},
 		utils:  {},
-		data: {
-			wysihtml5Config: wysihtml5Config
-		},
+		settings: {},
 
 		// instances
 		user: user
 	};
 })();
+
+// ### file ### app/settings.js
+// Copyright (c) 2012 The President and Fellows of Harvard College
+// Use of this source code is governed by the LICENSE file found in the root of this project.
+(function(App) {
+	/**
+	 * Defines global, application-wide settings for the wysihtml5 editor.
+	 * 
+	 * The wysihtml5 editor is a jQuery plugin.
+	 *
+	 * See also: https://github.com/xing/wysihtml5
+	 */
+	var wysihtml5Config = {
+		"font-styles": true, //Font styling, e.g. h1, h2, etc. Default true
+		"emphasis": true, //Italics, bold, etc. Default true
+		"lists": true, //(Un)ordered lists, e.g. Bullets, Numbers. Default true
+		"html": true, //Button which allows you to edit the generated HTML. Default false
+		"link": true, //Button to insert a link. Default true
+		"image": true, //Button to insert an image. Default true,
+		"color": false //Button to change color of font  
+	};
+
+	App.settings = _.extend(App.settings, {
+		wysihtml5Config: wysihtml5Config
+	});
+
+})(Catool);
 
 // ### file ### app/utils.js
 // Copyright (c) 2012 The President and Fellows of Harvard College
@@ -1067,18 +1080,16 @@ Catool = (function() {
 })(Catool);
 
 /**
- * A text editor class. This is intended to be little more than a wrapper
- * around a textarea. If anything more complex than that is needed, a proper
- * text editor, wysiwyg or otherwise, should be used (i.e. tinymce, etc).
+ * View for editing comments.
  *
  * @class CommentEditorView
  * @namespace Catool.views
  * @constructor
  */
-
 (function(App) {
 	// dependencies
 	var View = App.View;
+	var wysihtml5Config = App.settings.wysihtml5Config || {};
 	
 	var CommentEditorView = View.extend({
 		events: {
@@ -1153,6 +1164,16 @@ Catool = (function() {
 
 			return this;
 		},
+		
+		/**
+		 * Returns the textarea element.
+		 * 
+		 * @method getTextareaEl
+		 * @return {Object} jQuery
+		 */
+		getTextareaEl: function() {
+			return this.$el.children('textarea');
+		},
 
 		/**
 		 * Render the editor
@@ -1169,8 +1190,11 @@ Catool = (function() {
 			this.$el.html(html);
 
 			if(height) {
-				this.$el.children('textarea').height(height);
+				this.getTextareaEl().height(height);
 			}
+			
+			// initializes the wysiwyg
+			this.getTextareaEl().wysihtml5(wysihtml5Config);
 
 			return this;
 		},
@@ -1197,7 +1221,7 @@ Catool = (function() {
 			evt.preventDefault();
 			evt.stopPropagation();
 
-			var value = this.$el.children('textarea').val();
+			var value = this.getTextareaEl().val();
 			this.save(value);
 		},
 
@@ -1228,7 +1252,7 @@ Catool = (function() {
 	var View = App.View;
 	var AlertView = App.views.AlertView;
 	var TimeConverter = App.utils.TimeConverter;
-	var wysihtml5Config = App.data.wysihtml5Config || {};
+	var wysihtml5Config = App.settings.wysihtml5Config || {};
 	
 	var VideoNoteFormView = View.extend({
 		events: {
@@ -2246,6 +2270,7 @@ Catool = (function() {
 	// dependencies
 	var View = App.View;
 	var Note = App.models.Note;
+	var wysihtml5Config = App.settings.wysihtml5Config || {};
 	
 	var CommentFormView = View.extend({
 		events: {
@@ -2267,7 +2292,7 @@ Catool = (function() {
 		 */
 		template: _.template([
 			'<form class="note-comment-form">',
-				'<textarea class="note-comment-text" rows="3"></textarea>',
+				'<textarea class="note-comment-text" rows="6"></textarea>',
 				'<div>',
 					'<button type="submit" class="js-btn-save btn btn-primary">Submit Comment</button>',
 					'<button class="js-btn-cancel btn">Cancel</button>',
@@ -2283,6 +2308,17 @@ Catool = (function() {
 		 */
 		initialize: function() {
 		},
+		
+		
+		/**
+		 * Returns the textarea element.
+		 * 
+		 * @method getTextareaEl
+		 * @return {Object} jQuery
+		 */
+		getTextareaEl: function() {
+			return this.$('textarea.note-comment-text');
+		},
 
 		/**
 		 * Renders the form.
@@ -2292,6 +2328,10 @@ Catool = (function() {
 		 */
 		render: function() {
 			this.$el.html(this.template());
+
+			// initializes the wysiwyg
+			this.getTextareaEl().wysihtml5(wysihtml5Config);
+
 			return this;
 		},
 
@@ -2348,7 +2388,7 @@ Catool = (function() {
 		 * @method reset
 		 */
 		reset: function() {
-			this.$('.note-comment-text').val('');
+			this.getTextareaEl().data('wysihtml5').editor.clear();
 		},
 
 		/**
@@ -2468,21 +2508,6 @@ Catool = (function() {
 					'<li class="note-tag"><%= tag %></li>',
 				'<% }); %>',
 			'</ul>'
-		].join("")),
-
-		/**
-		 * Template for editing a comment.
-		 *
-		 * @property editTemplate
-		 */
-		editTemplate: _.template([
-			'<form class="note-annotation-edit-form">',
-				'<textarea style="width: 95%"><%= body %></textarea>',
-				'<p>',
-					'<button class="save-edits btn-primary btn" style="margin-right: 10px">Save Changes</button>',
-					'<button class="cancel-edits btn">Cancel</button>',
-				'</p>',
-			'</form>'
 		].join("")),
 
 		/**

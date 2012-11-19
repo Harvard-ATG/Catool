@@ -27,6 +27,7 @@ return array(
 	// javascript custom app libraries
 	'js-app' => array(
 		'app/core.js',
+		'app/settings.js',
 		'app/utils.js',
 		'app/models.js',
 		'app/views.js',

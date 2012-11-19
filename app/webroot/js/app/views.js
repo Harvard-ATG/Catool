@@ -156,18 +156,16 @@
 })(Catool);
 
 /**
- * A text editor class. This is intended to be little more than a wrapper
- * around a textarea. If anything more complex than that is needed, a proper
- * text editor, wysiwyg or otherwise, should be used (i.e. tinymce, etc).
+ * View for editing comments.
  *
  * @class CommentEditorView
  * @namespace Catool.views
  * @constructor
  */
-
 (function(App) {
 	// dependencies
 	var View = App.View;
+	var wysihtml5Config = App.settings.wysihtml5Config || {};
 	
 	var CommentEditorView = View.extend({
 		events: {
@@ -242,6 +240,16 @@
 
 			return this;
 		},
+		
+		/**
+		 * Returns the textarea element.
+		 * 
+		 * @method getTextareaEl
+		 * @return {Object} jQuery
+		 */
+		getTextareaEl: function() {
+			return this.$el.children('textarea');
+		},
 
 		/**
 		 * Render the editor
@@ -258,8 +266,11 @@
 			this.$el.html(html);
 
 			if(height) {
-				this.$el.children('textarea').height(height);
+				this.getTextareaEl().height(height);
 			}
+			
+			// initializes the wysiwyg
+			this.getTextareaEl().wysihtml5(wysihtml5Config);
 
 			return this;
 		},
@@ -286,7 +297,7 @@
 			evt.preventDefault();
 			evt.stopPropagation();
 
-			var value = this.$el.children('textarea').val();
+			var value = this.getTextareaEl().val();
 			this.save(value);
 		},
 
@@ -317,7 +328,7 @@
 	var View = App.View;
 	var AlertView = App.views.AlertView;
 	var TimeConverter = App.utils.TimeConverter;
-	var wysihtml5Config = App.data.wysihtml5Config || {};
+	var wysihtml5Config = App.settings.wysihtml5Config || {};
 	
 	var VideoNoteFormView = View.extend({
 		events: {
@@ -1335,6 +1346,7 @@
 	// dependencies
 	var View = App.View;
 	var Note = App.models.Note;
+	var wysihtml5Config = App.settings.wysihtml5Config || {};
 	
 	var CommentFormView = View.extend({
 		events: {
@@ -1356,7 +1368,7 @@
 		 */
 		template: _.template([
 			'<form class="note-comment-form">',
-				'<textarea class="note-comment-text" rows="3"></textarea>',
+				'<textarea class="note-comment-text" rows="6"></textarea>',
 				'<div>',
 					'<button type="submit" class="js-btn-save btn btn-primary">Submit Comment</button>',
 					'<button class="js-btn-cancel btn">Cancel</button>',
@@ -1372,6 +1384,17 @@
 		 */
 		initialize: function() {
 		},
+		
+		
+		/**
+		 * Returns the textarea element.
+		 * 
+		 * @method getTextareaEl
+		 * @return {Object} jQuery
+		 */
+		getTextareaEl: function() {
+			return this.$('textarea.note-comment-text');
+		},
 
 		/**
 		 * Renders the form.
@@ -1381,6 +1404,10 @@
 		 */
 		render: function() {
 			this.$el.html(this.template());
+
+			// initializes the wysiwyg
+			this.getTextareaEl().wysihtml5(wysihtml5Config);
+
 			return this;
 		},
 
@@ -1437,7 +1464,7 @@
 		 * @method reset
 		 */
 		reset: function() {
-			this.$('.note-comment-text').val('');
+			this.getTextareaEl().data('wysihtml5').editor.clear();
 		},
 
 		/**
@@ -1557,21 +1584,6 @@
 					'<li class="note-tag"><%= tag %></li>',
 				'<% }); %>',
 			'</ul>'
-		].join("")),
-
-		/**
-		 * Template for editing a comment.
-		 *
-		 * @property editTemplate
-		 */
-		editTemplate: _.template([
-			'<form class="note-annotation-edit-form">',
-				'<textarea style="width: 95%"><%= body %></textarea>',
-				'<p>',
-					'<button class="save-edits btn-primary btn" style="margin-right: 10px">Save Changes</button>',
-					'<button class="cancel-edits btn">Cancel</button>',
-				'</p>',
-			'</form>'
 		].join("")),
 
 		/**

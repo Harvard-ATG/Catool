@@ -36,7 +36,8 @@ Catool = (function() {
 	var Collection = Backbone.Collection.extend({});
 
 	/**
-	 * Events is an application-wide event manager.
+	 * Events class derived from from Backbone.Events.
+	 * Can be mixed into any object to priovide custom events.
 	 *
 	 * @class Events
 	 * @extends Backbone.Events
@@ -58,19 +59,6 @@ Catool = (function() {
 		}
 	};
 
-	/**
-	 * Settings for the wysihtml5 editor.
-	 */
-	var wysihtml5Config = {
-		"font-styles": true, //Font styling, e.g. h1, h2, etc. Default true
-		"emphasis": true, //Italics, bold, etc. Default true
-		"lists": true, //(Un)ordered lists, e.g. Bullets, Numbers. Default true
-		"html": false, //Button which allows you to edit the generated HTML. Default false
-		"link": true, //Button to insert a link. Default true
-		"image": true, //Button to insert an image. Default true,
-		"color": false //Button to change color of font  
-	};
-
 	return {
 		// classes
 		Model: Model,
@@ -83,9 +71,7 @@ Catool = (function() {
 		views: {},
 		collections: {},
 		utils:  {},
-		data: {
-			wysihtml5Config: wysihtml5Config
-		},
+		settings: {},
 
 		// instances
 		user: user

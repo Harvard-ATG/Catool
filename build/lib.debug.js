@@ -1,5 +1,5 @@
 
-// ### build ### js-lib ### Sun, 18 Nov 2012 19:37:06 -0800
+// ### build ### js-lib ### Mon, 19 Nov 2012 11:15:27 -0800
 
 // ### file ### lib/jquery.js
 /*!
@@ -46709,7 +46709,7 @@ wysihtml5.views.Textarea = wysihtml5.views.View.extend(
       });
       
       try {
-        console.log("Heya! This page is using wysihtml5 for rich text editing. Check out https://github.com/xing/wysihtml5");
+        //console.log("Heya! This page is using wysihtml5 for rich text editing. Check out https://github.com/xing/wysihtml5");
       } catch(e) {}
     },
     
