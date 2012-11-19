@@ -37,9 +37,9 @@ $buildConfig = include ROOT.DS.'build'.DS.'build.php';
         if(Configure::read('debug') > 1) {
             echo $this->Html->css($buildConfig['css-app']);
         } else if(Configure::read('debug') === 1) {
-            echo $this->Html->css('build/app.debug.css');
+            echo $this->Html->css('app.debug.css');
         } else {
-            echo $this->Html->css('build/app.min.css');
+            echo $this->Html->css('app.min.css');
         }
         echo $this->fetch('css');
     ?>

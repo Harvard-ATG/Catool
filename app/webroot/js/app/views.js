@@ -423,6 +423,7 @@
 			});
 			
 			attrs.Note.type = 'annotation';
+			attrs.Note.body_type = 'text/html';
 			attrs.Note.target_id = this.collection.targetModel.get('id');
 			attrs.Note.title = attrs.Note.title || 'Untitled';
 			attrs.Segment = [attrs.Segment];

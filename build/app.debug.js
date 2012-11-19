@@ -1,5 +1,5 @@
 
-// ### build ### js-app ### Sun, 18 Nov 2012 19:22:24 -0800
+// ### build ### js-app ### Sun, 18 Nov 2012 19:37:06 -0800
 
 // ### file ### app/core.js
 // Copyright (c) 2012 The President and Fellows of Harvard College
@@ -1334,6 +1334,7 @@ Catool = (function() {
 			});
 			
 			attrs.Note.type = 'annotation';
+			attrs.Note.body_type = 'text/html';
 			attrs.Note.target_id = this.collection.targetModel.get('id');
 			attrs.Note.title = attrs.Note.title || 'Untitled';
 			attrs.Segment = [attrs.Segment];

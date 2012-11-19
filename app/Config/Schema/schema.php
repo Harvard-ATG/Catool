@@ -159,6 +159,7 @@ class AppSchema extends CakeSchema {
 		'rght' => array('type' => 'integer', 'null' => true, 'default' => NULL),
 		'title' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 1000, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'body' => array('type' => 'text', 'null' => true, 'default' => NULL, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+		'body_type' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 25, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'created' => array('type' => 'datetime', 'null' => true, 'default' => NULL),
 		'modified' => array('type' => 'datetime', 'null' => true, 'default' => NULL),
 		'deleted' => array('type' => 'integer', 'null' => false, 'default' => 0, 'length' => 1),
