@@ -35,13 +35,6 @@ class PurifiableBehavior extends ModelBehavior {
 		'dirtySuffix' => '_dirty', // for when keepDirty = true
 		'cleanSuffix' => '_clean' // for when overwrite = false
 	);
-	
-/**
- * HTMLPurifier instance.
- * 
- * @var HTMLPurifier
- */
-	public $HTMLPurifier;
 
 /**
  * Setup this behavior with the specified configuration settings.
