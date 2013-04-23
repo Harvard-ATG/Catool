@@ -10,4 +10,4 @@ _Please Note:_ This is *alpha* quality software that is untested in terms of pro
 * Configure your web server and point the document root to *app/webroot*.
 * Run the web installer <code>install.php</code> from the document root.
 
-For more detailed installation instructions, see the *INSTALL* file.
+For more detailed installation instructions, see the [INSTALL](https://github.com/Harvard-ATG/Catool/blob/master/INSTALL.md) file or the [FAQ](https://github.com/Harvard-ATG/Catool/wiki/FAQs).
