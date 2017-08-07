@@ -1,6 +1,6 @@
 # [DEPRECATED] Catool
 
-### Important notice: This tool is deprecated and not actively developed anymore. 
+### Important notice: This tool is deprecated and not actively developed or supported anymore. 
 
 ## Description
 
